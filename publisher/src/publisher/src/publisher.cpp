@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <unistd.h>
+
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
@@ -16,12 +18,19 @@ class Publisher : public rclcpp::Node
     : Node("publisher"), out("publish.txt"), count_(0)
     {
       mes = std::string(length, 'a');
-      publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-      start_time = high_resolution_clock::now();
-      nanoseconds ns = duration_cast<nanoseconds>(start_time.time_since_epoch());
-      std::time_t t = duration_cast<seconds>(ns).count();
-      out << std::ctime(&t);
-      out << ns.count() % 1000000000 << std::endl;
+      rmw_qos_profile_t qos_profile = rmw_qos_profile_default;
+      qos_profile.depth = 5000;
+      publisher_ = this->create_publisher<std_msgs::msg::String>("test_topic", qos_profile);
+      pid_t id = getpid();
+      std::ofstream f_task("/sys/fs/cgroup/cpuset/sub_cpuset/tasks", std::ios_base::out);
+      if(!f_task.is_open()){
+        RCLCPP_INFO(this->get_logger(), "FILE OPEN ERORR");
+      }
+      else{
+        auto s = std::to_string(id);
+        f_task.write(s.c_str(),s.length());
+      }
+      f_task.close();
       timer_ = this->create_wall_timer(
       0ms, std::bind(&Publisher::timer_callback, this));
     }
@@ -33,12 +42,11 @@ class Publisher : public rclcpp::Node
       message.data = mes;
       high_resolution_clock::time_point t = high_resolution_clock::now();
       publisher_->publish(message);
-      out << duration_cast<nanoseconds>(t-start_time).count() << std::endl;
+      out << duration_cast<nanoseconds>(t.time_since_epoch()).count() << std::endl;
     }
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     std::ofstream out;
-    high_resolution_clock::time_point start_time;
     std::string mes;
     size_t count_;
   };
