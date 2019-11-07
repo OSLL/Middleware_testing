@@ -44,9 +44,9 @@ class Subscriber : public rclcpp::Node
       pr.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
       pr.depth = SIZE_MAX+1;
       pr.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
-      /*pr.durability =  RMW_QOS_POLICY_DURABILITY_VOLATILE;
+      pr.durability =  RMW_QOS_POLICY_DURABILITY_VOLATILE;
       pr.deadline.nsec = UINT64_MAX+1;
-      pr.lifespan = pr.deadline;*/
+      pr.lifespan = pr.deadline;
       rclcpp::QoSInitialization QoSinit = rclcpp::QoSInitialization::from_rmw(pr);
       rclcpp::QoS test_QoS(QoSinit, pr);
       return test_QoS;
@@ -68,6 +68,10 @@ class Subscriber : public rclcpp::Node
 
 int main(int argc, char * argv[])
 {
+  if(argc < 2){
+    std::cout << "Missed argument" << std::endl;
+    return 0;
+  }
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<Subscriber>(argv[1]));
   rclcpp::shutdown();
