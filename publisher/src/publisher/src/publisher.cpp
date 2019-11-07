@@ -14,8 +14,8 @@ using namespace std::chrono;
 class Publisher : public rclcpp::Node
 {
   public:
-    Publisher(int length=10)
-    : Node("publisher"), out("publish.txt"), count_(0)
+    Publisher(int length, int mcount)
+    : Node("publisher"), out("publish.txt", std::ios_base::app), count_(0), mcount(mcount)
     {
       mes = std::string(length, 'a');
       rmw_qos_profile_t qos_profile = rmw_qos_profile_default;
@@ -40,23 +40,35 @@ class Publisher : public rclcpp::Node
     {
       auto message = std_msgs::msg::String();
       message.data = mes;
+      ++count_;
       high_resolution_clock::time_point t = high_resolution_clock::now();
       publisher_->publish(message);
-      out << duration_cast<nanoseconds>(t.time_since_epoch()).count() << std::endl;
+      out << duration_cast<nanoseconds>(t.time_since_epoch()).count() << ' ';
+      if(count_ == mcount) {
+        timer_.reset();
+	out << std::endl;
+	out.close();
+	rclcpp::shutdown();
+      }
     }
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     std::ofstream out;
     std::string mes;
     size_t count_;
+    size_t mcount;
   };
 
   int main(int argc, char * argv[])
   {
+    if(argc < 3) {
+	std::cout << "Missed length and/or message count" << std::endl;
+	return 0;
+    }
+    int length = atoi(argv[1]);
+    int mcount = atoi(argv[2]);
     rclcpp::init(argc, argv);
-    int length;
-    std::cin >> length;
-    rclcpp::spin(std::make_shared<Publisher>(length));
+    rclcpp::spin(std::make_shared<Publisher>(length, mcount));
     rclcpp::shutdown();
     return 0;
   }
