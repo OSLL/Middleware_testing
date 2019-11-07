@@ -14,11 +14,11 @@ class Subscriber : public rclcpp::Node
   public:
     Subscriber(char *add_to_cpuset): Node("test_subscriber"),id(getpid())
     {
-      subscription_ = this->create_subscription<std_msgs::msg::String>("test_topic", 100, std::bind(&Subscriber::callback, this, std::placeholders::_1));
+      subscription_ = this->create_subscription<std_msgs::msg::String>("test_topic", createQoS(), std::bind(&Subscriber::callback, this, std::placeholders::_1));
       if(std::string(add_to_cpuset) == "true"){
         std::ofstream f_task("/sys/fs/cgroup/cpuset/sub_cpuset/tasks", std::ios_base::out);
         if(!f_task.is_open()){
-          RCLCPP_INFO(this->get_logger(), "FILE OPEN ERROR");
+          RCLCPP_WARN_ONCE(this->get_logger(), "Erorr in adding to cpuset");
         }
         else{
           auto s = std::to_string(id);
@@ -32,11 +32,26 @@ class Subscriber : public rclcpp::Node
 
     std::ofstream file(std::string(get_name())+".txt");
     for(unsigned i=0; i<time_list.size();i++)
-      file << time_list[i] << std::endl;
+      file << time_list[i] << ' ';
+    file << std::endl;
     file.close();
   }
 
   private:
+
+    rclcpp::QoS createQoS(){
+      rmw_qos_profile_t pr = rmw_qos_profile_default;
+      pr.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+      pr.depth = SIZE_MAX+1;
+      pr.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
+      /*pr.durability =  RMW_QOS_POLICY_DURABILITY_VOLATILE;
+      pr.deadline.nsec = UINT64_MAX+1;
+      pr.lifespan = pr.deadline;*/
+      rclcpp::QoSInitialization QoSinit = rclcpp::QoSInitialization::from_rmw(pr);
+      rclcpp::QoS test_QoS(QoSinit, pr);
+      return test_QoS;
+    }
+
     void callback(std_msgs::msg::String::SharedPtr msg)
     {
       auto rec_time = std::chrono::high_resolution_clock::now();
