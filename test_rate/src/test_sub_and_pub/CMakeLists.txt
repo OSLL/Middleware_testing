@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
-project(publisher)
+project(test_sub_and_pub)
+
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -12,16 +17,21 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+# uncomment the following section in order to fill in
+# further dependencies manually.
+# find_package(<dependency> REQUIRED)
 
-add_executable(publisher src/publisher.cpp)
-ament_target_dependencies(publisher rclcpp std_msgs)
+add_executable(test_sub src/subscriber.cpp)
+ament_target_dependencies(test_sub rclcpp std_msgs)
+
+add_executable(test_pub src/publisher.cpp)
+ament_target_dependencies(test_pub rclcpp std_msgs)
 
 install(TARGETS
-  publisher
+  test_sub
+  test_pub
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
@@ -34,5 +44,10 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 ament_package()
