@@ -23,11 +23,12 @@ def generate_launch_description():
         msg_num,
         msg_len,
     ]
-    for i in range(10):
+    for i in range(500):
         descr.append(launch_ros.actions.Node(
         package='test_sub_and_pub', node_executable='test_sub', output='screen',
         node_name=[launch.substitutions.LaunchConfiguration('node_prefix'), 'sub'+ str(i)],
         arguments = ['false']))
+
     publisher = launch_ros.actions.Node(
             package='test_sub_and_pub', node_executable='test_pub', output='screen',
             node_name=[launch.substitutions.LaunchConfiguration('node_prefix'), 'pub'],
