@@ -12,7 +12,7 @@
 class Subscriber : public rclcpp::Node
 {
   public:
-    Subscriber(char *add_to_cpuset): Node("test_subscriber"),id(getpid())
+    Subscriber(char *add_to_cpuset): Node("subscriber"),id(getpid())
     {
       subscription_ = this->create_subscription<std_msgs::msg::String>("test_topic", createQoS(), std::bind(&Subscriber::callback, this, std::placeholders::_1));
       if(std::string(add_to_cpuset) == "true"){
@@ -30,10 +30,10 @@ class Subscriber : public rclcpp::Node
 
   ~Subscriber(){
 
-    std::ofstream file(std::string(get_name())+".txt");
+    std::ofstream file("subscriber.txt", std::ofstream::app);
     for(unsigned i=0; i<time_list.size();i++)
       file << time_list[i] << ' ';
-    file << std::endl;
+    file << std::endl << "-----------"<<std::endl;
     file.close();
   }
 
