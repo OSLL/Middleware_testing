@@ -37,11 +37,10 @@ class Publisher : public rclcpp::Node
     rclcpp::QoS createQoS(){
       rmw_qos_profile_t pr = rmw_qos_profile_default;
       pr.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
-      pr.depth = SIZE_MAX+1;
-      pr.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
-      pr.durability =  RMW_QOS_POLICY_DURABILITY_VOLATILE;
-      pr.deadline.nsec = UINT64_MAX+1;
-      pr.lifespan = pr.deadline;
+      pr.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
+      pr.durability =  RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+      /*pr.deadline.nsec = UINT64_MAX+1;
+      pr.lifespan = pr.deadline;*/
       rclcpp::QoSInitialization QoSinit = rclcpp::QoSInitialization::from_rmw(pr);
       rclcpp::QoS test_QoS(QoSinit, pr);
       return test_QoS;

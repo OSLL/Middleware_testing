@@ -20,7 +20,7 @@ def generate_launch_description():
     subscriber = launch_ros.actions.Node(
         package='test_sub_and_pub', node_executable='test_sub', output='screen',
         node_name=[launch.substitutions.LaunchConfiguration('node_prefix'), 'sub'],
-        arguments = ['true'])
+        arguments = ['true', launch.substitutions.LaunchConfiguration('message_number')])
     publisher = launch_ros.actions.Node(
             package='test_sub_and_pub', node_executable='test_pub', output='screen',
             node_name=[launch.substitutions.LaunchConfiguration('node_prefix'), 'pub'],
