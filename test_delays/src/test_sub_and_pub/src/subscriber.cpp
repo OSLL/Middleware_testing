@@ -12,7 +12,7 @@
 class Subscriber : public rclcpp::Node
 {
   public:
-    Subscriber(char *add_to_cpuset): Node("subscriber"),id(getpid())
+    Subscriber(char *add_to_cpuset, int mcount): Node("subscriber"),id(getpid()), m_count(mcount),count(0)
     {
       subscription_ = this->create_subscription<std_msgs::msg::String>("test_topic", createQoS(), std::bind(&Subscriber::callback, this, std::placeholders::_1));
       if(std::string(add_to_cpuset) == "true"){
@@ -29,7 +29,6 @@ class Subscriber : public rclcpp::Node
     }
 
   ~Subscriber(){
-
     std::ofstream file("subscriber.txt", std::ofstream::app);
     for(unsigned i=0; i<time_list.size();i++)
       file << time_list[i] << ' ';
@@ -38,15 +37,13 @@ class Subscriber : public rclcpp::Node
   }
 
   private:
-
     rclcpp::QoS createQoS(){
       rmw_qos_profile_t pr = rmw_qos_profile_default;
       pr.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
-      pr.depth = SIZE_MAX+1;
-      pr.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
-      pr.durability =  RMW_QOS_POLICY_DURABILITY_VOLATILE;
-      pr.deadline.nsec = UINT64_MAX+1;
-      pr.lifespan = pr.deadline;
+      pr.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
+      pr.durability =  RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+      /*pr.deadline.nsec = UINT64_MAX+1;
+      pr.lifespan = pr.deadline;*/
       rclcpp::QoSInitialization QoSinit = rclcpp::QoSInitialization::from_rmw(pr);
       rclcpp::QoS test_QoS(QoSinit, pr);
       return test_QoS;
@@ -54,26 +51,32 @@ class Subscriber : public rclcpp::Node
 
     void callback(std_msgs::msg::String::SharedPtr msg)
     {
+      count++;
       auto rec_time = std::chrono::high_resolution_clock::now();
       auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(rec_time.time_since_epoch()).count();
       time_list.push_back(ns);
       RCLCPP_INFO(this->get_logger(), "I heard: '%s - %lu'", msg->data.c_str(), time_list.size());
+      if(count == m_count)
+          rclcpp::shutdown();
     }
 
     std::vector<unsigned long int> time_list;
     cpu_set_t my_set;
     pid_t id;
+    int m_count;
+    int count;
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
 };
 
 int main(int argc, char * argv[])
 {
-  if(argc < 2){
+  if(argc < 3){
     std::cout << "Missed argument" << std::endl;
     return 0;
   }
+  int mcount = atoi(argv[2]);
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<Subscriber>(argv[1]));
+  rclcpp::spin(std::make_shared<Subscriber>(argv[1],mcount));
   rclcpp::shutdown();
   return 0;
 }
