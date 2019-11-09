@@ -39,8 +39,6 @@ class Publisher : public rclcpp::Node
       pr.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
       pr.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
       pr.durability =  RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
-      /*pr.deadline.nsec = UINT64_MAX+1;
-      pr.lifespan = pr.deadline;*/
       rclcpp::QoSInitialization QoSinit = rclcpp::QoSInitialization::from_rmw(pr);
       rclcpp::QoS test_QoS(QoSinit, pr);
       return test_QoS;
@@ -58,9 +56,8 @@ class Publisher : public rclcpp::Node
       out << duration_cast<nanoseconds>(t.time_since_epoch()).count() << ' ';
       if(count_ == mcount) {
         timer_.reset();
-  out << std::endl;
-  out.close();
-  rclcpp::shutdown();
+        out << std::endl;
+        out.close();
       }
     }
     rclcpp::TimerBase::SharedPtr timer_;

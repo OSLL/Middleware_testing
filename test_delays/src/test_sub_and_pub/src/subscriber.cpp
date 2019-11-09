@@ -12,10 +12,10 @@
 class Subscriber : public rclcpp::Node
 {
   public:
-    Subscriber(char *add_to_cpuset, int mcount): Node("subscriber"),id(getpid()), m_count(mcount),count(0)
+    Subscriber(bool need_cpuset, int mcount): Node("subscriber"),id(getpid()), m_count(mcount),count(0)
     {
       subscription_ = this->create_subscription<std_msgs::msg::String>("test_topic", createQoS(), std::bind(&Subscriber::callback, this, std::placeholders::_1));
-      if(std::string(add_to_cpuset) == "true"){
+      if(need_cpuset){
         std::ofstream f_task("/sys/fs/cgroup/cpuset/sub_cpuset/tasks", std::ios_base::out);
         if(!f_task.is_open()){
           RCLCPP_WARN_ONCE(this->get_logger(), "Erorr in adding to cpuset");
@@ -32,7 +32,7 @@ class Subscriber : public rclcpp::Node
     std::ofstream file("subscriber.txt", std::ofstream::app);
     for(unsigned i=0; i<time_list.size();i++)
       file << time_list[i] << ' ';
-    file << std::endl << "-----------"<<std::endl;
+    file <<"|||"<< std::endl;
     file.close();
   }
 
@@ -42,8 +42,6 @@ class Subscriber : public rclcpp::Node
       pr.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
       pr.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
       pr.durability =  RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
-      /*pr.deadline.nsec = UINT64_MAX+1;
-      pr.lifespan = pr.deadline;*/
       rclcpp::QoSInitialization QoSinit = rclcpp::QoSInitialization::from_rmw(pr);
       rclcpp::QoS test_QoS(QoSinit, pr);
       return test_QoS;
@@ -55,9 +53,11 @@ class Subscriber : public rclcpp::Node
       auto rec_time = std::chrono::high_resolution_clock::now();
       auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(rec_time.time_since_epoch()).count();
       time_list.push_back(ns);
-      RCLCPP_INFO(this->get_logger(), "I heard: '%s - %lu'", msg->data.c_str(), time_list.size());
-      if(count == m_count)
+      //RCLCPP_INFO(this->get_logger(), "Package recieved: '%s', count = %d", msg->data.c_str(), count);
+      if(count == m_count) {
+          RCLCPP_INFO(this->get_logger(), "Last package recieved by %s", get_name());
           rclcpp::shutdown();
+      }
     }
 
     std::vector<unsigned long int> time_list;
@@ -74,9 +74,11 @@ int main(int argc, char * argv[])
     std::cout << "Missed argument" << std::endl;
     return 0;
   }
+  bool need_cpuset;
+  std::istringstream(argv[1]) >> std::boolalpha >> need_cpuset;
   int mcount = atoi(argv[2]);
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<Subscriber>(argv[1],mcount));
+  rclcpp::spin(std::make_shared<Subscriber>(need_cpuset,mcount));
   rclcpp::shutdown();
   return 0;
 }
