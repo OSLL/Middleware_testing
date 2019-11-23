@@ -12,7 +12,7 @@
 class Subscriber : public rclcpp::Node
 {
   public:
-    Subscriber(bool need_cpuset, int mcount): Node("subscriber"),id(getpid()), m_count(mcount),count(0)
+    Subscriber(bool need_cpuset, int mcount): Node("subscriber"),time_list(mcount),id(getpid()), m_count(mcount),count(0)
     {
       subscription_ = this->create_subscription<std_msgs::msg::String>("test_topic", createQoS(), std::bind(&Subscriber::callback, this, std::placeholders::_1));
       if(need_cpuset){
@@ -49,11 +49,11 @@ class Subscriber : public rclcpp::Node
 
     void callback(std_msgs::msg::String::SharedPtr msg)
     {
-      count++;
       auto rec_time = std::chrono::high_resolution_clock::now();
       auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(rec_time.time_since_epoch()).count();
-      time_list.push_back(ns);
-      //RCLCPP_INFO(this->get_logger(), "Package recieved: '%s', count = %d", msg->data.c_str(), count);
+      time_list[count] = ns;
+      count++;
+        //RCLCPP_INFO(this->get_logger(), "Package recieved: '%s', count = %d", msg->data.c_str(), count);
       if(count == m_count) {
           RCLCPP_INFO(this->get_logger(), "Last package recieved by %s", get_name());
           rclcpp::shutdown();

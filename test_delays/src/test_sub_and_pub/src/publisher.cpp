@@ -3,7 +3,7 @@
 #include <memory>
 #include <fstream>
 #include <iostream>
-
+#include <vector>
 #include <unistd.h>
 
 #include "rclcpp/rclcpp.hpp"
@@ -15,7 +15,7 @@ class Publisher : public rclcpp::Node
 {
   public:
     Publisher(int length, int mcount)
-    : Node("publisher"), out("publish.txt", std::ios_base::app), count_(0), mcount(mcount)
+    : Node("publisher"), time_list(mcount), count_(0), mcount(mcount)
     {
       mes = std::string(length, 'a');
       publisher_ = this->create_publisher<std_msgs::msg::String>("test_topic", createQoS());
@@ -31,6 +31,14 @@ class Publisher : public rclcpp::Node
       f_task.close();
       timer_ = this->create_wall_timer(
       0ms, std::bind(&Publisher::timer_callback, this));
+    }
+
+    ~Publisher(){
+        std::ofstream file("publisher.txt");
+        for(unsigned i=0; i<time_list.size();i++)
+            file << time_list[i] << ' ';
+        file << std::endl;
+        file.close();
     }
 
   private:
@@ -50,19 +58,17 @@ class Publisher : public rclcpp::Node
         usleep(4000000);
       auto message = std_msgs::msg::String();
       message.data = mes;
-      ++count_;
       high_resolution_clock::time_point t = high_resolution_clock::now();
       publisher_->publish(message);
-      out << duration_cast<nanoseconds>(t.time_since_epoch()).count() << ' ';
+      time_list[count_] = duration_cast<nanoseconds>(t.time_since_epoch()).count();
+      ++count_;
       if(count_ == mcount) {
         timer_.reset();
-        out << std::endl;
-        out.close();
       }
     }
+    std::vector<unsigned long int> time_list;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    std::ofstream out;
     std::string mes;
     size_t count_;
     size_t mcount;
