@@ -29,6 +29,10 @@ class Publisher : public rclcpp::Node
         f_task.write(s.c_str(),s.length());
       }
       f_task.close();
+      priority.sched_priority = sched_get_priority_max(SCHED_FIFO);
+      int err = sched_setscheduler(id, SCHED_FIFO, &priority);
+      if(err)
+          RCLCPP_WARN_ONCE(this->get_logger(), "Erorr in setting priority: %d", -err);
       timer_ = this->create_wall_timer(
       0ms, std::bind(&Publisher::timer_callback, this));
     }
@@ -72,7 +76,8 @@ class Publisher : public rclcpp::Node
     std::string mes;
     size_t count_;
     size_t mcount;
-  };
+    sched_param priority;
+};
 
   int main(int argc, char * argv[])
   {
