@@ -26,6 +26,11 @@ class Subscriber : public rclcpp::Node
         }
         f_task.close();
       }
+      priority.sched_priority = sched_get_priority_max(SCHED_FIFO);
+      int err = sched_setscheduler(id, SCHED_FIFO, &priority);
+      if(err)
+          RCLCPP_WARN_ONCE(this->get_logger(), "Erorr in setting priority: %d", -err);
+
     }
 
   ~Subscriber(){
@@ -66,6 +71,7 @@ class Subscriber : public rclcpp::Node
     int m_count;
     int count;
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
+    sched_param priority;
 };
 
 int main(int argc, char * argv[])
