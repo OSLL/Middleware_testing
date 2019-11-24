@@ -17,7 +17,8 @@ class Publisher : public rclcpp::Node
     Publisher(int length, int mcount)
     : Node("publisher"), time_list(mcount), count_(0), mcount(mcount)
     {
-      mes = std::string(length, 'a');
+      std::string mes(length, 'a');
+      message.data = mes;
       publisher_ = this->create_publisher<std_msgs::msg::String>("test_topic", createQoS());
       pid_t id = getpid();
       std::ofstream f_task("/sys/fs/cgroup/cpuset/pub_cpuset/tasks", std::ios_base::out);
@@ -59,12 +60,9 @@ class Publisher : public rclcpp::Node
     void timer_callback()
     {
       if(count_ == 0)
-        usleep(4000000);
-      auto message = std_msgs::msg::String();
-      message.data = mes;
-      high_resolution_clock::time_point t = high_resolution_clock::now();
+        usleep(400000);
       publisher_->publish(message);
-      time_list[count_] = duration_cast<nanoseconds>(t.time_since_epoch()).count();
+      time_list[count_] = duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch()).count();
       ++count_;
       if(count_ == mcount) {
         timer_.reset();
@@ -73,10 +71,10 @@ class Publisher : public rclcpp::Node
     std::vector<unsigned long int> time_list;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    std::string mes;
     size_t count_;
     size_t mcount;
     sched_param priority;
+    std_msgs::msg::String message;
 };
 
   int main(int argc, char * argv[])

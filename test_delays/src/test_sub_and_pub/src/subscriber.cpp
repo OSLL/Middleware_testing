@@ -54,9 +54,7 @@ class Subscriber : public rclcpp::Node
 
     void callback(std_msgs::msg::String::SharedPtr msg)
     {
-      auto rec_time = std::chrono::high_resolution_clock::now();
-      auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(rec_time.time_since_epoch()).count();
-      time_list[count] = ns;
+      time_list[count] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
       count++;
         //RCLCPP_INFO(this->get_logger(), "Package recieved: '%s', count = %d", msg->data.c_str(), count);
       if(count == m_count) {
@@ -72,6 +70,7 @@ class Subscriber : public rclcpp::Node
     int count;
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
     sched_param priority;
+    unsigned long int ns;
 };
 
 int main(int argc, char * argv[])
