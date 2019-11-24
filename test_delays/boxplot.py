@@ -1,6 +1,22 @@
 import matplotlib.pyplot as plt
 import sys
 
+count_qmsgs = 0
+
+def check_size(i,common):
+	global count_qmsgs
+	if common[i][1] is 'pub':
+		count_qmsgs+=1
+	else:
+		count_qmsgs-=1
+	return count_qmsgs
+
+def queue_size(sent, recieved):
+	sent_list = [[sent[0][i], 'pub'] for i in range(0, len(sent[0]))][0:50]
+	recieved_list = [[recieved[0][i], 'sub'] for i in range(0, len(sent[0]))][0:10]
+	common = sorted(sent_list + recieved_list, key = lambda el: el[0])
+	list_counts = [check_size(i, common) for i in range(0, len(common))]
+
 def main():
 	send_time = []
 	receive_time = []
@@ -23,6 +39,7 @@ def main():
 			print(len(send_time[i]), len(receive_time[i]))
 			print("Number of observations doesn't match")
 			exit()
+	queue_size(send_time,receive_time)
 	delay_time =[[receive_time[i][j] - send_time[i][j] for j in range(0, len(send_time[i]))] for i in range(0, len(send_time))]
 	delay = []
 	for i in range(0, 10):
