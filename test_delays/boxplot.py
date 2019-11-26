@@ -63,7 +63,7 @@ def main():
 	plt.show()
 	plt.plot([i for i in range(1, len(list_counts)+1)], list_counts)
 	plt.ylabel('messages in queue')
-	plt.xlabel('sended message number')
+	plt.xlabel('sent message number')
 	plt.show()
 
 if __name__ == '__main__':
