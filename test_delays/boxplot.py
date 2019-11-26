@@ -48,22 +48,22 @@ def main():
 	delay_time =[[receive_time[i][j] - send_time[i][j] for j in range(0, len(send_time[i]))] for i in range(0, len(send_time))]
 	delay = []
 	for i in range(0, 10):
-		delay.append(delay_time[0][0:(1000*(i+1))])
+		delay.append(delay_time[0][0:(500*(i+1))])
 	delay_time = delay
 	means = [sum(delay_time[i])/(1000000*len(delay_time[i])) for i in range(0, len(delay_time))]
 	with open('delays.txt', 'w') as f:
 		f.write(' '.join([str(i/1000000) for i in delay_time[-1]]))
-	plt.boxplot(list(map(lambda x: [x[i]/1000000 for i in range(0, len(x))], delay_time)), positions=[len(d) for d in delay], widths=[500 for i in range(0, 10)], whis=[0,100])
+	plt.boxplot(list(map(lambda x: [x[i]/1000000 for i in range(0, len(x))], delay_time)), positions=[len(d) for d in delay], widths=[200 for i in range(0, 10)], whis=[0,100])
 	plt.ylabel('time, ms')
-	plt.xlabel('message count')
+	plt.xlabel('count of messages')
 	plt.show()
 	plt.plot([i for i in range(1, len(delay_time[-1])+1)], list(map(lambda x: x/1000000, delay_time[-1])))
 	plt.ylabel('time, ms')
-	plt.xlabel('message number')
+	plt.xlabel('number of message')
 	plt.show()
 	plt.plot([i for i in range(1, len(list_counts)+1)], list_counts)
 	plt.ylabel('messages in queue')
-	plt.xlabel('sent message number')
+	plt.xlabel('number of sent messages')
 	plt.show()
 
 if __name__ == '__main__':
