@@ -21,8 +21,12 @@ public:
     Test(int msg_len): sock(context, zmq::socket_type::pub), msg(msg_len), time_list(MSGS_COUNT), count(0)
     {
         sock.bind("tcp://127.0.0.1:5600");
-	usleep(4000000);
-	pid_t id = getpid();
+        int max_q = 6000;
+        sock.setsockopt(ZMQ_SNDHWM, &max_q, sizeof(max_q));
+        int dont_drop = 1;
+        sock.setsockopt(ZMQ_XPUB_NODROP, &dont_drop, sizeof(dont_drop));
+	    usleep(4000000);
+	    pid_t id = getpid();
         std::ofstream f_task("/sys/fs/cgroup/cpuset/pub_cpuset/tasks", std::ios_base::out);
         if(!f_task.is_open()){
            std::cout << "Error in adding to cpuset" << std::endl;
@@ -45,10 +49,9 @@ public:
     int start_test(){
         while (count < MSGS_COUNT) {
             if (sock.send(msg, zmq::send_flags::none)){
-		time_list[count] = duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch()).count();
+		        time_list[count] = duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch()).count();
                 count++;
-		int i = 0;
-		while(i < 2000) ++i;
+		        int i = 0;
             } else
                 return 1;
         }

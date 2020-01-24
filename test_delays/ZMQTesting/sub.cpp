@@ -22,6 +22,8 @@ public:
     {
         sock.connect("tcp://127.0.0.1:5600");
         sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
+        int max_q = 6000;
+        sock.setsockopt(ZMQ_RCVHWM, &max_q, sizeof(max_q));
         pid_t id = getpid();
         std::ofstream f_task("/sys/fs/cgroup/cpuset/sub_cpuset/tasks", std::ios_base::out);
         if(!f_task.is_open()){
