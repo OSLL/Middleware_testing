@@ -33,7 +33,7 @@ def main():
 
 	receive = open(sys.argv[2], 'r')
 	for line in receive:
-		receive_time.append(list(map(int, line.split()[0:-1])))
+		receive_time.append(list(map(int, line.split())))
 	receive.close()
 
 	if len(send_time) != len(receive_time):

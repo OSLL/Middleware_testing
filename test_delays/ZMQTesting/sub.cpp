@@ -1,28 +1,48 @@
 #include <zmq_addon.hpp>
+#include <fstream>
 #include <iostream>
 #include <cerrno>
+#include <chrono>
+#include <ctime>
+#include <vector>
+#include <unistd.h>
 
 #define MSGS_COUNT 5000
+using namespace std::chrono;
 class Test{
 private:
     zmq::context_t context;
     zmq::socket_t sock;
     zmq::message_t msg;
+    std::vector<unsigned long int> time_list;
+    sched_param priority;
     int count;
 public:
-    Test(int msg_len): sock(context, zmq::socket_type::sub), msg(msg_len), count(0)
+    Test(int msg_len): sock(context, zmq::socket_type::sub), msg(msg_len), time_list(MSGS_COUNT), count(0)
     {
-        sock.connect("tcp://127.0.0.1:5555");
+        sock.connect("tcp://127.0.0.1:5600");
         sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
-        sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
-
+        pid_t id = getpid();
+        std::ofstream f_task("/sys/fs/cgroup/cpuset/sub_cpuset/tasks", std::ios_base::out);
+        if(!f_task.is_open()){
+            std::cout << "Error in adding to cpuset" << std::endl;
+        }
+        else{
+            auto s = std::to_string(id);
+            f_task.write(s.c_str(),s.length());
+        }
+        f_task.close();
+        priority.sched_priority = sched_get_priority_max(SCHED_FIFO);
+        int err = sched_setscheduler(id, SCHED_FIFO, &priority);
+        if(err)
+            std::cout << "Error in setting priority: " << -err << std::endl;
     }
 
     int start_test(){
         while (count < MSGS_COUNT) {
             if (sock.recv(msg, zmq::recv_flags::none)){
+		time_list[count] = duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch()).count();
                 count++;
-                std::cout << count << std::endl;
             }
             else{
                 if(errno != EAGAIN)
@@ -31,11 +51,18 @@ public:
         }
         return 0;
     }
+    ~Test() {
+        std::ofstream file("subscriber.txt");
+        for(unsigned i=0; i<time_list.size();i++)
+            file << time_list[i] << ' ';
+        file << std::endl;
+        file.close();
+    }
 };
 
 int main(int argc, char **argv)
 {
-    Test test(600);
+    Test test(60);
     if(test.start_test())
         return 1;
     return 0;
