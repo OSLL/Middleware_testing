@@ -68,7 +68,24 @@ public:
 
 int main(int argc, char **argv)
 {
-    Test test(60);
+    if(argc < 2){
+        std::cout<< "Error: too few arguments!"<< std::endl;
+        return 0;
+    }
+    int len;
+    try {
+        std::string str(argv[1]);
+        len = std::stoi(str);
+    }
+    catch (std::invalid_argument const &e){
+        std::cout << "Error: bad argument!" <<std::endl;
+        return 0;
+    }
+    catch (std::out_of_range const &e){
+        std::cout << "Error: integer overflow!" <<std::endl;
+        return 0;
+    }
+    Test test(len);
     if(test.start_test())
         return 1;
     return 0;
