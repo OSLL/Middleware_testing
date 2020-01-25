@@ -4,4 +4,10 @@ source /opt/ros/$CHOOSE_ROS_DISTRO/setup.bash
 cd test_delays
 colcon build
 source ./install/setup.bash
-cd ..
+cd ../ZMQTesting
+mkdir build
+cd build
+cmake ..
+make
+cd ../../..
+
