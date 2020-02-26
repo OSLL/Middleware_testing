@@ -12,7 +12,7 @@
 class Subscriber : public rclcpp::Node
 {
   public:
-    Subscriber(bool need_cpuset, int mcount): Node("subscriber"),id(getpid()), m_count(mcount),count(0)
+    Subscriber(bool need_cpuset, int mcount): Node("subscriber"),time_list(mcount),id(getpid()), m_count(mcount),count(0)
     {
       subscription_ = this->create_subscription<std_msgs::msg::String>("test_topic", createQoS(), std::bind(&Subscriber::callback, this, std::placeholders::_1));
       if(need_cpuset){
@@ -26,6 +26,11 @@ class Subscriber : public rclcpp::Node
         }
         f_task.close();
       }
+      priority.sched_priority = sched_get_priority_max(SCHED_FIFO);
+      int err = sched_setscheduler(id, SCHED_FIFO, &priority);
+      if(err)
+          RCLCPP_WARN_ONCE(this->get_logger(), "Erorr in setting priority: %d", -err);
+
     }
 
   ~Subscriber(){
@@ -49,11 +54,9 @@ class Subscriber : public rclcpp::Node
 
     void callback(std_msgs::msg::String::SharedPtr msg)
     {
+      time_list[count] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
       count++;
-      auto rec_time = std::chrono::high_resolution_clock::now();
-      auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(rec_time.time_since_epoch()).count();
-      time_list.push_back(ns);
-      //RCLCPP_INFO(this->get_logger(), "Package recieved: '%s', count = %d", msg->data.c_str(), count);
+        //RCLCPP_INFO(this->get_logger(), "Package recieved: '%s', count = %d", msg->data.c_str(), count);
       if(count == m_count) {
           RCLCPP_INFO(this->get_logger(), "Last package recieved by %s", get_name());
           rclcpp::shutdown();
@@ -66,6 +69,8 @@ class Subscriber : public rclcpp::Node
     int m_count;
     int count;
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
+    sched_param priority;
+    unsigned long int ns;
 };
 
 int main(int argc, char * argv[])
