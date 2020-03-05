@@ -1,0 +1,20 @@
+<dds>
+<qos_profile name="TestProfile">
+    <datawriter_qos>
+        <history>
+            <kind>KEEP_ALL_HISTORY_QOS</kind>
+        </history>
+        <reliability>
+            <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+    </datawriter_qos>
+    <datareader_qos>
+        <history>
+            <kind>KEEP_ALL_HISTORY_QOS</kind>
+        </history>
+        <reliability>
+            <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+    </datareader_qos>
+</qos_profile>
+</dds>
