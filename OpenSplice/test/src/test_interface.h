@@ -1,16 +1,11 @@
 #include <string>
 #include <chrono>
 #include <ctime>
+#include <vector>
 
 template <class Publisher>
 class TestMiddlewarePub
 {
-
-    /*template <class QoS>
-    struct IQoS {
-        QoS qos;
-    };*/
- 
 public:
  
     explicit ITestDDS(int msInterval, int byteSize, int msgCount, std::string topic) :
@@ -20,27 +15,27 @@ public:
     _topic(topic) {
         _publisher = createPublisher(topic);
     };
+
+    void toJson(std::vector<?> time){
+        //перенести id сообщение и его время получения/отправки в json
+    }
  
     virtual Publisher createPublisher(std::string topic)=0;
 
     virtual void publish(std::string msg)=0;
+
+    virtual void setQoS(std::string filename)=0;	//считывать наверное тоже из json, так как будет разные конфигурации QoS
  
-//    virtual IQoS<class T> createQoS()=0;
- 
-//     метод для реализации тестов
-    void test0(){
-        int counter;
-        std::this_thread::sleep_for(std::chrono::seconds(4));
-        while(counter < _msgCount) {
-            publish('message');
-            std::this_thread::sleep_for(std::chrono::mseconds(_msInterval));
-        }
-    };
  
 private:
     int _msInterval = 0;
-    int _byteSize = 0;
+    int _byteSizeMin = 0;
+    int _byteSizeMax = 0;
+    int _step = 0;
+    int _msg_count_befor_step = 0;
     int _msgCount = 0;
+    int _priority = -1 //not stated
+    int _cpu_index = -1; //not stated
     std::string _topic;
     Publisher _publisher;
 };
@@ -48,12 +43,6 @@ private:
 template <class Subscriber>
 class TestMiddlewareSub
 {
-
-    /*template <class QoS>
-    struct IQoS {
-        QoS qos;
-    };*/
-
 public:
 
     explicit ITestDDS(int msInterval, int byteSize, int msgCount, std::string topic) :
@@ -66,22 +55,17 @@ public:
 
     virtual Subscriber createSubscriber(std::string topic)=0;
 
-    virtual unsigned int receive(Publisher publisher)=0;  //возвращает количетство принятых сообщений
+    virtual std::vector<std::string> receive(Publisher publisher)=0;  //возвращает вектор принятых сообщений
 
-//    virtual IQoS<class T> createQoS()=0;
+    virtual void setQoS(std::string filename)=0;
 
-//     метод для реализации тестов
-    void test0(){
-        int counter;
-        while(counter < _msgCount) {
-                counter += receive();
-        }
-    };
 
 private:
-    int _msInterval = 0;
-    int _byteSize = 0;
     int _msgCount = 0;
+    int _priority = -1 //not stated
+    int _cpu_index = -1; //not stated
     std::string _topic;
     Subscriber _subscriber;
 };
+
+QoS, 
