@@ -6,7 +6,7 @@ TestSubscriber* FastRTPSTestSub::createSubscriber(std::string topic) {
     return sub;
 }
 
-std::vector<std::string> FastRTPSTestSub::receive() {
-    return std::vector<std::string>();
+std::tuple<std::vector<std::string>, std::vector<unsigned long>> FastRTPSTestSub::receive() {
+    return _subscriber->receive();
 }
 

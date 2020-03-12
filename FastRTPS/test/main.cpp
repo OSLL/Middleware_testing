@@ -12,6 +12,8 @@ using namespace rtps;
 int main(int argc, char** argv)
 {
     int type = 0;
+    char* topic = nullptr;
+    const char* res_filename = "res.json";
     int m_count = 5000;
     int priority = -1;
     int cpu_index = -1;
@@ -32,14 +34,14 @@ int main(int argc, char** argv)
             type = 2;
         }
     }
-    if (argc > 2) {
-        m_count = atoi(argv[2]);
+    if(argc > 2) {
+	topic = argv[2];
     }
-    if (argc > 3) {
-        priority = atoi(argv[3]);
+    if(argc > 3) {
+        res_filename = argv[3];
     }
     if (argc > 4) {
-        cpu_index = atoi(argv[4]);
+        m_count = atoi(argv[4]);
     }
     if(argc > 5) {
         min_msg_size = atoi(argv[5]);
@@ -51,33 +53,36 @@ int main(int argc, char** argv)
         step = atoi(argv[7]);
     }
     if(argc > 8) {
-        interval = atoi(argv[8]);
+        msgs_before_step = atoi(argv[8]);
     }
     if(argc > 9) {
-        msgs_before_step = atoi(argv[9]);
+        priority = atoi(argv[9]);
     }
-    if (type==0)
+    if(argc > 10) {
+        cpu_index = atoi(argv[10]);
+    }
+    if(argc > 11) {
+        interval = atoi(argv[11]);
+    }
+    if (type==0 || argc < 3)
     {
         std::cout << "Error: Incorrect arguments." << std::endl;
         std::cout << "Usage: " << std::endl << std::endl;
-        std::cout << argv[0] << " publisher|subscriber [m_count] [priority] [cpu_index] [min_msg_size] [max_msg_size] [step] [interval] [msgs_before_step]" << std::endl << std::endl;
+        std::cout << argv[0] << " publisher|subscriber topic [res_filename] [m_count] [min_msg_size] [max_msg_size] [step] [msgs_before_step] [priority] [cpu_index] [interval]" << std::endl << std::endl;
         return 0;
     }
-    std::cout << "Starting "<< std::endl;
-
-    std::vector<std::string> msgs;
 
     switch(type)
     {
         case 1:
         {
-            FastRTPSTestPub mypub("TestTopic", m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
+            FastRTPSTestPub mypub(topic, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
             mypub.test();
             break;
         }
         case 2:
         {
-            FastRTPSTestSub mysub("TestTopic", m_count, priority, cpu_index, max_msg_size);
+            FastRTPSTestSub mysub(topic, m_count, priority, cpu_index, max_msg_size, res_filename);
             mysub.test();
             break;
         }
