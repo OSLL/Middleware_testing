@@ -64,7 +64,7 @@ public:
 	    msg.resize(_byteSizeMax);
 	    publish(msg);
 	}
-	std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+	std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     }
 
 protected:
@@ -85,14 +85,15 @@ class TestMiddlewareSub
 {
 public:
 
-    explicit TestMiddlewareSub(std::string topic, int msgCount=0, int prior = -1, int cpu_index = -1, int max_msg_size=64000) :
+    explicit TestMiddlewareSub(std::string topic, int msgCount=0, int prior = -1, int cpu_index = -1, int max_msg_size=64000, std::string res_filename="res.json") :
     rec_time(msgCount),
     msgs(msgCount),
     _msgCount(msgCount),
     _priority(prior),
     _cpu_index(cpu_index),
     _topic(topic),
-    _byteSizeMax(max_msg_size)
+    _byteSizeMax(max_msg_size),
+    _res_filename(res_filename)
     {
 //        _subscriber = createSubscriber(topic);
         pid_t id = getpid();
@@ -118,7 +119,7 @@ public:
 
     virtual Subscriber* createSubscriber(std::string topic)=0;
 
-    virtual std::vector<std::string> receive()=0;  //возвращает вектор принятых сообщений
+    virtual std::tuple<std::vector<std::string>, std::vector<unsigned long>> receive()=0;  //возвращает вектор принятых сообщений
 
     void to_Json(){
         nlohmann::json json = nlohmann::json::array();
@@ -135,7 +136,7 @@ public:
             msg["msg"] = {{"id", std::stoi(id)}, {"sent_time", std::stoul(time)}, {"rec_time", rec_time[i]}};
             json.push_back(msg);
         }
-        std::ofstream file("key.json");
+        std::ofstream file(_res_filename);
         file << json;
     }
 
@@ -144,7 +145,7 @@ public:
 
     void test() {
 	_subscriber = createSubscriber(_topic);
-	std::tie(msgs, rec_time) = _subscriber->receive();
+	std::tie(msgs, rec_time) = receive();
 	to_Json();
     }
 protected:
@@ -155,6 +156,7 @@ protected:
     int _cpu_index; //def not stated
     int _byteSizeMax;
     std::string _topic;
+    std::string _res_filename;
     Subscriber* _subscriber;
 
 };

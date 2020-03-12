@@ -129,7 +129,7 @@ std::tuple<std::vector<std::string>, std::vector<unsigned long>> TestSubscriber:
     while (m_count > this->m_listener.n_msgs)
     {
 	last_count = m_listener.n_msgs;
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	if(m_listener.n_msgs == last_count && last_count != 0)
             break;
     }
