@@ -6,65 +6,43 @@
 #include <vector>
 #include <unistd.h>
 #include "gen/TestData_DCPS.hpp"
+#include "test_interface.hpp"
 
-
-class TestPublisher{
-    dds::domain::DomainParticipant dp;
-    dds::topic::Topic <TestDataType> topic;
-    dds::pub::Publisher pub;
-    dds::pub::DataWriter <TestDataType> dw;
-    dds::core::QosProvider provider;
-    sched_param priority;
-    std::vector<unsigned long int> pub_time;
-
+class TestPublisher: public TestMiddlewarePub{
+    dds::domain::DomainParticipant _dp;
+    dds::topic::Topic <TestDataType> _topic;
+    dds::pub::Publisher _publisher;
+    dds::pub::DataWriter <TestDataType> _dw;
 public:
-    TestPublisher(): dp(org::opensplice::domain::default_id()),
-                        topic(dp, "TestTopic"),
-                        pub(dp),
-                        dw(pub, topic),
-                        provider("file://QoS.xml", "TestProfile"),
-                        pub_time(5000)
-                        {
-                            pid_t id = getpid();
-                            std::ofstream f_task("/sys/fs/cgroup/cpuset/pub_cpuset/tasks", std::ios_base::out);
-                            if(!f_task.is_open()){
-                                std::cout << "Erorr in adding to cpuset"<< std::endl;
-                            }
-                            else{
-                                auto s = std::to_string(id);
-                                f_task.write(s.c_str(),s.length());
-                            }
-                            f_task.close();
-                            priority.sched_priority = sched_get_priority_max(SCHED_FIFO);
-                            int err = sched_setscheduler(id, SCHED_FIFO, &priority);
-                            if(err)
-                                std::cout << "Erorr in setting priority: "<< -err << std::endl;
-                        }
-    int StartTest(int count = 5000){
-        TestDataType msg(std::vector<char>(60000));
-        std::this_thread::sleep_for(std::chrono::seconds(4));
-        for(int i = 0; i < count; i++){
-            pub_time[i] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-            dw.write(msg);
-        }
-        return 0;
+    TestPublisher(std::string topic,  int msgCount=0, int prior = -1, int cpu_index = -1,
+                  int min_msg_size=50, int max_msg_size=64000, int step=0, int interval = 0, int msgs_before_step = 100):
+                  TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step),
+                  _dp(org::opensplice::domain::default_id()),
+                  _topic(_dp,topic),
+                  _publisher(_dp),
+                  _dw(_publisher, _topic)
+                  {
+        setQoS("file://QoS.xml");
     }
-    ~TestPublisher(){
-        std::ofstream file2("publisher.txt");
-        for(unsigned i=0; i<pub_time.size();i++)
-            file2 << pub_time[i] << ' ';
-        file2 << std::endl;
-        file2.close();
+
+    void setQoS(std::string filename) override {
+        dds::core::QosProvider provider(filename, "TestProfile");
+    }
+
+    void publish(std::string data) override {
+        TestDataType msg(std::vector<char>(data.begin(), data.end()));
+        _dw.write(msg);
     }
 };
 
 
 int main(int argc, char **argv) {
     try {
-        TestPublisher publisher;
+        TestPublisher publisher("/topic", 100);
         publisher.StartTest();
     }
     catch (...){
+        std::cout<< "Error!\n";
         return -1;
     }
 }
