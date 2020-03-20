@@ -1,0 +1,4 @@
+struct TestDataType {
+	sequence<char> data;
+};
+#pragma keylist TestDataType
