@@ -11,8 +11,8 @@
 
 class TestSubscriber: public TestMiddlewareSub{
 public:
-    TestSubscriber(std::string topic,  int msgCount=0, int prior=-1, int cpu_index=-1):
-            TestMiddlewareSub(topic, msgCount, prior, cpu_index),
+    TestSubscriber(std::string topic,  int msgCount=0, int prior=-1, int cpu_index=-1, std::string filename = "res.json"):
+            TestMiddlewareSub(topic, msgCount, prior, cpu_index, filename),
             _dp(org::opensplice::domain::default_id()),
             _topic(_dp,topic),
             _subscriber(_dp),
@@ -32,7 +32,8 @@ public:
             auto samples = _dr.read();
             for(auto j=samples.begin();  j != samples.end(); ++j){
                 if(j->info().state().sample_state() == dds::sub::status::SampleState::not_read()){
-                    msgs[i]=std::string(j->data().data().begin(), j->data().data().end());
+                    msgs[i].first = j->data().id();
+                    msgs[i].second = j->data().sent_time();
                     i++;
                 }
             }
@@ -48,8 +49,43 @@ private:
 };
 
 int main(int argc, char **argv) {
+    if(argc < 2) {
+        std::cout << "Config file is not set!\n";
+        return 0;
+    }
+    nlohmann::json args;
+    std::ifstream file(argv[1]);
+    if(!file.is_open()) {
+        std::cout << "Cannot open file " << argv[1] << std::endl;
+        return 0;
+    }
+    std::string topic;
+    std::string res_filename = "res.json";
+    int m_count = 5000;
+    int priority = -1;
+    int cpu_index = -1;
+
+    file >> args;
+    std::cout<<args;
+    file.close();
+
+    if(args["topic"] != nullptr){
+        topic = args["topic"];
+    }
+    if(args["res_filename"] != nullptr){
+        res_filename = args["res_filename"];
+    }
+    if(args["m_count"] != nullptr){
+        m_count = args["m_count"];
+    }
+    if(args["priority"] != nullptr){
+        priority = args["priority"];
+    }
+    if(args["cpu_index"] != nullptr){
+        cpu_index = args["cpu_index"];
+    }
     try {
-        TestSubscriber subscriber("/topic", 500);
+        TestSubscriber subscriber(topic, m_count, priority, cpu_index, res_filename);
         subscriber.StartTest();
     }
     catch (...){
