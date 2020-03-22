@@ -29,16 +29,69 @@ public:
         dds::core::QosProvider provider(filename, "TestProfile");
     }
 
-    void publish(std::string data) override {
-        TestDataType msg(std::vector<char>(data.begin(), data.end()));
+    void publish(short id, unsigned size) override {
+        unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        std::string data('a', size);
+        TestDataType msg(id, cur_time, std::vector<char>(data.begin(), data.end()));
         _dw.write(msg);
     }
 };
 
 
 int main(int argc, char **argv) {
+    if(argc < 2) {
+        std::cout << "Config file is not set!\n";
+        return 0;
+    }
+    nlohmann::json args;
+    std::ifstream file(argv[1]);
+    if(!file.is_open()) {
+        std::cout << "Cannot open file " << argv[1] << std::endl;
+        return 0;
+    }
+    std::string topic;
+    int m_count = 5000;
+    int priority = -1;
+    int cpu_index = -1;
+    int min_msg_size = 0;
+    int max_msg_size = 64000;
+    int step = 0;
+    int msgs_before_step = 100;
+    int interval = 0;
+
+    file >> args;
+    std::cout<<args;
+    file.close();
+
+    if(args["topic"] != nullptr){
+        topic = args["topic"];
+    }
+    if(args["m_count"] != nullptr){
+        m_count = args["m_count"];
+    }
+    if(args["min_msg_size"] != nullptr){
+        min_msg_size = args["min_msg_size"];
+    }
+    if(args["max_msg_size"] != nullptr){
+        max_msg_size = args["max_msg_size"];
+    }
+    if(args["step"] != nullptr){
+        step = args["step"];
+    }
+    if(args["msgs_before_step"] != nullptr){
+        msgs_before_step = args["msgs_before_step"];
+    }
+    if(args["priority"] != nullptr){
+        priority = args["priority"];
+    }
+    if(args["cpu_index"] != nullptr){
+        cpu_index = args["cpu_index"];
+    }
+    if(args["interval"] != nullptr){
+        interval = args["interval"];
+    }
     try {
-        TestPublisher publisher("/topic", 100);
+        TestPublisher publisher(topic, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
         publisher.StartTest();
     }
     catch (...){

@@ -10,8 +10,8 @@
 class TestMiddlewarePub
 {
 public:
-    explicit TestMiddlewarePub(std::string topic,  int msgCount=0, int prior = -1, int cpu_index = -1,
-            int min_msg_size=0, int max_msg_size=64000, int step=0, int interval = 0, int msgs_before_step = 100) :
+    explicit TestMiddlewarePub(std::string topic,  int msgCount, int prior, int cpu_index,
+            int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step) :
     _msInterval(interval),
     _msgCount(msgCount),
     _priority(prior),
@@ -43,22 +43,17 @@ public:
     };
     int StartTest(){
         std::this_thread::sleep_for(std::chrono::seconds(4));
-        std::string id = "id";
-        std::string time = "time";
-        std::string end = "end";
         int cur_size = _byteSizeMin;
         for (int i = 0; i < _msgCount; ++i) {
-            unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-            std::string msg = id + std::to_string(i) + time + std::to_string(cur_time) + end + std::string('a', cur_size - 30);
             if(i % (_msg_count_befor_step-1) == 0 && cur_size <= _byteSizeMax)
                 cur_size += _step;
-            publish(msg);
+            publish(i, cur_size);
             std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
         }
         return 0;
     }
 
-    virtual void publish(std::string msg)=0;
+    virtual void publish(short id, unsigned size)=0;
 
     virtual void setQoS(std::string filename)=0;	//считывать наверное тоже из json, так как будут разные конфигурации QoS
 
@@ -77,12 +72,13 @@ protected:
 class TestMiddlewareSub
 {
 public:
-    explicit TestMiddlewareSub(std::string topic, int msgCount=0, int prior = -1, int cpu_index = -1) :
+    explicit TestMiddlewareSub(std::string topic, int msgCount, int prior, int cpu_index, std::string filename) :
     rec_time(msgCount),
     msgs(msgCount),
     _msgCount(msgCount),
     _priority(prior),
-    _cpu_index(cpu_index)
+    _cpu_index(cpu_index),
+    _filename(filename)
     {
         pid_t id = getpid();
         if(prior >= 0){
@@ -117,21 +113,15 @@ public:
     }
 
     void to_Json(){
-        nlohmann::json json = nlohmann::json::array();
+        auto json = nlohmann::json::array();
         for (int i = 0; i < _msgCount; ++i) {
-            auto time_pos = msgs[i].find("time")+ sizeof("time");
-            auto end_pos = msgs[i].find("end");
-            if(time_pos == std::string::npos || end_pos==std::string::npos ) {
-                std::cout << "Msg parse error!" << std::endl;
-                continue;
-            }
             nlohmann::json msg;
-            std::string id = msgs[i].substr(sizeof("id") - 1, time_pos - sizeof("time") - sizeof("id") + 1);
-            std::string time = msgs[i].substr(time_pos - 1, end_pos-time_pos + 1);
-            msg["msg"] = {{"id", std::stol(id)}, {"sent_time", std::stol(time)}, {"rec_time", rec_time[i]}, {"delay", std::stol(time) - rec_time[i]}};
+            auto id = msgs[i].first;
+            auto sent_time = msgs[i].second;
+            msg["msg"] = {{"id", id}, {"sent_time", sent_time}, {"rec_time", rec_time[i]}, {"delay", sent_time - rec_time[i]}};
             json.push_back(msg);
         }
-        std::ofstream file("key.json");
+        std::ofstream file(_filename);
         file << json;
     }
 
@@ -139,8 +129,9 @@ public:
 
 protected:
     std::vector<unsigned long> rec_time;
-    std::vector<std::string> msgs;
+    std::vector<std::pair<short, unsigned long >> msgs;
     int _msgCount;
     int _priority; //def not stated
     int _cpu_index; //def not stated
+    std::string _filename;
 };
