@@ -10,25 +10,25 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
-class TestSubscriber
+#include "test_interface.hpp"
+
+class TestSubscriber : public TestMiddlewareSub
 {
     public:
 
-        TestSubscriber();
+        TestSubscriber(std::string topic, int msgCount=0, int prior = -1, int cpu_index = -1, int max_msg_size=64000, std::string res_filename="res.json");
 
         virtual ~TestSubscriber();
 
-        bool init(std::string topic, int m_count, int max_msglen);
+        int receive();
 
-        void run();
+        void setQoS(std::string filename);
 
-        void run(
-                uint32_t number);
-
-        std::tuple<std::vector<std::string>, std::vector<unsigned long>> receive();
     private:
 
-        int m_count;
+        eprosima::fastrtps::SubscriberAttributes Rparam;
+
+        int rec_before;
 
         eprosima::fastrtps::Participant* mp_participant;
 
@@ -39,8 +39,9 @@ class TestSubscriber
         class SubListener : public eprosima::fastrtps::SubscriberListener
         {
             public:
-                SubListener()
-                    : n_matched(0)
+                SubListener(TestSubscriber* parent)
+                    : parent(parent)
+                    , n_matched(0)
                     , n_msgs(0)
                 {}
 
@@ -61,8 +62,7 @@ class TestSubscriber
 
                 uint32_t n_msgs;
 
-		std::vector<std::string> rec_msgs;
-		std::vector<unsigned long> rec_time;
+                TestSubscriber* parent;
         } m_listener;
 
     private:

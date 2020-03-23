@@ -9,22 +9,20 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
+#include "test_interface.hpp"
 
-class TestPublisher
+class TestPublisher : public TestMiddlewarePub
 {
     public:
 
-        TestPublisher();
+        TestPublisher(std::string topic,  int msgCount=0, int prior = -1, int cpu_index = -1,
+                  int min_msg_size=50, int max_msg_size=64000, int step=0, int interval = 0, int msgs_before_step = 100);
 
         virtual ~TestPublisher();
 
-        bool init(std::string topic, int max_msglen);
+	void publish(short id, unsigned size);
 
-	void publish(std::string &msg);
-
-        void run(
-                uint32_t number,
-                uint32_t sleep);
+        void setQoS(std::string filename);
 
     private:
 
@@ -32,9 +30,9 @@ class TestPublisher
 
         eprosima::fastrtps::Publisher* mp_publisher;
 
-        bool stop;
-
 	int m_interval;
+
+        eprosima::fastrtps::PublisherAttributes Wparam;
 
         class PubListener : public eprosima::fastrtps::PublisherListener
         {

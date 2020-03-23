@@ -13,30 +13,27 @@ using namespace eprosima::fastrtps;
 using namespace eprosima::fastrtps::rtps;
 using namespace eprosima::fastrtps::types;
 
-TestSubscriber::TestSubscriber()
-    : mp_participant(nullptr)
+TestSubscriber::TestSubscriber(std::string topic, int msgCount, int prior, int cpu_index, int max_msg_size, std::string res_filename)
+    : TestMiddlewareSub(topic, msgCount, prior, cpu_index, max_msg_size, res_filename)
+    , mp_participant(nullptr)
     , mp_subscriber(nullptr)
+    , m_listener(SubListener(this))
     , m_DynType(DynamicType_ptr(nullptr))
+    , rec_before(0)
 {
-}
-
-bool TestSubscriber::init(std::string topic, int msgCount, int max_msglen)
-{
-    m_count = msgCount;
-    m_listener.rec_msgs.resize(m_count);
-    m_listener.rec_time.resize(m_count);
-
+    setQoS("qos.json");
     ParticipantAttributes PParam;
     PParam.rtps.builtin.domainId = 0;
-    PParam.rtps.setName("DynTest_sub");
+    std::string name = "FastRTPSTest_sub" + std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+    PParam.rtps.setName(name.c_str());
     mp_participant = Domain::createParticipant(PParam);
-    if (mp_participant == nullptr)
-    {
-        return false;
-    }
 
-    DynamicTypeBuilder_ptr created_builder = DynamicTypeBuilderFactory::get_instance()->create_string_builder(max_msglen);
-    DynamicType_ptr dynType = DynamicTypeBuilderFactory::get_instance()->create_type(created_builder.get());
+    DynamicTypeBuilder_ptr builder = DynamicTypeBuilderFactory::get_instance()->create_struct_builder();
+    builder->add_member(0, "id", DynamicTypeBuilderFactory::get_instance()->create_int16_type());
+    builder->add_member(1, "sent_time", DynamicTypeBuilderFactory::get_instance()->create_uint64_type());
+    builder->add_member(2, "data", DynamicTypeBuilderFactory::get_instance()->create_string_type(max_msg_size));
+
+    DynamicType_ptr dynType(builder->build());
     m_DynType.SetDynamicType(dynType);
     m_listener.m_DynMsg = DynamicDataFactory::get_instance()->create_data(dynType);
 
@@ -44,24 +41,16 @@ bool TestSubscriber::init(std::string topic, int msgCount, int max_msglen)
     Domain::registerDynamicType(mp_participant, &m_DynType);
 
     //CREATE THE SUBSCRIBER
-    SubscriberAttributes Rparam;
+//    SubscriberAttributes Rparam;
     Rparam.topic.topicKind = NO_KEY;
     Rparam.topic.topicDataType = dynType->get_name();
     Rparam.topic.topicName = topic;
 
-    Rparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
+/*    Rparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
     Rparam.qos.m_reliability.kind = RELIABLE_RELIABILITY_QOS;
     Rparam.qos.m_durability.kind = TRANSIENT_LOCAL_DURABILITY_QOS;
-
+*/
     mp_subscriber = Domain::createSubscriber(mp_participant,Rparam,(SubscriberListener*)&m_listener);
-
-    if (mp_subscriber == nullptr)
-    {
-        return false;
-    }
-
-
-    return true;
 }
 
 TestSubscriber::~TestSubscriber()
@@ -96,10 +85,14 @@ void TestSubscriber::SubListener::onNewDataMessage(
     {
         if (m_info.sampleKind == ALIVE)
         {
-            rec_time[n_msgs] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+            parent->rec_time[n_msgs] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
             std::string message;
-            m_DynMsg->get_string_value(message, MEMBER_ID_INVALID);
-            rec_msgs[n_msgs] = message;
+            short id;
+            unsigned long sent_time;
+            m_DynMsg->get_int16_value(id, 0);
+            m_DynMsg->get_uint64_value(sent_time, 1);
+            parent->msgs[n_msgs].first = id;
+            parent->msgs[n_msgs].second = sent_time;
             this->n_msgs++;
 
             //std::cout << "Message: " << message << " RECEIVED" << std::endl;
@@ -107,31 +100,28 @@ void TestSubscriber::SubListener::onNewDataMessage(
     }
 }
 
-
-void TestSubscriber::run()
-{
-    std::cout << "Subscriber running. Please press enter to stop the Subscriber" << std::endl;
-    std::cin.ignore();
+int TestSubscriber::receive() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    int rec_count = m_listener.n_msgs - rec_before;
+    rec_before = m_listener.n_msgs;
+    return rec_count;
 }
 
-void TestSubscriber::run(
-        uint32_t number)
-{
-    std::cout << "Subscriber running until " << number << "samples have been received" << std::endl;
-    while (number > this->m_listener.n_msgs)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+void TestSubscriber::setQoS(std::string filename) {
+    nlohmann::json qos;
+    std::ifstream file(filename);
+    if(!file.is_open()) {
+        std::cout << "Cannot open qos file " << filename << std::endl;
+        return;
     }
-}
-
-std::tuple<std::vector<std::string>, std::vector<unsigned long>> TestSubscriber::receive() {
-    int last_count = 0;
-    while (m_count > this->m_listener.n_msgs)
-    {
-	last_count = m_listener.n_msgs;
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	if(m_listener.n_msgs == last_count && last_count != 0)
-            break;
-    }
-    return std::make_tuple(m_listener.rec_msgs, m_listener.rec_time);
+    file >> qos;
+    file.close();
+    if(qos["reliability"] != nullptr)
+        if(qos["reliability"] == "RELIABLE")
+            Rparam.qos.m_reliability.kind = RELIABLE_RELIABILITY_QOS;
+        else Rparam.qos.m_reliability.kind = BEST_EFFORT_RELIABILITY_QOS;
+    if(qos["history"] != nullptr)
+        if(qos["history"] == "KEEP_ALL")
+            Rparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
+        else Rparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
 }
