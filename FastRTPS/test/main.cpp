@@ -1,7 +1,5 @@
 #include "TestPublisher.h"
 #include "TestSubscriber.h"
-#include "FastRTPSTestPub.h"
-#include "FastRTPSTestSub.h"
 #include "nlohmann/json.hpp"
 
 #include <fastrtps/Domain.h>
@@ -40,7 +38,7 @@ int main(int argc, char** argv)
     {
         std::cout << "Error: Incorrect arguments." << std::endl;
         std::cout << "Usage: " << std::endl << std::endl;
-        std::cout << argv[0] << " publisher|subscriber topic [res_filename] [m_count] [min_msg_size] [max_msg_size] [step] [msgs_before_step] [priority] [cpu_index] [interval]" << std::endl << std::endl;
+        std::cout << argv[0] << " publisher|subscriber params.json" << std::endl << std::endl;
         return 0;
     }
 
@@ -51,6 +49,7 @@ int main(int argc, char** argv)
         return 0;
     }
     file >> args;
+    file.close();
 	
     if(args["topic"] != nullptr){
         topic = args["topic"];
@@ -83,19 +82,18 @@ int main(int argc, char** argv)
         interval = args["interval"];
     }
 
-    file.close();
 
     switch(type)
     {
         case 1:
         {
-            FastRTPSTestPub mypub(topic, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
-            mypub.test();
+            TestPublisher mypub(topic, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
+            mypub.StartTest();
             break;
         }
         case 2:
         {
-            FastRTPSTestSub mysub(topic, m_count, priority, cpu_index, max_msg_size, res_filename);
+            TestSubscriber mysub(topic, m_count, priority, cpu_index, max_msg_size, res_filename);
             mysub.test();
             break;
         }

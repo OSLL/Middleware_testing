@@ -10,7 +10,6 @@
 #include <thread>
 #include <sstream>
 
-template <class Publisher>
 class TestMiddlewarePub
 {
 public:
@@ -24,19 +23,17 @@ public:
     _byteSizeMin(min_msg_size),
     _byteSizeMax(max_msg_size),
     _step(step),
-    _msg_count_befor_step(msgs_before_step),
-    _topic(topic)
+    _msg_count_befor_step(msgs_before_step)
     {
-//        _publisher = this->createPublisher(topic);
         pid_t id = getpid();
-        if(prior != -1){
+        if(prior >= 0){
             sched_param priority;
             priority.sched_priority = sched_get_priority_max(prior);
             int err = sched_setscheduler(id, SCHED_FIFO, &priority);
             if(err)
                 std::cout << "Erorr in setting priority: "<< -err << std::endl;
         }
-        if(cpu_index != -1){
+        if(cpu_index >= 0){
             std::ofstream f_task("/sys/fs/cgroup/cpuset/pub_cpuset/tasks", std::ios_base::out);
             if(!f_task.is_open()){
                 std::cout << "Erorr in adding to cpuset"<< std::endl;
@@ -49,22 +46,21 @@ public:
         }
     };
 
-    virtual Publisher* createPublisher(std::string topic)=0;
+    virtual void publish(short id, unsigned size)=0;
 
-    virtual void publish(std::string &msg)=0;
+    virtual void setQoS(std::string filename)=0;
 
-    void test() {
-	_publisher = createPublisher(_topic);
-	std::string msg(_byteSizeMax, 'a');
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-	for(int i=0; i<_msgCount; ++i) {
-	    std::stringstream ss;
-	    ss << "id" << i << "time" << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() << "end";
-	    msg.replace(0, msg.find("end") + sizeof("end")-1, ss.str());
-	    msg.resize(_byteSizeMax);
-	    publish(msg);
-	}
+    int StartTest(){
+        std::this_thread::sleep_for(std::chrono::seconds(4));
+        int cur_size = _byteSizeMin;
+        for (int i = 0; i < _msgCount; ++i) {
+            if(i % (_msg_count_befor_step-1) == 0 && cur_size <= _byteSizeMax)
+                cur_size += _step;
+            publish(i, cur_size);
+            std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
+        }
 	std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+        return 0;
     }
 
 protected:
@@ -76,11 +72,9 @@ protected:
     int _byteSizeMax;
     int _step;
     int _msg_count_befor_step;
-    std::string _topic;
-    Publisher* _publisher;
 };
 
-template <class Subscriber>
+
 class TestMiddlewareSub
 {
 public:
@@ -91,11 +85,9 @@ public:
     _msgCount(msgCount),
     _priority(prior),
     _cpu_index(cpu_index),
-    _topic(topic),
     _byteSizeMax(max_msg_size),
-    _res_filename(res_filename)
+    _filename(res_filename)
     {
-//        _subscriber = createSubscriber(topic);
         pid_t id = getpid();
         if(prior != -1){
             sched_param priority;
@@ -117,46 +109,36 @@ public:
         }
     };
 
-    virtual Subscriber* createSubscriber(std::string topic)=0;
-
-    virtual std::tuple<std::vector<std::string>, std::vector<unsigned long>> receive()=0;  //возвращает вектор принятых сообщений
+    virtual int receive()=0;
 
     void to_Json(){
-        nlohmann::json json = nlohmann::json::array();
+        auto json = nlohmann::json::array();
         for (int i = 0; i < _msgCount; ++i) {
-            auto time_pos = msgs[i].find("time")+ sizeof("time");
-            auto end_pos = msgs[i].find("end");
-            if(time_pos == std::string::npos || end_pos==std::string::npos ) {
-                std::cout << "Msg error!" << std::endl;
-                continue;
-            }
             nlohmann::json msg;
-            std::string id = msgs[i].substr(sizeof("id") - 1, time_pos - sizeof("time") - sizeof("id") + 1);
-            std::string time = msgs[i].substr(time_pos - 1, end_pos-time_pos + 1);
-            msg["msg"] = {{"id", std::stoi(id)}, {"sent_time", std::stoul(time)}, {"rec_time", rec_time[i]}};
+            auto id = msgs[i].first;
+            auto sent_time = msgs[i].second;
+            msg["msg"] = {{"id", id}, {"sent_time", sent_time}, {"rec_time", rec_time[i]}, {"delay", sent_time - rec_time[i]}};
             json.push_back(msg);
         }
-        std::ofstream file(_res_filename);
+        std::ofstream file(_filename);
         file << json;
     }
 
-//    virtual void setQoS(std::string filename)=0;
-
+    virtual void setQoS(std::string filename)=0;
 
     void test() {
-	_subscriber = createSubscriber(_topic);
-	std::tie(msgs, rec_time) = receive();
-	to_Json();
+        int count = 0;
+        while (count < _msgCount){
+            count += receive();
+        }
+        to_Json();
     }
 protected:
     std::vector<unsigned long> rec_time;
-    std::vector<std::string> msgs;
+    std::vector<std::pair<short, unsigned long>> msgs;
     int _msgCount;
     int _priority; //def not stated
     int _cpu_index; //def not stated
     int _byteSizeMax;
-    std::string _topic;
-    std::string _res_filename;
-    Subscriber* _subscriber;
-
+    std::string _filename;
 };
