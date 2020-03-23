@@ -1,4 +1,6 @@
 struct TestDataType {
+	short id;
+	unsigned long long sent_time;
 	sequence<char> data;
 };
 #pragma keylist TestDataType
