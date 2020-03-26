@@ -1,5 +1,5 @@
 {
-    "topic": "/topic",
+    "topics": ["/topic"],
     "res_filename": "res_test1.json",
     "m_count": 5000,
     "min_msg_size": 50,
@@ -8,5 +8,5 @@
     "msgs_before_step": 100,
     "priority": -1,
     "cpu_index": -1,
-    "interval": 0
+    "interval": 10
 }
