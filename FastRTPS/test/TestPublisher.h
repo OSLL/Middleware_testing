@@ -9,7 +9,7 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
-#include "test_interface.hpp"
+#include "pub_interface.hpp"
 
 class TestPublisher : public TestMiddlewarePub
 {
@@ -21,8 +21,6 @@ class TestPublisher : public TestMiddlewarePub
         virtual ~TestPublisher();
 
 	void publish(short id, unsigned size);
-
-        void setQoS(std::string filename);
 
     private:
 

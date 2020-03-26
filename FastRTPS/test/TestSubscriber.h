@@ -10,39 +10,38 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
-#include "test_interface.hpp"
+#include "sub_interface.hpp"
 
 class TestSubscriber : public TestMiddlewareSub
 {
     public:
 
-        TestSubscriber(std::string topic, int msgCount=0, int prior = -1, int cpu_index = -1, int max_msg_size=64000, std::string res_filename="res.json");
+        TestSubscriber(std::vector<std::string> &topics, int msgCount, int prior, int cpu_index, std::vector<std::string> &res_filenames, int max_msg_size);
 
         virtual ~TestSubscriber();
 
-        int receive();
-
-        void setQoS(std::string filename);
+        int receive(std::string &topic);
 
     private:
 
         eprosima::fastrtps::SubscriberAttributes Rparam;
 
-        int rec_before;
-
         eprosima::fastrtps::Participant* mp_participant;
 
-        eprosima::fastrtps::Subscriber* mp_subscriber;
+        std::vector<eprosima::fastrtps::Subscriber*> mp_subscribers;
 
     public:
 
         class SubListener : public eprosima::fastrtps::SubscriberListener
         {
             public:
-                SubListener(TestSubscriber* parent)
+                SubListener() {}
+                SubListener(TestSubscriber* parent, int n)
                     : parent(parent)
                     , n_matched(0)
                     , n_msgs(0)
+                    , rec_before(0)
+                    , subscr_n(n)
                 {}
 
                 ~SubListener() override {}
@@ -62,8 +61,14 @@ class TestSubscriber : public TestMiddlewareSub
 
                 uint32_t n_msgs;
 
+                int rec_before;
+
+                int subscr_n;
+
                 TestSubscriber* parent;
-        } m_listener;
+        } /*m_listener*/;
+
+        std::vector<SubListener> m_listeners;
 
     private:
 

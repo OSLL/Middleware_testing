@@ -11,8 +11,8 @@ using namespace rtps;
 int main(int argc, char** argv)
 {
     int type = 0;
-    std::string topic;
-    std::string res_filename = "res.json";
+    std::vector<std::string> topics;
+    std::vector<std::string> res_filenames;
     int m_count = 5000;
     int priority = -1;
     int cpu_index = -1;
@@ -52,10 +52,12 @@ int main(int argc, char** argv)
     file.close();
 	
     if(args["topic"] != nullptr){
-        topic = args["topic"];
+        for(auto topic : args["topic"])
+            topics.push_back(topic);
     }
     if(args["res_filename"] != nullptr){
-        res_filename = args["res_filename"];
+        for(auto res_filename : args["res_filename"])
+            res_filenames.push_back(res_filename);
     }
     if(args["m_count"] != nullptr){
         m_count = args["m_count"];
@@ -87,14 +89,15 @@ int main(int argc, char** argv)
     {
         case 1:
         {
-            TestPublisher mypub(topic, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
+            TestPublisher mypub(topics[0], m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
             mypub.StartTest();
+	    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
             break;
         }
         case 2:
         {
-            TestSubscriber mysub(topic, m_count, priority, cpu_index, max_msg_size, res_filename);
-            mysub.test();
+            TestSubscriber mysub(topics, m_count, priority, cpu_index, res_filenames, max_msg_size);
+            mysub.StartTest();
             break;
         }
     }

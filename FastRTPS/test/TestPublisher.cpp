@@ -22,7 +22,6 @@ TestPublisher::TestPublisher(std::string topic,  int msgCount, int prior, int cp
     , mp_publisher(nullptr)
     , m_DynType(DynamicType_ptr(nullptr))
 {
-    setQoS("qos.json");
     DynamicTypeBuilder_ptr builder = DynamicTypeBuilderFactory::get_instance()->create_struct_builder();
     builder->add_member(0, "id", DynamicTypeBuilderFactory::get_instance()->create_int16_type());
     builder->add_member(1, "sent_time", DynamicTypeBuilderFactory::get_instance()->create_uint64_type());
@@ -47,9 +46,8 @@ TestPublisher::TestPublisher(std::string topic,  int msgCount, int prior, int cp
     Wparam.topic.topicDataType = dynType->get_name();
     Wparam.topic.topicName = topic;
 
-/*    Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
+    Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
     Wparam.qos.m_reliability.kind = RELIABLE_RELIABILITY_QOS;
-    Wparam.qos.m_durability.kind = TRANSIENT_LOCAL_DURABILITY_QOS;*/
     Wparam.qos.m_publishMode.kind = ASYNCHRONOUS_PUBLISH_MODE;
 
     mp_publisher = Domain::createPublisher(mp_participant,Wparam,(PublisherListener*)&m_listener);
@@ -90,21 +88,3 @@ void TestPublisher::publish(short id, unsigned size) {
     mp_publisher->write((void*)m_DynMsg);
 }
 
-void TestPublisher::setQoS(std::string filename) {
-    nlohmann::json qos;
-    std::ifstream file(filename);
-    if(!file.is_open()) {
-        std::cout << "Cannot open qos file " << filename << std::endl;
-        return;
-    }
-    file >> qos;
-    file.close();
-    if(qos["reliability"] != nullptr)
-        if(qos["reliability"] == "RELIABLE")
-            Wparam.qos.m_reliability.kind = RELIABLE_RELIABILITY_QOS;
-        else Wparam.qos.m_reliability.kind = BEST_EFFORT_RELIABILITY_QOS;
-    if(qos["history"] != nullptr)
-        if(qos["history"] == "KEEP_ALL")
-            Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
-        else Wparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
-}
