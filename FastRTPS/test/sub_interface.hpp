@@ -56,6 +56,8 @@ public:
                 count += receive(topic);
             }
         }
+        to_Json();
+        return 0;
     }
 
     void to_Json(){

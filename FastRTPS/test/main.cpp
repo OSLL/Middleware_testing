@@ -51,12 +51,12 @@ int main(int argc, char** argv)
     file >> args;
     file.close();
 	
-    if(args["topic"] != nullptr){
-        for(auto topic : args["topic"])
+    if(args["topics"] != nullptr){
+        for(auto topic : args["topics"])
             topics.push_back(topic);
     }
-    if(args["res_filename"] != nullptr){
-        for(auto res_filename : args["res_filename"])
+    if(args["res_filenames"] != nullptr){
+        for(auto res_filename : args["res_filenames"])
             res_filenames.push_back(res_filename);
     }
     if(args["m_count"] != nullptr){
