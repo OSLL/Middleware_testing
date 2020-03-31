@@ -52,7 +52,6 @@ TestSubscriber::TestSubscriber(std::vector<std::string> &topics, int msgCount, i
 
         mp_subscribers[i] = Domain::createSubscriber(mp_participant,Rparam,(SubscriberListener*)&m_listeners[i]);
     }
-    std::cout << "OK" << std::endl;
 }
 
 TestSubscriber::~TestSubscriber()
@@ -69,16 +68,6 @@ void TestSubscriber::SubListener::onSubscriptionMatched(
         Subscriber* /*sub*/,
         MatchingInfo& info)
 {
-    if (info.status == MATCHED_MATCHING)
-    {
-        n_matched++;
-        std::cout << "Subscriber matched" << std::endl;
-    }
-    else
-    {
-        n_matched--;
-        std::cout << "Subscriber unmatched" << std::endl;
-    }
 }
 
 void TestSubscriber::SubListener::onNewDataMessage(
@@ -89,7 +78,6 @@ void TestSubscriber::SubListener::onNewDataMessage(
         if (m_info.sampleKind == ALIVE)
         {
             parent->rec_time[subscr_n][n_msgs] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-            std::string message;
             short id;
             unsigned long sent_time;
             m_DynMsg->get_int16_value(id, 0);
@@ -98,7 +86,6 @@ void TestSubscriber::SubListener::onNewDataMessage(
             parent->msgs[subscr_n][n_msgs].second = sent_time;
             this->n_msgs++;
 
-            //std::cout << "Message: " << message << " RECEIVED" << std::endl;
         }
     }
 }

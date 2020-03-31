@@ -38,7 +38,6 @@ class TestSubscriber : public TestMiddlewareSub
                 SubListener() {}
                 SubListener(TestSubscriber* parent, int n)
                     : parent(parent)
-                    , n_matched(0)
                     , n_msgs(0)
                     , rec_before(0)
                     , subscr_n(n)
@@ -57,7 +56,6 @@ class TestSubscriber : public TestMiddlewareSub
 
                 eprosima::fastrtps::SampleInfo_t m_info;
 
-                int n_matched;
 
                 uint32_t n_msgs;
 
@@ -66,7 +64,7 @@ class TestSubscriber : public TestMiddlewareSub
                 int subscr_n;
 
                 TestSubscriber* parent;
-        } /*m_listener*/;
+        };
 
         std::vector<SubListener> m_listeners;
 
