@@ -29,14 +29,14 @@ public:
             priority.sched_priority = sched_get_priority_max(prior);
             int err = sched_setscheduler(id, SCHED_FIFO, &priority);
             if(err) {
-                std::cout << "Error in setting priority: " << -err << std::endl;
+                std::cout << "Erorr in setting priority: " << -err << std::endl;
                 throw;
             }
         }
         if(cpu_index >= 0){
             std::ofstream f_task("/sys/fs/cgroup/cpuset/sub_cpuset/tasks", std::ios_base::out);
             if(!f_task.is_open()){
-                std::cout << "Error in adding to cpuset"<< std::endl;
+                std::cout << "Erorr in adding to cpuset"<< std::endl;
                 throw;
             }
             else{                                                   // добавить изменения номера ядра для привязки
@@ -47,7 +47,7 @@ public:
         }
     };
 
-    virtual int receive(std::string &topic)=0;
+    virtual int receive(std::string &topic)=0;  //возвращает вектор принятых сообщений
 
     int StartTest(){
         for(auto& topic :  _topic_names){
@@ -56,6 +56,8 @@ public:
                 count += receive(topic);
             }
         }
+        to_Json();
+        return 0;
     }
 
     void to_Json(){
