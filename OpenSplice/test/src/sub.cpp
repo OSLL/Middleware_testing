@@ -11,8 +11,8 @@
 
 class TestSubscriber: public TestMiddlewareSub{
 public:
-    TestSubscriber(std::vector<std::string> &topics,  int msgCount=0, int prior=-1, int cpu_index=-1, std::string filename = "res.json"):
-            TestMiddlewareSub(topics, msgCount, prior, cpu_index, filename),
+    TestSubscriber(std::vector<std::string> &topics, std::vector<std::string> filenames, int msgCount=0, int prior=-1, int cpu_index=-1):
+            TestMiddlewareSub(topics, msgCount, prior, cpu_index, filenames),
             _dp(org::opensplice::domain::default_id()),
             _provider("file://QoS.xml", "TestProfile"),
             _subscriber(_dp)
@@ -25,15 +25,14 @@ public:
             }
 
 
-    int receive(std::string &topic) override {
+    int receive(int topic_id) override {
         int i = 0;
-        std::cout<<topic<<std::endl;
         while(i < _msgCount){
             auto samples = _drs[0].read();
             for(auto j=samples.begin();  j != samples.end(); ++j){
                 if(j->info().state().sample_state() == dds::sub::status::SampleState::not_read()){
-                    msgs[i].first = j->data().id();
-                    msgs[i].second = j->data().sent_time();
+                    msgs[topic_id][i].first = j->data().id();
+                    msgs[topic_id][i].second = j->data().sent_time();
                     std::cout<<i<<std::endl;
                     i++;
                 }
@@ -61,6 +60,7 @@ int main(int argc, char **argv) {
         return 0;
     }
     nlohmann::json topics;
+    std::vector<std::string> res_filenames;
     std::string res_filename = "res.json";
     int m_count = 5000;
     int priority = -1;
@@ -72,8 +72,9 @@ int main(int argc, char **argv) {
     if(args["topics"] != nullptr){
         topics = args["topics"];
     }
-    if(args["res_filename"] != nullptr){
-        res_filename = args["res_filename"];
+    if(args["res_filenames"] != nullptr) {
+        for (auto res_filename : args["res_filenames"])
+            res_filenames.push_back(res_filename);
     }
     if(args["m_count"] != nullptr){
         m_count = args["m_count"];
@@ -86,7 +87,7 @@ int main(int argc, char **argv) {
     }
     try {
         std::vector<std::string> topic_names(topics.begin(), topics.end());
-        TestSubscriber subscriber(topic_names, m_count, priority, cpu_index, res_filename);
+        TestSubscriber subscriber(topic_names, res_filenames, m_count, priority, cpu_index);
         subscriber.StartTest();
     }
     catch (...){
