@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <unistd.h>
-#include "nlohmann/json.hpp"
+#include "../nlohmann/json.hpp"
 #include <fstream>
 
 class TestMiddlewareSub
@@ -25,14 +25,14 @@ public:
             priority.sched_priority = sched_get_priority_max(prior);
             int err = sched_setscheduler(id, SCHED_FIFO, &priority);
             if(err) {
-                std::cout << "Erorr in setting priority: " << -err << std::endl;
+                std::cout << "Error in setting priority: " << -err << std::endl;
                 throw;
             }
         }
         if(cpu_index >= 0){
             std::ofstream f_task("/sys/fs/cgroup/cpuset/sub_cpuset/tasks", std::ios_base::out);
             if(!f_task.is_open()){
-                std::cout << "Erorr in adding to cpuset"<< std::endl;
+                std::cout << "Error in adding to cpuset"<< std::endl;
                 throw;
             }
             else{                                                   // добавить изменения номера ядра для привязки
@@ -43,7 +43,7 @@ public:
         }
     };
 
-    virtual int receive(std::string topic)=0;  //возвращает вектор принятых сообщений
+    virtual int receive(std::string &topic)=0;  //записывает вектор принятых сообщений
 
     int StartTest(){
         int count = 0;
@@ -66,8 +66,6 @@ public:
         std::ofstream file(_filename);
         file << json;
     }
-
-    virtual void setQoS(std::string filename)=0;
 
 protected:
     std::vector<std::string> _topic_names;

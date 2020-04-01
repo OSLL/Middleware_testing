@@ -6,39 +6,34 @@
 #include <vector>
 #include <unistd.h>
 #include "gen/TestData_DCPS.hpp"
-#include "pub_interface.hpp"
+#include "../../../interface/pub_interface.hpp"
 
 class TestPublisher: public TestMiddlewarePub{
 public:
-    TestPublisher(std::vector<std::string> topics,  int msgCount=0, int prior = -1, int cpu_index = -1,
+    TestPublisher(std::string topic,  int msgCount=0, int prior = -1, int cpu_index = -1,
             int min_msg_size=50, int max_msg_size=64000, int step=0, int interval = 0, int msgs_before_step = 100):
-            TestMiddlewarePub(topics, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step),
+            TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step),
             _dp(org::opensplice::domain::default_id()),
             _provider("file://QoS.xml", "TestProfile"),
-            _publisher(_dp)
-            {
-                for(auto it = _topic_names.begin(); it != _topic_names.end(); it++){
-                    dds::topic::Topic<TestDataType> topic(_dp, *it, _provider.topic_qos());
-                    _topics.push_back(topic);
-                    _dws.push_back(dds::pub::DataWriter<TestDataType>(_publisher, topic, _provider.datawriter_qos()));
-                }
-                    // setQoS("file://QoS.xml");
-            }
+            _topic(_dp, _topic_name, _provider.topic_qos()),
+            _publisher(_dp),
+            _dw(_publisher, _topic, _provider.datawriter_qos())
+            {}
 
 
-    void publish(short id, unsigned size, std::string &topic) override {
+    void publish(short id, unsigned size) override {
         unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-        std::string data('a', size);
+        std::string data(size, 'a');
         TestDataType msg(id, cur_time, std::vector<char>(data.begin(), data.end()));
-        _dws[0].write(msg);
+        _dw.write(msg);
     }
 
 private:
     dds::domain::DomainParticipant _dp;
     dds::core::QosProvider _provider;
-    std::vector<dds::topic::Topic <TestDataType>> _topics;
+    dds::topic::Topic <TestDataType> _topic;
     dds::pub::Publisher _publisher;
-    std::vector<dds::pub::DataWriter <TestDataType>> _dws;
+    dds::pub::DataWriter <TestDataType> _dw;
 };
 
 
@@ -95,7 +90,7 @@ int main(int argc, char **argv) {
     }
     try {
         std::vector<std::string> topic_names(topics.begin(), topics.end());
-        TestPublisher publisher(topic_names, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
+        TestPublisher publisher(topic_names[0], m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
         publisher.StartTest();
     }
     catch (...){

@@ -6,7 +6,7 @@
 #include <vector>
 #include <unistd.h>
 #include "gen/TestData_DCPS.hpp"
-#include "sub_interface.hpp"
+#include "../../../interface/sub_interface.hpp"
 
 
 class TestSubscriber: public TestMiddlewareSub{
