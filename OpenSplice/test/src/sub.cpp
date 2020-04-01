@@ -27,15 +27,25 @@ public:
 
     int receive(int topic_id) override {
         int i = 0;
+        unsigned long start_timer = 0;
         while(i < _msgCount){
             auto samples = _drs[0].read();
             for(auto j=samples.begin();  j != samples.end(); ++j){
                 if(j->info().state().sample_state() == dds::sub::status::SampleState::not_read()){
+                    unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+                    start_timer = cur_time;
                     msgs[topic_id][i].first = j->data().id();
                     msgs[topic_id][i].second = j->data().sent_time();
-                    std::cout<<i<<std::endl;
+                    rec_time[topic_id][i] = cur_time;
+                    std::cout<<j->data().id()<<std::endl;
                     i++;
                 }
+                else{
+                    unsigned long end_timer = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+                    if(start_timer != 0 && end_timer-start_timer > 1000000000)
+                        throw;
+                }
+
             }
         }
         return i;
