@@ -3,36 +3,45 @@
     <topic_qos>
         <history>
             <kind>KEEP_ALL_HISTORY_QOS</kind>
-	        <depth>5000</depth>
+	        <depth>10</depth>
         </history>
         <reliability>
             <kind>RELIABLE_RELIABILITY_QOS</kind>
 	    <max_blocking_time>
-		    <sec>50</sec>
+		    <sec>100</sec>
 	    </max_blocking_time>
         </reliability>
+	<durability>
+            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+        </durability>
     </topic_qos>
     <datawriter_qos>
+	<durability>
+            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+        </durability>
         <history>
             <kind>KEEP_ALL_HISTORY_QOS</kind>
-	        <depth>5000</depth>
+	        <depth>10</depth>
         </history>
         <reliability>
             <kind>RELIABLE_RELIABILITY_QOS</kind>
 	    <max_blocking_time>
-		    <sec>50</sec>
+		    <sec>100</sec>
 	    </max_blocking_time>
         </reliability>
     </datawriter_qos>
     <datareader_qos>
+	<durability>
+            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+        </durability>
         <history>
             <kind>KEEP_ALL_HISTORY_QOS</kind>
-	        <depth>5000</depth>
+	        <depth>10</depth>
         </history>
         <reliability>
             <kind>RELIABLE_RELIABILITY_QOS</kind>
 	    <max_blocking_time>
-		    <sec>50</sec>
+		    <sec>100</sec>
 	    </max_blocking_time>
         </reliability>
     </datareader_qos>
