@@ -8,6 +8,11 @@ class MiddlewareTesting(unittest.TestCase):
     pubs = ["../FastRTPS/test/build/FastRTPSTest publisher"]
     subs = ["../FastRTPS/test/build/FastRTPSTest subscriber"]
 
+    def create_process(self, name, args):
+        with open('args.json', 'w') as f:
+            json.dump(args, f)
+        return subprocess.Popen(name+' args.json', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd=".")
+
     def test0(self):
         print(">>> running test0")
         try:
@@ -22,13 +27,9 @@ class MiddlewareTesting(unittest.TestCase):
             args["max_msg_size"] = i
             for j in range(0, len(self.pubs)):
                 args["res_filenames"] = ['test0/' + self.subs[j][self.subs[j].rfind('/')+1:self.subs[j].rfind(' ')] + str(i) + '.json']
-                with open('args.json', 'w') as f:
-                    json.dump(args, f)
-                s = subprocess.Popen(self.subs[j]+' '+'args.json', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd=".")
+                s = self.create_process(self.subs[j], args)
                 args["cpu_index"] = 1
-                with open('args.json', 'w') as f:
-                    json.dump(args, f)
-                p = subprocess.Popen(self.pubs[j]+' '+'args.json', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd=".")
+                p = self.create_process(self.pubs[j], args)
                 args["cpu_index"] = 0
                 if s.poll() is None:
                     s.wait()
@@ -58,18 +59,13 @@ class MiddlewareTesting(unittest.TestCase):
                 for j in range(0, i):
                     time.sleep(0.1)
                     args["res_filenames"] = ['test2/' + str(i) + '/' + self.subs[k][self.subs[k].rfind('/')+1:self.subs[k].rfind(' ')] + str(j) + '.json']
-                    with open('args.json', 'w') as f:
-                        json.dump(args, f)
-                    subs.append(subprocess.Popen(self.subs[k]+' '+'args.json', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd="."))
+                    subs.append(self.create_process(self.subs[k], args))
                 args["cpu_index"] = 1
-                with open('args.json', 'w') as f:
-                    json.dump(args, f)
-                p = subprocess.Popen(self.pubs[k]+' '+'args.json', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd=".")
+                p = self.create_process(self.pubs[k], args)
                 args["cpu_index"] = 0
                 for s in subs:
                     if s.poll() is None:
                         s.wait()
-                    print(s.stdout.readlines())
                     s.stdout.close()
                     s.stdin.close()
                 if p.poll() is None:
@@ -77,6 +73,53 @@ class MiddlewareTesting(unittest.TestCase):
                 p.stdout.close()
                 p.stdin.close()
 
+    def test4(self):
+        print(">>> running test4")
+        try:
+            os.mkdir("test4")
+        except OSError:
+            None
+        args = {"topics":['test_topic'], "res_filenames":['json'], "m_count":204900, "min_msg_size":-896, "max_msg_size":2097152,  "step":1024, "msgs_before_step":100, "priority":1, "cpu_index":0, "interval":50}
+        freq = [1, 5, 10, 15, 20, 25, 30]
+        for f in freq:
+            print(" >> freq = " + str(f))
+            args["interval"] = 1000/f
+            for j in range(0, len(self.pubs)):
+                args["res_filenames"] = ['test4/' + self.subs[j][self.subs[j].rfind('/')+1:self.subs[j].rfind(' ')] + str(f) + '.json']
+                s = self.create_process(self.subs[j], args)
+                args["cpu_index"] = 1
+                p = self.create_process(self.pubs[j], args)
+                args["cpu_index"] = 0
+                if s.poll() is None:
+                    s.wait()
+                s.stdout.close()
+                s.stdin.close()
+                if p.poll() is None:
+                    p.wait()
+                p.stdout.close()
+                p.stdin.close()
+            
+    def test6(self):
+        print(">>> running test6")
+        try:
+            os.mkdir("test6")
+        except OSError:
+            None
+        args = {"topics":['test_topic'], "res_filenames":['json'], "m_count":204900, "min_msg_size":-896, "max_msg_size":2097152,  "step":1024, "msgs_before_step":100, "priority":1, "cpu_index":0, "interval":0}
+        for j in range(0, len(self.pubs)):
+            args["res_filenames"] = ['test6/' + self.subs[j][self.subs[j].rfind('/')+1:self.subs[j].rfind(' ')] + str(i) + '.json']
+            s = self.create_process(self.subs[j], args) 
+            args["cpu_index"] = 1
+            p = self.create_process(self.pubs[j], args)
+            args["cpu_index"] = 0
+            if s.poll() is None:
+                s.wait()
+            s.stdout.close()
+            s.stdin.close()
+            if p.poll() is None:
+                p.wait()
+            p.stdout.close()
+            p.stdin.close()
 
 if __name__ == "__main__":
     unittest.main()
