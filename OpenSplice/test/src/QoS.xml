@@ -3,25 +3,37 @@
     <topic_qos>
         <history>
             <kind>KEEP_ALL_HISTORY_QOS</kind>
+	        <depth>5000</depth>
         </history>
         <reliability>
             <kind>RELIABLE_RELIABILITY_QOS</kind>
+	    <max_blocking_time>
+		    <sec>50</sec>
+	    </max_blocking_time>
         </reliability>
     </topic_qos>
     <datawriter_qos>
         <history>
             <kind>KEEP_ALL_HISTORY_QOS</kind>
+	        <depth>5000</depth>
         </history>
         <reliability>
             <kind>RELIABLE_RELIABILITY_QOS</kind>
+	    <max_blocking_time>
+		    <sec>50</sec>
+	    </max_blocking_time>
         </reliability>
     </datawriter_qos>
     <datareader_qos>
         <history>
             <kind>KEEP_ALL_HISTORY_QOS</kind>
+	        <depth>5000</depth>
         </history>
         <reliability>
             <kind>RELIABLE_RELIABILITY_QOS</kind>
+	    <max_blocking_time>
+		    <sec>50</sec>
+	    </max_blocking_time>
         </reliability>
     </datareader_qos>
 </qos_profile>
