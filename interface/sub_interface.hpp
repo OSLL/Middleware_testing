@@ -19,7 +19,7 @@ public:
             _cpu_index(cpu_index),
             _filenames(filenames)
     {
-        for(int i = 0; i < topics.size(); ++i) {
+        for(unsigned i = 0; i < topics.size(); ++i) {
             rec_time[i].resize(msgCount);
             msgs[i].resize(msgCount);
         }
@@ -47,13 +47,13 @@ public:
         }
     };
 
-    virtual int receive(std::string &topic)=0;  //записывает вектор принятых сообщений
+    virtual int receive(int topic_id)=0;  //записывает вектор принятых сообщений
 
     int StartTest(){
-        for(auto& topic :  _topic_names){
+        for(unsigned i=0; i < _topic_names.size(); ++i){
             int count = 0;
             while (count < _msgCount){
-                count += receive(topic);
+                count += receive(i);
             }
         }
         to_Json();
@@ -61,7 +61,7 @@ public:
     }
 
     void to_Json(){
-        for (int k = 0; k < _topic_names.size(); ++k) {
+        for (unsigned k = 0; k < _topic_names.size(); ++k) {
             auto json = nlohmann::json::array();
             for (int i = 0; i < _msgCount; ++i) {
                 nlohmann::json msg;

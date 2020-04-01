@@ -1,6 +1,6 @@
 {
     "topics": ["/topic"],
-    "res_filename": "res_test1.json",
+    "res_filenames": ["res_test1.json"],
     "m_count": 5000,
     "min_msg_size": 50,
     "max_msg_size": 64000,
