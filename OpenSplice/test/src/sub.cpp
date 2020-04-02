@@ -8,6 +8,8 @@
 #include "gen/TestData_DCPS.hpp"
 #include "../../../interface/sub_interface.hpp"
 
+#include <cmath>
+#define TIMEOUT_NS 2*pow(10, 10)
 
 class TestSubscriber: public TestMiddlewareSub{
 public:
@@ -42,7 +44,7 @@ public:
                 }
                 else{
                     unsigned long end_timer = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-                    if(start_timer != 0 && end_timer-start_timer > 1000000000)
+                    if(start_timer != 0 && end_timer-start_timer > TIMEOUT_NS)
                         throw;
                 }
 
