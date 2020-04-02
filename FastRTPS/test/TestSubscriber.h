@@ -10,7 +10,7 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
-#include "sub_interface.hpp"
+#include "../../interface/sub_interface.hpp"
 
 class TestSubscriber : public TestMiddlewareSub
 {
@@ -20,7 +20,7 @@ class TestSubscriber : public TestMiddlewareSub
 
         virtual ~TestSubscriber();
 
-        int receive(std::string &topic);
+        int receive(int topic_id);
 
     private:
 

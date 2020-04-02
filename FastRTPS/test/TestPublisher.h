@@ -9,7 +9,7 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
-#include "pub_interface.hpp"
+#include "../../interface/pub_interface.hpp"
 
 class TestPublisher : public TestMiddlewarePub
 {
