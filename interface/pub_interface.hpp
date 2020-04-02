@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "nlohmann/json.hpp"
 #include <fstream>
+#include <thread>
 
 class TestMiddlewarePub
 {
@@ -20,14 +21,25 @@ public:
     _byteSizeMin(min_msg_size),
     _byteSizeMax(max_msg_size),
     _step(step),
-    _msg_count_befor_step(msgs_before_step)
-    {
+    _msg_count_befor_step(msgs_before_step) {
+
+        std::cout << "topic: " << _topic_names[0] << std::endl;
+        std::cout << "interval: " << _msInterval << std::endl;
+        std::cout << "msg_count: " <<_msgCount << std::endl;
+        std::cout << "priority: " << _priority << std::endl;
+        std::cout << "cpu_index: " << _cpu_index << std::endl;
+        std::cout << "min_byte: " << _byteSizeMin << std::endl;
+        std::cout << "max_byte: " << _byteSizeMax << std::endl;
+        std::cout << "step :" << _step << std::endl;
+        std::cout << "count_before_step :" << _msg_count_befor_step << std::endl;
+
         pid_t id = getpid();
         if(prior >= 0){
             sched_param priority;
             priority.sched_priority = sched_get_priority_max(prior);
             int err = sched_setscheduler(id, SCHED_FIFO, &priority);
             if(err) {
+                std::cout << prior << std::endl;
                 std::cout << "Erorr in setting priority: " << -err << std::endl;
                 throw;
             }
@@ -45,19 +57,20 @@ public:
             f_task.close();
         }
     };
+
     int StartTest(){
         std::this_thread::sleep_for(std::chrono::seconds(4));
         int cur_size = _byteSizeMin;
         for (int i = 0; i < _msgCount; ++i) {
             if(i % (_msg_count_befor_step-1) == 0 && cur_size <= _byteSizeMax)
                 cur_size += _step;
-            publish(i, cur_size, _topic_names[0]);
+            publish(i, cur_size);
             std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
         }
         return 0;
     }
 
-    virtual void publish(short id, unsigned size, std::string topic)=0;
+    virtual void publish(short id, unsigned size)=0;
 
     virtual void setQoS(std::string filename)=0;	//считывать наверное тоже из json, так как будут разные конфигурации QoS
 
