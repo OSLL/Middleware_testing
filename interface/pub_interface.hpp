@@ -25,7 +25,7 @@ public:
         pid_t id = getpid();
         if(prior >= 0){
             sched_param priority;
-            priority.sched_priority = sched_get_priority_max(prior);
+            priority.sched_priority = _priority;
             int err = sched_setscheduler(id, SCHED_FIFO, &priority);
             if(err) {
                 std::cout << "Error in setting priority: " << -err << std::endl;
