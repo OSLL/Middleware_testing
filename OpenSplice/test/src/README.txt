@@ -1,0 +1,1 @@
+--Before building and running project you need to source release.com file in opensplice installation folder
