@@ -90,14 +90,10 @@ void TestSubscriber::SubListener::onNewDataMessage(
     }
 }
 
-int TestSubscriber::receive(std::string &topic) {
-    int n = 0;
-    for(int i = 0; i < _topic_names.size(); ++i)
-        if(_topic_names[i] == topic)
-            n = i;
+int TestSubscriber::receive(int topic_id) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    int rec_count = m_listeners[n].n_msgs - m_listeners[n].rec_before;
-    m_listeners[n].rec_before = m_listeners[n].n_msgs;
+    int rec_count = m_listeners[topic_id].n_msgs - m_listeners[topic_id].rec_before;
+    m_listeners[topic_id].rec_before = m_listeners[topic_id].n_msgs;
     return rec_count;
 }
 
