@@ -54,7 +54,12 @@ public:
             publish(i, cur_size);
             std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
         }
-        return 0;
+        std::string end_str;
+        std::cin >> end_str;
+        if(end_str == "end")
+            return 0;
+        std::this_thread::sleep_for(std::chrono::seconds(200));
+        return -1;
     }
 
     virtual void publish(short id, unsigned size)=0;
