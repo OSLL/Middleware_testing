@@ -1,15 +1,10 @@
 #include <chrono>
-#include <ctime>
-#include <fstream>
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <unistd.h>
 #include "gen/TestData_DCPS.hpp"
 #include "../../../interface/sub_interface.hpp"
 
-#include <cmath>
-#define TIMEOUT_NS 2*pow(10, 10)
 
 class TestSubscriber: public TestMiddlewareSub{
 public:
@@ -23,34 +18,24 @@ public:
                     dds::topic::Topic<TestDataType> topic(_dp, *it, _provider.topic_qos());
                     _topics.push_back(topic);
                     _drs.push_back(dds::sub::DataReader<TestDataType>(_subscriber, topic, _provider.datareader_qos()));
+                    _drs.back().default_filter_state(dds::sub::status::DataState::new_data());
                 }
             }
 
 
     int receive(int topic_id) override {
-        int i = 0;
-        unsigned long start_timer = 0;
-        while(i < _msgCount){
-            auto samples = _drs[0].read();
-            for(auto j=samples.begin();  j != samples.end(); ++j){
-                if(j->info().state().sample_state() == dds::sub::status::SampleState::not_read()){
-                    unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-                    start_timer = cur_time;
-                    msgs[topic_id][i].first = j->data().id();
-                    msgs[topic_id][i].second = j->data().sent_time();
-                    rec_time[topic_id][i] = cur_time;
-                    std::cout<<j->data().id()<<std::endl;
-                    i++;
-                }
-                else{
-                    unsigned long end_timer = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-                    if(start_timer != 0 && end_timer-start_timer > TIMEOUT_NS)
-                        throw;
-                }
-
-            }
+        auto samples = _drs[topic_id].read();
+        if(samples.length() > 0){
+            unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+            auto id = samples.begin()->data().id();
+            msgs[topic_id][id].first = id;
+            msgs[topic_id][id].second = samples.begin()->data().sent_time();
+            rec_time[topic_id][id] = cur_time;
+            std::cout<<samples.begin()->data().id()<<std::endl;
         }
-        return i;
+        else
+            return 0;
+        return 1;
     }
 private:
     dds::domain::DomainParticipant _dp;
