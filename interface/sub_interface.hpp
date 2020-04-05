@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include "../nlohmann/json.hpp"
 #include <fstream>
+#include <cmath>
+
+#define TIMEOUT 2 * pow(10, 10)
 
 class TestMiddlewareSub
 {
@@ -52,8 +55,20 @@ public:
     int StartTest(){
         for(unsigned i=0; i < _topic_names.size(); ++i){
             int count = 0;
-            while (count < _msgCount){
+            unsigned long start_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+            while (count < _msgCount) {
+                int pre_rec_count = count;
                 count += receive(i);
+                unsigned long end_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                        std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+                if (pre_rec_count == count && count != 0) {
+                    if (end_timeout - start_timeout > TIMEOUT)
+                        throw;
+                } else {
+                    start_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+                }
             }
         }
         to_Json();
