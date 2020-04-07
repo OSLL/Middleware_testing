@@ -85,21 +85,30 @@ int main(int argc, char** argv)
     }
 
 
-    switch(type)
-    {
-        case 1:
-        {
-            TestPublisher mypub(topics[0], m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
-            mypub.StartTest();
-	    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-            break;
+    try{
+        switch(type)
+	{
+            case 1:
+            {
+                TestPublisher mypub(topics[0], m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
+                mypub.StartTest();
+                break;
+            }
+	    case 2:
+            {
+                TestSubscriber mysub(topics, m_count, priority, cpu_index, res_filenames, max_msg_size);
+                mysub.StartTest();
+                break;
+            }
         }
-        case 2:
-        {
-            TestSubscriber mysub(topics, m_count, priority, cpu_index, res_filenames, max_msg_size);
-            mysub.StartTest();
-            break;
-        }
+    }
+    catch (test_exception& e){
+        std::cout << e.what() << std::endl;
+        return -e.get_ret_code();
+    }
+    catch (std::exception& e){
+        std::cout << e.what() << std::endl;
+        return -MIDDLEWARE_ERROR;
     }
     Domain::stopAll();
     return 0;
