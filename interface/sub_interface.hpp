@@ -7,6 +7,7 @@
 #include "../nlohmann/json.hpp"
 #include <fstream>
 #include <cmath>
+#include "test_errors.hpp"
 
 #define TIMEOUT 2 * pow(10, 10)
 
@@ -32,15 +33,13 @@ public:
             priority.sched_priority = _priority;
             int err = sched_setscheduler(id, SCHED_FIFO, &priority);
             if(err) {
-                std::cout << "Error in setting priority: " << -err << std::endl;
-                throw;
+                throw test_exception("Error in setting priority: " + std::to_string(err), THREAD_PRIOR_ERROR);
             }
         }
         if(cpu_index >= 0){
             std::ofstream f_task("/sys/fs/cgroup/cpuset/sub_cpuset/tasks", std::ios_base::out);
             if(!f_task.is_open()){
-                std::cout << "Error in adding to cpuset"<< std::endl;
-                throw;
+                throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
             }
             else{                                                   // добавить изменения номера ядра для привязки
                 auto s = std::to_string(id);
@@ -64,7 +63,7 @@ public:
                         std::chrono::high_resolution_clock::now().time_since_epoch()).count();
                 if (pre_rec_count == count && count != 0) {
                     if (end_timeout - start_timeout > TIMEOUT)
-                        throw;
+                        throw test_exception("Timeout exceeded!", TIMEOUT_ERROR);
                 } else {
                     start_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
                             std::chrono::high_resolution_clock::now().time_since_epoch()).count();
