@@ -24,7 +24,7 @@ public:
     _step(step),
     _msg_count_befor_step(msgs_before_step) {
 
-        std::cout << "topic: " << _topic_names[0] << std::endl;
+        std::cout << "topic: " << _topic_name << std::endl;
         std::cout << "interval: " << _msInterval << std::endl;
         std::cout << "msg_count: " <<_msgCount << std::endl;
         std::cout << "priority: " << _priority << std::endl;
