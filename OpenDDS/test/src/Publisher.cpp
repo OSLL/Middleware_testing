@@ -15,7 +15,6 @@
 
 #include "MessengerTypeSupportImpl.h"
 
-
 #include <pub_interface.hpp>
 
 #include <argparse/argparse.hpp>
@@ -25,9 +24,9 @@
 class Publisher: public TestMiddlewarePub{
 
 public:
-    Publisher(std::vector<std::string> &topics,  int msgCount, int prior, int cpu_index,
+    Publisher(std::string &topic,  int msgCount, int prior, int cpu_index,
               int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step) :
-            _topic_names(topics),
+            _topic(topic),
             _msInterval(interval),
             _msgCount(msgCount),
             _priority(prior),
@@ -36,7 +35,7 @@ public:
             _byteSizeMax(max_msg_size),
             _step(step),
             _msg_count_befor_step(msgs_before_step),
-            TestMiddlewarePub(topics, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step){};
+            TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step){};
 
     void createPublisher(int argc, ACE_TCHAR *argv[]) {
         try {
@@ -68,7 +67,7 @@ public:
             // Create Topic (Movie Discussion List)
             CORBA::String_var type_name = ts->get_type_name();
             DDS::Topic_var topic =
-                    _participant->create_topic(_topic_names[0].c_str(),
+                    _participant->create_topic(_topic.c_str(),
                                               type_name.in(),
                                               TOPIC_QOS_DEFAULT,
                                               DDS::TopicListener::_nil(),
@@ -186,7 +185,7 @@ public:
     };
 
 private:
-    std::vector<std::string> _topic_names;
+    std::string _topic;
     int _msInterval;
     int _msgCount;
     int _priority; //not stated

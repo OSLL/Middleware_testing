@@ -70,9 +70,8 @@ int main(int argc, char* argv[]) {
     auto msg_count_before_step = parser.get<int>("--msg_before_step");
     auto topic = parser.get<std::string>("-t");
 
-    auto topics = std::vector<std::string>{topic};
 
-    Publisher pub(topics, msg_count, priority, cpu_index, min_bytes, max_bytes, step,
+    Publisher pub(topic, msg_count, priority, cpu_index, min_bytes, max_bytes, step,
                   interval, msg_count_before_step);
 
     pub.createPublisher(argc, argv);
