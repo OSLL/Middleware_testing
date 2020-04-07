@@ -1,51 +1,48 @@
 #include <chrono>
-#include <ctime>
-#include <fstream>
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <unistd.h>
 #include "gen/TestData_DCPS.hpp"
-#include "test_interface.hpp"
+#include "../../../interface/sub_interface.hpp"
 
 
 class TestSubscriber: public TestMiddlewareSub{
 public:
-    TestSubscriber(std::string topic,  int msgCount=0, int prior=-1, int cpu_index=-1, std::string filename = "res.json"):
-            TestMiddlewareSub(topic, msgCount, prior, cpu_index, filename),
+    TestSubscriber(std::vector<std::string> &topics, std::vector<std::string> filenames, int msgCount=0, int prior=-1, int cpu_index=-1):
+            TestMiddlewareSub(topics, msgCount, prior, cpu_index, filenames),
             _dp(org::opensplice::domain::default_id()),
-            _topic(_dp,topic),
-            _subscriber(_dp),
-            _dr(_subscriber, _topic)
+            _provider("file://QoS.xml", "TestProfile"),
+            _subscriber(_dp)
             {
-                setQoS("file://QoS.xml");
-            }
-
-
-    void setQoS(std::string filename) override {
-        dds::core::QosProvider provider(filename, "TestProfile");
-    }
-
-    int receive() override {
-        int i = 0;
-        while(i < _msgCount){
-            auto samples = _dr.read();
-            for(auto j=samples.begin();  j != samples.end(); ++j){
-                if(j->info().state().sample_state() == dds::sub::status::SampleState::not_read()){
-                    msgs[i].first = j->data().id();
-                    msgs[i].second = j->data().sent_time();
-                    i++;
+                for(auto it = _topic_names.begin(); it != _topic_names.end(); it++){
+                    dds::topic::Topic<TestDataType> topic(_dp, *it, _provider.topic_qos());
+                    _topics.push_back(topic);
+                    _drs.push_back(dds::sub::DataReader<TestDataType>(_subscriber, topic, _provider.datareader_qos()));
+                    _drs.back().default_filter_state(dds::sub::status::DataState::new_data());
                 }
             }
-        }
-        return i;
-    }
 
+
+    int receive(int topic_id) override {
+        auto samples = _drs[topic_id].read();
+        if(samples.length() > 0){
+            unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+            auto id = samples.begin()->data().id();
+            msgs[topic_id][id].first = id;
+            msgs[topic_id][id].second = samples.begin()->data().sent_time();
+            rec_time[topic_id][id] = cur_time;
+            std::cout<<samples.begin()->data().id()<<std::endl;
+        }
+        else
+            return 0;
+        return 1;
+    }
 private:
     dds::domain::DomainParticipant _dp;
-    dds::topic::Topic <TestDataType> _topic;
+    dds::core::QosProvider _provider;
+    std::vector<dds::topic::Topic<TestDataType>> _topics;
     dds::sub::Subscriber _subscriber;
-    dds::sub::DataReader <TestDataType> _dr;
+    std::vector<dds::sub::DataReader <TestDataType>> _drs;
 };
 
 int main(int argc, char **argv) {
@@ -59,21 +56,22 @@ int main(int argc, char **argv) {
         std::cout << "Cannot open file " << argv[1] << std::endl;
         return 0;
     }
-    std::string topic;
+    nlohmann::json topics;
+    std::vector<std::string> res_filenames;
     std::string res_filename = "res.json";
     int m_count = 5000;
     int priority = -1;
     int cpu_index = -1;
 
     file >> args;
-    std::cout<<args;
     file.close();
 
-    if(args["topic"] != nullptr){
-        topic = args["topic"];
+    if(args["topics"] != nullptr){
+        topics = args["topics"];
     }
-    if(args["res_filename"] != nullptr){
-        res_filename = args["res_filename"];
+    if(args["res_filenames"] != nullptr) {
+        for (auto res_filename : args["res_filenames"])
+            res_filenames.push_back(res_filename);
     }
     if(args["m_count"] != nullptr){
         m_count = args["m_count"];
@@ -85,7 +83,8 @@ int main(int argc, char **argv) {
         cpu_index = args["cpu_index"];
     }
     try {
-        TestSubscriber subscriber(topic, m_count, priority, cpu_index, res_filename);
+        std::vector<std::string> topic_names(topics.begin(), topics.end());
+        TestSubscriber subscriber(topic_names, res_filenames, m_count, priority, cpu_index);
         subscriber.StartTest();
     }
     catch (...){
