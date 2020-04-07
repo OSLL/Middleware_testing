@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "../nlohmann/json.hpp"
 #include <fstream>
+#include "test_errors.hpp"
 
 class TestMiddlewarePub
 {
@@ -28,15 +29,13 @@ public:
             priority.sched_priority = _priority;
             int err = sched_setscheduler(id, SCHED_FIFO, &priority);
             if(err) {
-                std::cout << "Error in setting priority: " << -err << std::endl;
-                throw;
+                throw test_exception("Error in setting priority: " + std::to_string(err), THREAD_PRIOR_ERROR);
             }
         }
         if(cpu_index >= 0){
             std::ofstream f_task("/sys/fs/cgroup/cpuset/pub_cpuset/tasks", std::ios_base::out);
             if(!f_task.is_open()){
-                std::cout << "Error in adding to cpuset"<< std::endl;
-                throw;
+                throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
             }
             else{                                                   // добавить изменения номера ядра для привязки
                 auto s = std::to_string(id);
@@ -58,7 +57,7 @@ public:
         std::cin >> end_str;
         if(end_str == "end")
             return 0;
-        std::this_thread::sleep_for(std::chrono::seconds(200));
+        std::this_thread::sleep_for(std::chrono::seconds(20));
         return -1;
     }
 
