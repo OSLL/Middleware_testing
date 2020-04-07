@@ -93,8 +93,12 @@ int main(int argc, char **argv) {
         TestPublisher publisher(topic_names[0], m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
         publisher.StartTest();
     }
-    catch (...){
-        std::cout<< "Error!\n";
-        return -1;
+    catch (test_exception& e){
+        std::cout<< e.what() << std::endl;
+        return -e.get_ret_code();
+    }
+    catch (std::exception& e){
+        std::cout<< e.what()<< std::endl;
+        return -MIDDLEWARE_ERROR;
     }
 }

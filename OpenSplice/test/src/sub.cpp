@@ -87,8 +87,12 @@ int main(int argc, char **argv) {
         TestSubscriber subscriber(topic_names, res_filenames, m_count, priority, cpu_index);
         subscriber.StartTest();
     }
-    catch (...){
-        std::cout<< "Error!\n";
-        return -1;
+    catch (test_exception& e){
+        std::cout<< e.what() << std::endl;
+        return -e.get_ret_code();
+    }
+    catch (std::exception& e){
+        std::cout<< e.what()<< std::endl;
+        return -MIDDLEWARE_ERROR;
     }
 }
