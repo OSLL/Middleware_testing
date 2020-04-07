@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "../nlohmann/json.hpp"
 #include <fstream>
+#include "test_errors.hpp"
 
 class TestMiddlewarePub
 {
@@ -25,18 +26,16 @@ public:
         pid_t id = getpid();
         if(prior >= 0){
             sched_param priority;
-            priority.sched_priority = sched_get_priority_max(prior);
+            priority.sched_priority = _priority;
             int err = sched_setscheduler(id, SCHED_FIFO, &priority);
             if(err) {
-                std::cout << "Error in setting priority: " << -err << std::endl;
-                throw;
+                throw test_exception("Error in setting priority: " + std::to_string(err), THREAD_PRIOR_ERROR);
             }
         }
         if(cpu_index >= 0){
             std::ofstream f_task("/sys/fs/cgroup/cpuset/pub_cpuset/tasks", std::ios_base::out);
             if(!f_task.is_open()){
-                std::cout << "Error in adding to cpuset"<< std::endl;
-                throw;
+                throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
             }
             else{                                                   // добавить изменения номера ядра для привязки
                 auto s = std::to_string(id);
@@ -54,7 +53,12 @@ public:
             publish(i, cur_size);
             std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
         }
-        return 0;
+        std::string end_str;
+        std::cin >> end_str;
+        if(end_str == "end")
+            return 0;
+        std::this_thread::sleep_for(std::chrono::seconds(20));
+        return -1;
     }
 
     virtual void publish(short id, unsigned size)=0;
