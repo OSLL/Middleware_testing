@@ -52,13 +52,7 @@ int main(int argc, char* argv[]) {
     auto cpu_index = parser.get<int>("-c");
     auto filename = parser.get<std::string>("-f");
 
-//    std::vector<std::string> &topics, int msgCount,
-//            int prior, int cpu_index, std::vector<std::string> &filenames
-
-    auto topics = std::vector<std::string>{topic};
-    auto filenames = std::vector<std::string>{filename};
-
-    Subscriber sub(topics, msg_count, priority, cpu_index, filenames);
+    Subscriber sub(topic, msg_count, priority, cpu_index, filename, 0);
 
     sub.createSubscriber(argc, argv);
 

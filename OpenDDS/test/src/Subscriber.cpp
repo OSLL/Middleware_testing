@@ -21,19 +21,18 @@
 #include <argparse/argparse.hpp>
 
 
-class Subscriber: public TestMiddlewareSub{
+class Subscriber: public TestMiddlewareSub<Messenger::Message>{
 
 public:
-    Subscriber(std::vector<std::string> &topics, int msgCount,
-               int prior, int cpu_index, std::vector<std::string> &filenames) :
-            _topic_names(topics),
+    Subscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_priority) :
+            _topic_name(topic),
             _msgCount(msgCount),
             _priority(prior),
             _cpu_index(cpu_index),
-            _filenames(filenames),
-            TestMiddlewareSub(topics, msgCount, prior, cpu_index, filenames){
-
-    };
+            _filename(filename),
+            TestMiddlewareSub<Messenger::Message>(topic, msgCount, prior, cpu_index, filename, topic_priority)
+            //_sub_interface(TestMiddlewareSub<Messenger::Message>(topic, msgCount, prior, cpu_index, filename, topic_priority))
+            {};
 
     void createSubscriber(int argc, ACE_TCHAR *argv[]) {
         try {
@@ -119,34 +118,32 @@ public:
     }
 
 
-    int receive(int topic_id) {
-        // Block until Publisher completes
-        _condition = _reader->get_statuscondition();
-        _condition->set_enabled_statuses(DDS::SUBSCRIPTION_MATCHED_STATUS);
+    bool receive(Messenger::Message& msg) {
+        Messenger::MessageSeq messages;
+        DDS::SampleInfoSeq info;
 
-        _ws = new DDS::WaitSet;
-        _ws->attach_condition(_condition);
+        DDS::ReturnCode_t error = _reader_i->take(messages,
+                                                 info,
+                                                 1,
+                                                 DDS::ANY_SAMPLE_STATE,
+                                                 DDS::ANY_VIEW_STATE,
+                                                 DDS::ANY_INSTANCE_STATE);
 
-        DDS::ConditionSeq conditions;
-        DDS::SubscriptionMatchedStatus matches = { 0, 0, 0, 0, 0 };
-        _timeout = { 30, 0 }; // 30 seconds
+        if (error == DDS::RETCODE_OK) {
+            if (info[0].valid_data) {
+                TestMiddlewareSub<Messenger::Message>::receive(messages[0]);
+                _reader_i->return_loan(messages, info);
+                return true;
+            } else
+                return false;
 
-        do {
-            if (_ws->wait(conditions, _timeout) != DDS::RETCODE_OK) {
-                ACE_ERROR((LM_ERROR,
-                        ACE_TEXT("ERROR: %N:%l: main() -")
-                                  ACE_TEXT(" wait failed!\n")));
-            }
-
-            if (_reader->get_subscription_matched_status(matches) != DDS::RETCODE_OK) {
-                ACE_ERROR((LM_ERROR,
-                        ACE_TEXT("ERROR: %N:%l: main() -")
-                                  ACE_TEXT(" get_subscription_matched_status() failed!\n")));
-            }
-        } while (matches.current_count > 0);
-
-        _ws->detach_condition(_condition);
-
+        } else {
+            ACE_ERROR((LM_ERROR,
+                    ACE_TEXT("ERROR: %N:%l: on_data_available() -")
+                              ACE_TEXT(" take failed!\n")));
+        }
+        _reader_i->return_loan(messages, info);
+        return false;
     };
 
     void setQoS(std::string filename) {
@@ -162,11 +159,11 @@ public:
     };
 
 protected:
-    std::vector<std::string> _topic_names;
+    std::string _topic_name;
     int _msgCount;
     int _priority; //def not stated
     int _cpu_index; //def not stated
-    std::vector<std::string> _filenames;
+    std::string _filename;
 
     DDS::DomainParticipant_var _participant;
     DDS::Subscriber_var _subscriber;
@@ -178,5 +175,6 @@ protected:
     Messenger::MessageDataReader_var _reader_i;
     DDS::DataReaderListener_var _listener;
     Messenger::MessageTypeSupport_var _ts;
+    //TestMiddlewareSub<Messenger::Message> _sub_interface;
 
 };
