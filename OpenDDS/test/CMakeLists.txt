@@ -14,10 +14,10 @@ set(opendds_libs
 
 include_directories(../../interface)
 
-# Publisher
-add_executable(publisher src/Publisher.cpp src/pub_main.cpp)
-OPENDDS_TARGET_SOURCES(publisher src/dds/Messenger.idl)
-target_link_libraries(publisher ${opendds_libs} pthread)
+## Publisher
+#add_executable(publisher src/Publisher.cpp src/pub_main.cpp)
+#OPENDDS_TARGET_SOURCES(publisher src/dds/Messenger.idl)
+#target_link_libraries(publisher ${opendds_libs} pthread)
 
 
 # Subscriber

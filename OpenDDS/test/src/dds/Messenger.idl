@@ -7,10 +7,9 @@ module Messenger {
 
   @topic
   struct Message {
-    string from;
-    string subject;
-    @key long subject_id;
-    string text;
-    long count;
+    @key long id;
+    unsigned long timestamp;
+    unsigned long processing_time;
+    string payload;
   };
 };
