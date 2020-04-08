@@ -3,6 +3,7 @@ import time
 from general_funcs import create_process, wait_and_end_process
 
 def test2(pubs, subs):
+    res_filenames = []
     try:
         os.mkdir("test2")
     except OSError:
@@ -20,10 +21,12 @@ def test2(pubs, subs):
             for j in range(0, i):
                 time.sleep(0.1)
                 args["res_filenames"] = ['test2/' + str(i) + '/' + subs[k][subs[k].rfind('/')+1:subs[k].rfind(' ')] + str(j) + '.json']
-                snodes.append(create_process(subs[k], args))
+                res_filenames.append(args["res_filenames"][0])
+            snodes.append(create_process(subs[k], args))
             args["cpu_index"] = 1
             p = create_process(pubs[k], args)
             args["cpu_index"] = 0
             for s in snodes:
                 wait_and_end_process(s)
             wait_and_end_process(p)
+    return res_filenames
