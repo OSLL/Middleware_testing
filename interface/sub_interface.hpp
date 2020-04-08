@@ -15,7 +15,7 @@ class TestMiddlewareSub
 {
 public:
     explicit TestMiddlewareSub(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename,
-            int topic_priority, bool isMsgProcTimeTest) :
+            int topic_priority) :
             _topic_name(topic),
             rec_time(msgCount),
             msgs(msgCount),
@@ -24,8 +24,7 @@ public:
             _msgCount(msgCount),
             _priority(prior),
             _cpu_index(cpu_index),
-            _filename(filename),
-            _isMsgProcTimeTest(isMsgProcTimeTest)
+            _filename(filename)
     {
         pid_t id = getpid();
         if(prior >= 0){
@@ -78,10 +77,7 @@ public:
             nlohmann::json msg;
             auto id = msgs[i].first;
             auto sent_time = msgs[i].second;
-            if(_isMsgProcTimeTest)
-                msg["msg"] = {{"id", id}, {"proc_time", _read_msg_time[i]}};
-            else
-                msg["msg"] = {{"id", id}, {"sent_time", sent_time}, {"rec_time", rec_time[i]}, {"delay", rec_time[i] - sent_time}};
+            msg["msg"] = {{"id", id}, {"sent_time", sent_time}, {"rec_time", rec_time[i]}, {"delay", rec_time[i] - sent_time}, {"proc_time", _read_msg_time[i]}};
             json.push_back(msg);
         }
         std::ofstream file(_filename);
@@ -98,5 +94,4 @@ protected:
     int _priority; //def not stated
     int _cpu_index; //def not stated
     std::string _filename;
-    bool _isMsgProcTimeTest;
 };
