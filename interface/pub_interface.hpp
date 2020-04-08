@@ -13,7 +13,7 @@ class TestMiddlewarePub
 public:
     explicit TestMiddlewarePub(std::string &topic,  int msgCount, int prior, int cpu_index,
             int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
-            std::string &filename, int topic_priority, bool isMsgProcTimeTest) :
+            std::string &filename, int topic_priority) :
     _filename(filename),
     _topic_name(topic),
     _msInterval(interval),
@@ -25,7 +25,6 @@ public:
     _step(step),
     _msg_count_befor_step(msgs_before_step),
     _topic_priority(topic_priority),
-    _isMsgProcTimeTest(isMsgProcTimeTest),
     _write_msg_time(msgCount)
     {
         pid_t id = getpid();
@@ -61,8 +60,7 @@ public:
         std::string end_str;
         std::cin >> end_str;
         if(end_str == "end") {
-            if(_isMsgProcTimeTest)
-                to_Json();
+            to_Json();
             return 0;
         }
         std::this_thread::sleep_for(std::chrono::seconds(20));
@@ -94,7 +92,6 @@ protected:
     int _step;
     int _msg_count_befor_step;
     int _topic_priority;
-    bool _isMsgProcTimeTest;
     std::vector <unsigned long> _write_msg_time;
 
 };
