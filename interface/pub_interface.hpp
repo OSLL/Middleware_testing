@@ -12,8 +12,10 @@ class TestMiddlewarePub
 {
 public:
     explicit TestMiddlewarePub(std::string &topic,  int msgCount, int prior, int cpu_index,
-            int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step) :
-            _topic_name(topic),
+            int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
+            std::string &filename, int topic_priority, bool isMsgProcTimeTest) :
+    _filename(filename),
+    _topic_name(topic),
     _msInterval(interval),
     _msgCount(msgCount),
     _priority(prior),
@@ -21,7 +23,10 @@ public:
     _byteSizeMin(min_msg_size),
     _byteSizeMax(max_msg_size),
     _step(step),
-    _msg_count_befor_step(msgs_before_step)
+    _msg_count_befor_step(msgs_before_step),
+    _topic_priority(topic_priority),
+    _isMsgProcTimeTest(isMsgProcTimeTest),
+    _write_msg_time(msgCount)
     {
         pid_t id = getpid();
         if(prior >= 0){
@@ -55,15 +60,30 @@ public:
         }
         std::string end_str;
         std::cin >> end_str;
-        if(end_str == "end")
+        if(end_str == "end") {
+            if(_isMsgProcTimeTest)
+                to_Json();
             return 0;
+        }
         std::this_thread::sleep_for(std::chrono::seconds(20));
         return -1;
+    }
+
+    void to_Json(){
+        auto json = nlohmann::json::array();
+        for (int i = 0; i < _msgCount; ++i) {
+            nlohmann::json msg;
+            msg["msg"] = {{"id", i}, {"proc_time", _write_msg_time[i]}};
+            json.push_back(msg);
+        }
+        std::ofstream file(_filename);
+        file << json;
     }
 
     virtual void publish(short id, unsigned size)=0;
 
 protected:
+    std::string _filename;
     std::string _topic_name;
     int _msInterval;
     int _msgCount;
@@ -73,5 +93,9 @@ protected:
     int _byteSizeMax;
     int _step;
     int _msg_count_befor_step;
+    int _topic_priority;
+    bool _isMsgProcTimeTest;
+    std::vector <unsigned long> _write_msg_time;
+
 };
 

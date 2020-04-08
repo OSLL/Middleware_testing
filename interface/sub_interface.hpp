@@ -14,19 +14,19 @@
 class TestMiddlewareSub
 {
 public:
-    explicit TestMiddlewareSub(std::vector<std::string> &topics, int msgCount, int prior, int cpu_index, std::vector<std::string> &filenames) :
-            _topic_names(topics),
-            rec_time(topics.size()),
-            msgs(topics.size()),
+    explicit TestMiddlewareSub(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename,
+            int topic_priority, bool isMsgProcTimeTest) :
+            _topic_name(topic),
+            rec_time(msgCount),
+            msgs(msgCount),
+            _read_msg_time(msgCount),
+            _topic_priority(topic_priority),
             _msgCount(msgCount),
             _priority(prior),
             _cpu_index(cpu_index),
-            _filenames(filenames)
+            _filename(filename),
+            _isMsgProcTimeTest(isMsgProcTimeTest)
     {
-        for(unsigned i = 0; i < topics.size(); ++i) {
-            rec_time[i].resize(msgCount);
-            msgs[i].resize(msgCount);
-        }
         pid_t id = getpid();
         if(prior >= 0){
             sched_param priority;
@@ -49,25 +49,23 @@ public:
         }
     };
 
-    virtual int receive(int topic_id)=0;  //записывает вектор принятых сообщений
+    virtual int receive()=0;  //записывает вектор принятых сообщений
 
     int StartTest(){
-        for(unsigned i=0; i < _topic_names.size(); ++i){
-            int count = 0;
-            unsigned long start_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        int count = 0;
+        unsigned long start_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        while (count < _msgCount) {
+            int pre_rec_count = count;
+            count += receive();
+            unsigned long end_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
                     std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-            while (count < _msgCount) {
-                int pre_rec_count = count;
-                count += receive(i);
-                unsigned long end_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
+            if (pre_rec_count == count && count != 0) {
+                if (end_timeout - start_timeout > TIMEOUT)
+                    throw test_exception("Timeout exceeded!", TIMEOUT_ERROR);
+            } else {
+                start_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
                         std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-                if (pre_rec_count == count && count != 0) {
-                    if (end_timeout - start_timeout > TIMEOUT)
-                        throw test_exception("Timeout exceeded!", TIMEOUT_ERROR);
-                } else {
-                    start_timeout = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                            std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-                }
             }
         }
         to_Json();
@@ -75,26 +73,30 @@ public:
     }
 
     void to_Json(){
-        for (unsigned k = 0; k < _topic_names.size(); ++k) {
-            auto json = nlohmann::json::array();
-            for (int i = 0; i < _msgCount; ++i) {
-                nlohmann::json msg;
-                auto id = msgs[k][i].first;
-                auto sent_time = msgs[k][i].second;
-                msg["msg"] = {{"id", id}, {"sent_time", sent_time}, {"rec_time", rec_time[k][i]}, {"delay", rec_time[k][i] - sent_time}};
-                json.push_back(msg);
-            }
-            std::ofstream file(_filenames[k]);
-            file << json;
+        auto json = nlohmann::json::array();
+        for (int i = 0; i < _msgCount; ++i) {
+            nlohmann::json msg;
+            auto id = msgs[i].first;
+            auto sent_time = msgs[i].second;
+            if(_isMsgProcTimeTest)
+                msg["msg"] = {{"id", id}, {"proc_time", _read_msg_time[i]}};
+            else
+                msg["msg"] = {{"id", id}, {"sent_time", sent_time}, {"rec_time", rec_time[i]}, {"delay", rec_time[i] - sent_time}};
+            json.push_back(msg);
         }
+        std::ofstream file(_filename);
+        file << json;
     }
 
 protected:
-    std::vector<std::string> _topic_names;
-    std::vector<std::vector<unsigned long>> rec_time;
-    std::vector<std::vector<std::pair<short, unsigned long>>> msgs;
+    std::string _topic_name;
+    std::vector<unsigned long> rec_time;
+    std::vector<std::pair<short, unsigned long>> msgs;
+    std::vector <unsigned long> _read_msg_time;
+    int _topic_priority;
     int _msgCount;
     int _priority; //def not stated
     int _cpu_index; //def not stated
-    std::vector<std::string> _filenames;
+    std::string _filename;
+    bool _isMsgProcTimeTest;
 };
