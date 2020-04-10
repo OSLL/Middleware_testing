@@ -95,4 +95,3 @@ protected:
     std::vector <unsigned long> _write_msg_time;
 
 };
-
