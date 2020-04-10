@@ -1,7 +1,7 @@
 #include <exception>
 #include <cstdlib>
 #define MIDDLEWARE_ERROR 1
-#define TIMEOUT_ERROR 2
+#define TEST_ERROR 2
 #define CPUSET_ERROR 3
 #define THREAD_PRIOR_ERROR 4
 

@@ -6,10 +6,10 @@
 #include "../../../interface/sub_interface.hpp"
 
 
-class TestSubscriber: public TestMiddlewareSub{
+class TestSubscriber: public TestMiddlewareSub<TestDataType>{
 public:
     TestSubscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_priority):
-            TestMiddlewareSub(topic, msgCount, prior, cpu_index, filename, topic_priority),
+            TestMiddlewareSub<TestDataType>(topic, msgCount, prior, cpu_index, filename, topic_priority),
             _dp(org::opensplice::domain::default_id()),
             _provider("file://QoS.xml", "TestProfile"),
             _topic(_dp, topic, _provider.topic_qos()),
@@ -20,21 +20,26 @@ public:
             }
 
 
-    int receive() override {
-        unsigned long start_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    bool receive() override {
+        auto start_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         auto samples = _dr.read();
+        unsigned long proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - start_timestamp;
         if(samples.length() > 0){
-            auto id = samples.begin()->data().id();
-            _read_msg_time[id] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - start_time;
-            unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-            msgs[id].first = id;
-            msgs[id].second = samples.begin()->data().sent_time();
-            rec_time[id] = cur_time;
-            //std::cout<<samples.begin()->data().id()<<std::endl;
+            auto msg = samples.begin()->data();
+            write_received_msg(msg, proc_time);
+            //std::cout<< msg.id()<<std::endl;
         }
         else
-            return 0;
-        return 1;
+            return false;
+        return true;
+    }
+
+    short get_id(TestDataType &msg) override {
+        return msg.id();
+    }
+
+    unsigned long get_timestamp(TestDataType &msg) override {
+        return msg.timestamp();
     }
 private:
     dds::domain::DomainParticipant _dp;

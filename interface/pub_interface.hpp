@@ -49,12 +49,17 @@ public:
         }
     };
     int StartTest(){
+        unsigned long proc_time = 0;
         std::this_thread::sleep_for(std::chrono::seconds(4));
         int cur_size = _byteSizeMin;
-        for (int i = 0; i < _msgCount; ++i) {
+        for (auto i = 0; i < _msgCount; ++i) {
             if(i % (_msg_count_befor_step-1) == 0 && cur_size <= _byteSizeMax)
                 cur_size += _step;
-            publish(i, cur_size);
+            publish(i, cur_size, &proc_time);
+            if(proc_time == 0)
+                throw test_exception("Processing time hasn't been written!", TEST_ERROR);
+            _write_msg_time[i] = proc_time;
+            proc_time = 0;
             std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
         }
         std::string end_str;
@@ -78,7 +83,7 @@ public:
         file << json;
     }
 
-    virtual void publish(short id, unsigned size)=0;
+    virtual void publish(short id, unsigned size, unsigned long *proc_time)=0;
 
 protected:
     std::string _filename;
