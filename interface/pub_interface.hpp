@@ -13,7 +13,7 @@ class TestMiddlewarePub
 public:
     explicit TestMiddlewarePub(std::string &topic,  int msgCount, int prior, int cpu_index,
             int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
-            std::string &filename, int topic_priority, bool isMsgProcTimeTest) :
+            std::string &filename, int topic_priority) :
     _filename(filename),
     _topic_name(topic),
     _msInterval(interval),
@@ -25,7 +25,6 @@ public:
     _step(step),
     _msg_count_befor_step(msgs_before_step),
     _topic_priority(topic_priority),
-    _isMsgProcTimeTest(isMsgProcTimeTest),
     _write_msg_time(msgCount)
     {
         pid_t id = getpid();
@@ -50,19 +49,23 @@ public:
         }
     };
     int StartTest(){
+        unsigned long proc_time = 0;
         std::this_thread::sleep_for(std::chrono::seconds(4));
         int cur_size = _byteSizeMin;
-        for (int i = 0; i < _msgCount; ++i) {
+        for (auto i = 0; i < _msgCount; ++i) {
             if(i % (_msg_count_befor_step-1) == 0 && cur_size <= _byteSizeMax)
                 cur_size += _step;
-            publish(i, cur_size);
+            publish(i, cur_size, &proc_time);
+            if(proc_time == 0)
+                throw test_exception("Processing time hasn't been written!", TEST_ERROR);
+            _write_msg_time[i] = proc_time;
+            proc_time = 0;
             std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
         }
         std::string end_str;
         std::cin >> end_str;
         if(end_str == "end") {
-            if(_isMsgProcTimeTest)
-                to_Json();
+            to_Json();
             return 0;
         }
         std::this_thread::sleep_for(std::chrono::seconds(20));
@@ -80,7 +83,7 @@ public:
         file << json;
     }
 
-    virtual void publish(short id, unsigned size)=0;
+    virtual void publish(short id, unsigned size, unsigned long *proc_time)=0;
 
 protected:
     std::string _filename;
@@ -94,7 +97,6 @@ protected:
     int _step;
     int _msg_count_befor_step;
     int _topic_priority;
-    bool _isMsgProcTimeTest;
     std::vector <unsigned long> _write_msg_time;
 
 };
