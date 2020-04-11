@@ -9,7 +9,7 @@ def from_json(filename):
         data = json.load(f)
     ids = [msg["msg"]["id"] for msg in data]
     send_time = [msg["msg"]["sent_time"] for msg in data]
-    rec_time = [msg["msg"]["rec_time"] for msg in data]
+    rec_time = [msg["msg"]["recieve_timestamp"] for msg in data]
     delay = [msg["msg"]["delay"] for msg in data]
     return (send_time, rec_time, delay, ids)
 
