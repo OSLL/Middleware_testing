@@ -15,12 +15,13 @@ class TestPublisher : public TestMiddlewarePub
 {
     public:
 
-        TestPublisher(std::string topic,  int msgCount=0, int prior = -1, int cpu_index = -1,
-                  int min_msg_size=50, int max_msg_size=64000, int step=0, int interval = 0, int msgs_before_step = 100);
+        TestPublisher(std::string topic,  int msgCount, int prior, int cpu_index,
+                  int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
+		  std::string &filename, int topic_priority);
 
         virtual ~TestPublisher();
 
-	void publish(short id, unsigned size);
+	void publish(short id, unsigned size, unsigned long *proc_time);
 
     private:
 

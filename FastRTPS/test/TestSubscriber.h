@@ -12,15 +12,19 @@
 
 #include "../../interface/sub_interface.hpp"
 
-class TestSubscriber : public TestMiddlewareSub
+class TestSubscriber : public TestMiddlewareSub<eprosima::fastrtps::types::DynamicData*>
 {
     public:
 
-        TestSubscriber(std::vector<std::string> &topics, int msgCount, int prior, int cpu_index, std::vector<std::string> &res_filenames, int max_msg_size);
+        TestSubscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_prior, int max_msg_size);
 
         virtual ~TestSubscriber();
 
-        int receive(int topic_id);
+        bool receive();
+
+	short get_id(eprosima::fastrtps::types::DynamicData* &msg);
+
+	unsigned long get_timestamp(eprosima::fastrtps::types::DynamicData* &msg);
 
     private:
 
@@ -28,7 +32,7 @@ class TestSubscriber : public TestMiddlewareSub
 
         eprosima::fastrtps::Participant* mp_participant;
 
-        std::vector<eprosima::fastrtps::Subscriber*> mp_subscribers;
+        eprosima::fastrtps::Subscriber* mp_subscriber;
 
     public:
 
@@ -36,11 +40,10 @@ class TestSubscriber : public TestMiddlewareSub
         {
             public:
                 SubListener() {}
-                SubListener(TestSubscriber* parent, int n)
+                SubListener(TestSubscriber* parent)
                     : parent(parent)
                     , n_msgs(0)
                     , rec_before(0)
-                    , subscr_n(n)
                 {}
 
                 ~SubListener() override {}
@@ -61,13 +64,12 @@ class TestSubscriber : public TestMiddlewareSub
 
                 int rec_before;
 
-                int subscr_n;
-
                 TestSubscriber* parent;
         };
 
-        std::vector<SubListener> m_listeners;
+        SubListener m_listener;
 
+	eprosima::fastrtps::types::DynamicType_ptr dynType;
     private:
 
         eprosima::fastrtps::types::DynamicPubSubType m_DynType;

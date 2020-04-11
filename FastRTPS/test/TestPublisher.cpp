@@ -16,8 +16,9 @@ using namespace eprosima::fastrtps::rtps;
 using namespace eprosima::fastrtps::types;
 
 TestPublisher::TestPublisher(std::string topic,  int msgCount, int prior, int cpu_index,
-                  int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step)
-    : TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step)
+                  int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
+		  std::string &filename, int topic_priority)
+    : TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step, filename, topic_priority)
     , mp_participant(nullptr)
     , mp_publisher(nullptr)
     , m_DynType(DynamicType_ptr(nullptr))
@@ -79,12 +80,14 @@ void TestPublisher::PubListener::onPublicationMatched(
     }
 }
 
-void TestPublisher::publish(short id, unsigned size) {
-    unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+void TestPublisher::publish(short id, unsigned size, unsigned long *proc_time) {
     std::string data(size, 'a');
+    unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     m_DynMsg->set_int16_value(id, 0);
     m_DynMsg->set_uint64_value(cur_time, 1);
-    m_DynMsg->set_string_value(data, 2);
+    m_DynMsg->set_string_value(std::string(size, 'a'), 2);
+    cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     mp_publisher->write((void*)m_DynMsg);
+    *proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
 }
 
