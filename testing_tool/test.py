@@ -15,25 +15,22 @@ class MiddlewareTesting(unittest.TestCase):
 
     def test0(self):
         print(">>> running test0")
-        self.res_filenames = test0(self.pubs, self.subs)
+        (self.pub_filenames, self.sub_filenames) = test0(self.pubs, self.subs)
 
-    @unittest.skip("")
     def test2(self):
         print(">>> running test2")
-        self.res_filenames = test2(self.pubs, self.subs)
+        (self.pub_filenames, self.sub_filenames) = test2(self.pubs, self.subs)
 
-    @unittest.skip("")
     def test4(self):
         print(">>> running test4")
-        self.res_filenames = test4(self.pubs, self.subs)
+        (self.pub_filenames, self.sub_filenames) = test4(self.pubs, self.subs)
             
-    @unittest.skip("")
     def test6(self):
         print(">>> running test6")
-        self.res_filenames = test6(self.pubs, self.subs)
+        (self.pub_filenames, self.sub_filenames) = test6(self.pubs, self.subs)
 
     def tearDown(self):
-        for filename in self.res_filenames:
+        for filename in self.sub_filenames:
             plot_results(filename)
 
 if __name__ == "__main__":
