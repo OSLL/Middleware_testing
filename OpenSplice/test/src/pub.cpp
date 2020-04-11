@@ -10,9 +10,11 @@
 
 class TestPublisher: public TestMiddlewarePub{
 public:
-    TestPublisher(std::string topic,  int msgCount=0, int prior = -1, int cpu_index = -1,
-            int min_msg_size=50, int max_msg_size=64000, int step=0, int interval = 0, int msgs_before_step = 100):
-            TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step),
+    TestPublisher(std::string topic,  int msgCount, int prior, int cpu_index,
+            int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step, std::string &filename,
+            int topic_priority):
+            TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval,
+                    msgs_before_step, filename, topic_priority),
             _dp(org::opensplice::domain::default_id()),
             _provider("file://QoS.xml", "TestProfile"),
             _topic(_dp, _topic_name, _provider.topic_qos()),
@@ -21,11 +23,13 @@ public:
             {}
 
 
-    void publish(short id, unsigned size) override {
-        unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    void publish(short id, unsigned size, unsigned long *proc_time) override {
         std::string data(size, 'a');
+        unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         TestDataType msg(id, cur_time, std::vector<char>(data.begin(), data.end()));
+        cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         _dw.write(msg);
+        *proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
     }
 
 private:
@@ -48,53 +52,32 @@ int main(int argc, char **argv) {
         std::cout << "Cannot open file " << argv[1] << std::endl;
         return 0;
     }
-    nlohmann::json topics;
-    int m_count = 5000;
-    int priority = -1;
-    int cpu_index = -1;
-    int min_msg_size = 0;
-    int max_msg_size = 64000;
-    int step = 0;
-    int msgs_before_step = 100;
-    int interval = 0;
-
     file >> args;
     file.close();
 
-    if(args["topics"] != nullptr){
-        topics = args["topics"];
-    }
-    if(args["m_count"] != nullptr){
-        m_count = args["m_count"];
-    }
-    if(args["min_msg_size"] != nullptr){
-        min_msg_size = args["min_msg_size"];
-    }
-    if(args["max_msg_size"] != nullptr){
-        max_msg_size = args["max_msg_size"];
-    }
-    if(args["step"] != nullptr){
-        step = args["step"];
-    }
-    if(args["msgs_before_step"] != nullptr){
-        msgs_before_step = args["msgs_before_step"];
-    }
-    if(args["priority"] != nullptr){
-        priority = args["priority"];
-    }
-    if(args["cpu_index"] != nullptr){
-        cpu_index = args["cpu_index"];
-    }
-    if(args["interval"] != nullptr){
-        interval = args["interval"];
-    }
+    std::string topic = args["topic"];
+    std::string filename = args["res_filenames"][0];
+    int m_count = args["m_count"];
+    int priority = args["priority"][0];
+    int cpu_index = args["cpu_index"][0];
+    int min_msg_size = args["min_msg_size"];
+    int max_msg_size = args["max_msg_size"];
+    int step = args["step"];
+    int msgs_before_step = args["msgs_before_step"];
+    int interval = args["interval"];
+    int topic_prior = args["topic_priority"];
+
     try {
-        std::vector<std::string> topic_names(topics.begin(), topics.end());
-        TestPublisher publisher(topic_names[0], m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
+        TestPublisher publisher(topic, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval,
+                msgs_before_step, filename, topic_prior);
         publisher.StartTest();
     }
-    catch (...){
-        std::cout<< "Error!\n";
-        return -1;
+    catch (test_exception& e){
+        std::cout<< e.what() << std::endl;
+        return -e.get_ret_code();
+    }
+    catch (std::exception& e){
+        std::cout<< e.what()<< std::endl;
+        return -MIDDLEWARE_ERROR;
     }
 }

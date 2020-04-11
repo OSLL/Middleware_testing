@@ -12,8 +12,10 @@ class TestMiddlewarePub
 {
 public:
     explicit TestMiddlewarePub(std::string &topic,  int msgCount, int prior, int cpu_index,
-            int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step) :
-            _topic_name(topic),
+            int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
+            std::string &filename, int topic_priority) :
+    _filename(filename),
+    _topic_name(topic),
     _msInterval(interval),
     _msgCount(msgCount),
     _priority(prior),
@@ -21,7 +23,9 @@ public:
     _byteSizeMin(min_msg_size),
     _byteSizeMax(max_msg_size),
     _step(step),
-    _msg_count_befor_step(msgs_before_step)
+    _msg_count_befor_step(msgs_before_step),
+    _topic_priority(topic_priority),
+    _write_msg_time(msgCount)
     {
         pid_t id = getpid();
         if(prior >= 0){
@@ -45,25 +49,44 @@ public:
         }
     };
     int StartTest(){
+        unsigned long proc_time = 0;
         std::this_thread::sleep_for(std::chrono::seconds(4));
         int cur_size = _byteSizeMin;
-        for (int i = 0; i < _msgCount; ++i) {
+        for (auto i = 0; i < _msgCount; ++i) {
             if(i % (_msg_count_befor_step-1) == 0 && cur_size <= _byteSizeMax)
                 cur_size += _step;
-            publish(i, cur_size);
+            publish(i, cur_size, &proc_time);
+            if(proc_time == 0)
+                throw test_exception("Processing time hasn't been written!", TEST_ERROR);
+            _write_msg_time[i] = proc_time;
+            proc_time = 0;
             std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
         }
         std::string end_str;
         std::cin >> end_str;
-        if(end_str == "end")
+        if(end_str == "end") {
+            to_Json();
             return 0;
+        }
         std::this_thread::sleep_for(std::chrono::seconds(20));
         return -1;
     }
 
-    virtual void publish(short id, unsigned size)=0;
+    void to_Json(){
+        auto json = nlohmann::json::array();
+        for (int i = 0; i < _msgCount; ++i) {
+            nlohmann::json msg;
+            msg["msg"] = {{"id", i}, {"proc_time", _write_msg_time[i]}};
+            json.push_back(msg);
+        }
+        std::ofstream file(_filename);
+        file << json;
+    }
+
+    virtual void publish(short id, unsigned size, unsigned long *proc_time)=0;
 
 protected:
+    std::string _filename;
     std::string _topic_name;
     int _msInterval;
     int _msgCount;
@@ -73,5 +96,7 @@ protected:
     int _byteSizeMax;
     int _step;
     int _msg_count_befor_step;
-};
+    int _topic_priority;
+    std::vector <unsigned long> _write_msg_time;
 
+};
