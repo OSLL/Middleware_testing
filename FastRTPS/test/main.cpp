@@ -1,8 +1,6 @@
 #include "TestPublisher.h"
 #include "TestSubscriber.h"
-#include "FastRTPSTestPub.h"
-#include "FastRTPSTestSub.h"
-#include "nlohmann/json.hpp"
+#include "../../nlohmann/json.hpp"
 
 #include <fastrtps/Domain.h>
 
@@ -13,16 +11,6 @@ using namespace rtps;
 int main(int argc, char** argv)
 {
     int type = 0;
-    std::string topic;
-    std::string res_filename = "res.json";
-    int m_count = 5000;
-    int priority = -1;
-    int cpu_index = -1;
-    int min_msg_size = 0;
-    int max_msg_size = 64000;
-    int step = 0;
-    int msgs_before_step = 100;
-    int interval = 0;
     
     if (argc > 1)
     {
@@ -40,7 +28,7 @@ int main(int argc, char** argv)
     {
         std::cout << "Error: Incorrect arguments." << std::endl;
         std::cout << "Usage: " << std::endl << std::endl;
-        std::cout << argv[0] << " publisher|subscriber topic [res_filename] [m_count] [min_msg_size] [max_msg_size] [step] [msgs_before_step] [priority] [cpu_index] [interval]" << std::endl << std::endl;
+        std::cout << argv[0] << " publisher|subscriber params.json" << std::endl << std::endl;
         return 0;
     }
 
@@ -51,54 +39,44 @@ int main(int argc, char** argv)
         return 0;
     }
     file >> args;
-	
-    if(args["topic"] != nullptr){
-        topic = args["topic"];
-    }
-    if(args["res_filename"] != nullptr){
-        res_filename = args["res_filename"];
-    }
-    if(args["m_count"] != nullptr){
-        m_count = args["m_count"];
-    }
-    if(args["min_msg_size"] != nullptr){
-        min_msg_size = args["min_msg_size"];
-    }
-    if(args["max_msg_size"] != nullptr){
-        max_msg_size = args["max_msg_size"];
-    }
-    if(args["step"] != nullptr){
-        step = args["step"];
-    }
-    if(args["msgs_before_step"] != nullptr){
-        msgs_before_step = args["msgs_before_step"];
-    }
-    if(args["priority"] != nullptr){
-        priority = args["priority"];
-    }
-    if(args["cpu_index"] != nullptr){
-        cpu_index = args["cpu_index"];
-    }
-    if(args["interval"] != nullptr){
-        interval = args["interval"];
-    }
-
     file.close();
 
-    switch(type)
-    {
-        case 1:
-        {
-            FastRTPSTestPub mypub(topic, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step);
-            mypub.test();
-            break;
+    std::string topic = args["topic"];
+    std::string filename = args["res_filenames"][type-1];
+    int m_count = args["m_count"];
+    int priority = args["priority"][type-1];
+    int cpu_index = args["cpu_index"][type-1];
+    int min_msg_size = args["min_msg_size"];
+    int max_msg_size = args["max_msg_size"];
+    int step = args["step"];
+    int msgs_before_step = args["msgs_before_step"];
+    int interval = args["interval"];
+    int topic_prior = args["topic_priority"];
+
+    try{
+        switch(type)
+	{
+            case 1:
+            {
+                TestPublisher mypub(topic, m_count, priority, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step, filename, topic_prior);
+                mypub.StartTest();
+                break;
+            }
+	    case 2:
+            {
+                TestSubscriber mysub(topic, m_count, priority, cpu_index, filename, topic_prior, max_msg_size);
+                mysub.StartTest();
+                break;
+            }
         }
-        case 2:
-        {
-            FastRTPSTestSub mysub(topic, m_count, priority, cpu_index, max_msg_size, res_filename);
-            mysub.test();
-            break;
-        }
+    }
+    catch (test_exception& e){
+        std::cout << e.what() << std::endl;
+        return -e.get_ret_code();
+    }
+    catch (std::exception& e){
+        std::cout << e.what() << std::endl;
+        return -MIDDLEWARE_ERROR;
     }
     Domain::stopAll();
     return 0;

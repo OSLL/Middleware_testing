@@ -10,25 +10,25 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
-class TestSubscriber
+#include "../../interface/sub_interface.hpp"
+
+class TestSubscriber : public TestMiddlewareSub<eprosima::fastrtps::types::DynamicData*>
 {
     public:
 
-        TestSubscriber();
+        TestSubscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_prior, int max_msg_size);
 
         virtual ~TestSubscriber();
 
-        bool init(std::string topic, int m_count, int max_msglen);
+        bool receive();
 
-        void run();
+	short get_id(eprosima::fastrtps::types::DynamicData* &msg);
 
-        void run(
-                uint32_t number);
+	unsigned long get_timestamp(eprosima::fastrtps::types::DynamicData* &msg);
 
-        std::tuple<std::vector<std::string>, std::vector<unsigned long>> receive();
     private:
 
-        int m_count;
+        eprosima::fastrtps::SubscriberAttributes Rparam;
 
         eprosima::fastrtps::Participant* mp_participant;
 
@@ -39,9 +39,11 @@ class TestSubscriber
         class SubListener : public eprosima::fastrtps::SubscriberListener
         {
             public:
-                SubListener()
-                    : n_matched(0)
+                SubListener() {}
+                SubListener(TestSubscriber* parent)
+                    : parent(parent)
                     , n_msgs(0)
+                    , rec_before(0)
                 {}
 
                 ~SubListener() override {}
@@ -57,14 +59,17 @@ class TestSubscriber
 
                 eprosima::fastrtps::SampleInfo_t m_info;
 
-                int n_matched;
 
                 uint32_t n_msgs;
 
-		std::vector<std::string> rec_msgs;
-		std::vector<unsigned long> rec_time;
-        } m_listener;
+                int rec_before;
 
+                TestSubscriber* parent;
+        };
+
+        SubListener m_listener;
+
+	eprosima::fastrtps::types::DynamicType_ptr dynType;
     private:
 
         eprosima::fastrtps::types::DynamicPubSubType m_DynType;
