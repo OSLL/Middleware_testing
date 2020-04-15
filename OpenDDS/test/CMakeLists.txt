@@ -12,15 +12,16 @@ set(opendds_libs
   OpenDDS::Dcps # Core OpenDDS Library
 )
 
-include_directories(../../interface)
+include_directories(../../interface
+                    include)
 
-## Publisher
-#add_executable(publisher src/Publisher.cpp src/pub_main.cpp)
-#OPENDDS_TARGET_SOURCES(publisher src/dds/Messenger.idl)
-#target_link_libraries(publisher ${opendds_libs} pthread)
+# Publisher
+add_executable(publisher src/publisher/Publisher.cpp src/publisher/publisher.cpp include/Publisher.h)
+OPENDDS_TARGET_SOURCES(publisher src/dds/Messenger.idl)
+target_link_libraries(publisher ${opendds_libs} pthread)
 
 
 # Subscriber
-add_executable(subscriber src/Subscriber.cpp src/sub_main.cpp src/dds/DataReaderListenerImpl.cpp)
+add_executable(subscriber src/subscriber/Subscriber.cpp src/subscriber/subscriber.cpp src/dds/DataReaderListenerImpl.cpp)
 OPENDDS_TARGET_SOURCES(subscriber src/dds/Messenger.idl)
 target_link_libraries(subscriber ${opendds_libs} pthread)

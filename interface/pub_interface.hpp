@@ -4,12 +4,12 @@
 #include <vector>
 #include <iostream>
 #include <unistd.h>
-#include "../nlohmann/json.hpp"
 #include <fstream>
+#include <thread>
+#include <nlohmann/json.hpp>
 #include "test_errors.hpp"
 
-class TestMiddlewarePub
-{
+class TestMiddlewarePub {
 public:
     explicit TestMiddlewarePub(std::string &topic,  int msgCount, int prior, int cpu_index,
             int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
@@ -41,7 +41,7 @@ public:
             if(!f_task.is_open()){
                 throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
             }
-            else{                                                   // добавить изменения номера ядра для привязки
+            else {                                                   //TODO: добавить изменения номера ядра для привязки
                 auto s = std::to_string(id);
                 f_task.write(s.c_str(),s.length());
             }
@@ -49,41 +49,60 @@ public:
         }
     };
     int StartTest(){
+
         unsigned long proc_time = 0;
         std::this_thread::sleep_for(std::chrono::seconds(4));
+
         int cur_size = _byteSizeMin;
+
         for (auto i = 0; i < _msgCount; ++i) {
+
             if(i % (_msg_count_befor_step-1) == 0 && cur_size <= _byteSizeMax)
                 cur_size += _step;
-            publish(i, cur_size, &proc_time);
+
+            proc_time = publish(i, cur_size);
+
             if(proc_time == 0)
                 throw test_exception("Processing time hasn't been written!", TEST_ERROR);
+
             _write_msg_time[i] = proc_time;
-            proc_time = 0;
+
             std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
         }
+
         std::string end_str;
         std::cin >> end_str;
+
         if(end_str == "end") {
             to_Json();
             return 0;
         }
+
         std::this_thread::sleep_for(std::chrono::seconds(20));
+
         return -1;
     }
 
     void to_Json(){
         auto json = nlohmann::json::array();
+
         for (int i = 0; i < _msgCount; ++i) {
+
             nlohmann::json msg;
-            msg["msg"] = {{"id", i}, {"proc_time", _write_msg_time[i]}};
+            msg["msg"] =
+                    {
+                        {"id", i},
+                        {"proc_time", _write_msg_time[i]}
+                    };
+
             json.push_back(msg);
         }
+
         std::ofstream file(_filename);
         file << json;
     }
 
-    virtual void publish(short id, unsigned size, unsigned long *proc_time)=0;
+    virtual unsigned long publish(short id, unsigned size)=0;
 
 protected:
     std::string _filename;
