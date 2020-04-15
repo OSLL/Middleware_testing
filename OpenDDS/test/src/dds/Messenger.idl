@@ -9,7 +9,6 @@ module Messenger {
   struct Message {
     @key long id;
     unsigned long timestamp;
-    unsigned long processing_time;
     string payload;
   };
 };
