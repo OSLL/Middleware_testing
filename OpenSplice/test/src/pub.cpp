@@ -23,13 +23,15 @@ public:
             {}
 
 
-    void publish(short id, unsigned size, unsigned long *proc_time) override {
+    unsigned long publish(short id, unsigned size) override {
+        unsigned long proc_time = 0;
         std::string data(size, 'a');
         unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         TestDataType msg(id, cur_time, std::vector<char>(data.begin(), data.end()));
         cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         _dw.write(msg);
-        *proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
+        proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
+        return proc_time;
     }
 
 private:
