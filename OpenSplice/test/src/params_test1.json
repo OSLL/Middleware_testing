@@ -1,12 +1,13 @@
 {
-    "topics": ["/topic"],
-    "res_filenames": ["res_test1.json"],
+    "topic": "/topic",
+    "res_filenames": ["pub_res_test1.json", "sub_res_test1.json"],
     "m_count": 5000,
     "min_msg_size": 50,
     "max_msg_size": 64000,
     "step": 0,
     "msgs_before_step": 100,
-    "priority": -1,
-    "cpu_index": -1,
-    "interval": 10
+    "priority": [-1, -1],
+    "cpu_index": [-1, -1],
+    "interval": 10,
+    "topic_priority": 0
 }
