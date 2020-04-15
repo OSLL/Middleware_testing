@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <unistd.h>
-#include "../nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
 #include <fstream>
 #include <cmath>
 #include "test_errors.hpp"
@@ -51,7 +51,7 @@ public:
     };
 
     void write_received_msg(MsgType &msg, unsigned long proc_time) {
-        _msgs.emplace(_msgs.begin() + get_id(msg), msg);
+        _msgs[get_id(msg)] = msg;
         _recieve_timestamps[get_id(msg)] = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                 now().time_since_epoch()).count();
@@ -80,8 +80,8 @@ public:
                     break;
             }
 
-
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
         }
 
         to_json();

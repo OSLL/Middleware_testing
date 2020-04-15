@@ -1,3 +1,4 @@
+#pragma once
 #include <exception>
 #include <cstdlib>
 #define MIDDLEWARE_ERROR 1
