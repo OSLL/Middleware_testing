@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <unistd.h>
-#include "../nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
 #include <fstream>
 #include <cmath>
 #include "test_errors.hpp"
@@ -80,8 +80,8 @@ public:
                     break;
             }
 
-
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
         }
 
         to_json();
