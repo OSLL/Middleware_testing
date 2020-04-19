@@ -4,10 +4,6 @@ import subprocess
 import json
 import time
 from general_funcs import get_configs, get_resfiles, mk_nodedir, create_process, wait_and_end_process
-#from test0 import test0
-#from test2 import test2
-#from test4 import test4
-#from test6 import test6
 from plotting import plot_results
 
 class MiddlewareTesting(unittest.TestCase):
@@ -18,9 +14,9 @@ class MiddlewareTesting(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         for p in self.pubs:
-            end = p.rfind(' ')
-            end = end if end != -1 else len(p)
-            self.nodes.append(p[p.rfind('/')+1:end])
+            start = p.find('/')
+            end = p[start+1:].find('/')
+            self.nodes.append(p[start+1 : start+end+1])
 
     def startTest(self):
         test_dir = 'test_' + str(self.test_n)
@@ -82,6 +78,7 @@ class MiddlewareTesting(unittest.TestCase):
         resfiles = get_resfiles(self.test_n, self.subtests)
         for filename in resfiles:
             plot_results([filename])
+
 
 if __name__ == "__main__":
     unittest.main()

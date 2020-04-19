@@ -3,32 +3,44 @@ import subprocess
 import json
 from os.path import isfile, isdir, join
 
+
 def get_configs(test_n, subtests=False):
-    directory = 'test_'+str(test_n)+'/config'
+    directory = 'test_' + str(test_n) + '/config'
     if subtests:
         dirs = [d for d in os.listdir(directory) if isdir(join(directory, d))]
-        return [[join(d, f) for f in os.listdir(join(directory, d)) if isfile(join(directory, d, f)) and f.endswith('.json')] for d in dirs]
-    return [f for f in os.listdir(directory) if isfile(join(directory, f)) and f.endswith('.json')]
+        return [[join(d, f) for f in os.listdir(join(directory, d)) 
+                 if isfile(join(directory, d, f)) and f.endswith('.json')] 
+                 for d in dirs]
+    return [f for f in os.listdir(directory) 
+            if isfile(join(directory, f)) and f.endswith('.json')]
+
 
 def get_resfiles(test_n, subtest=False):
     directory = 'test_'+str(test_n)+'/results'
-    dirs = [join(directory, d) + '/data' for d in os.listdir(directory) if isdir(join(directory, d))]
+    dirs = [join(directory, d) + '/data' for d in os.listdir(directory) 
+            if isdir(join(directory, d))]
     if subtest:
-        ldirs = [[join(direct, d) for d in os.listdir(direct) if isdir(join(direct, d))] for direct in dirs]
+        ldirs = [[join(direct, d) for d in os.listdir(direct) 
+                  if isdir(join(direct, d))] for direct in dirs]
         res = []
         for dirs in ldirs:
             subres = []
             for d in dirs:
-                subres.append([join(d, f) for f in os.listdir(d) if isfile(join(d, f))])
+                subres.append([join(d, f) for f in os.listdir(d) 
+                               if isfile(join(d, f))])
             res.append(subres)
         return res
     res = []
     for direct in dirs:
-        res += [join(direct, f) for f in os.listdir(direct) if isfile(join(direct, f)) and f.endswith('.json')]
+        res += [join(direct, f) for f in os.listdir(direct) 
+                if isfile(join(direct, f)) and f.endswith('.json')]
     return res
 
+
 def create_process(name, config, cwd):
-    return subprocess.Popen(name+' "'+config+'"', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd=cwd)
+    command = name + ' "' + config + '"'
+    return subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd=cwd)
+
 
 def wait_and_end_process(process):
     end = str.encode("end")
@@ -39,6 +51,7 @@ def wait_and_end_process(process):
         print("Process finished incorrectly, exit code", process.poll())
     process.stdout.close()
     process.stdin.close()
+
 
 def mk_nodedir(test_dir, node):
     cwd = test_dir + '/results/' + node
@@ -64,11 +77,13 @@ def mkdir_config(test_n):
     except OSError:
         None
 
+
 def constr_config(test_n, param, args):
     name = 'test_' + str(test_n) + '/config/' + str(param) + '.json'
     with open(name, 'w') as f:
         json.dump(args, f)
     return name
+
 
 def constr_resfilename(param, pub_or_sub):
     return str(param) + '_' + pub_or_sub + 'ub.json'
