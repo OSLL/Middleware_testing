@@ -10,6 +10,8 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
+#include <sys/stat.h>
+
 #include "../../interface/sub_interface.hpp"
 
 class TestSubscriber : public TestMiddlewareSub<eprosima::fastrtps::types::DynamicData*>

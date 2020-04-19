@@ -82,7 +82,6 @@ void TestSubscriber::SubListener::onNewDataMessage(
 }
 
 bool TestSubscriber::receive() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     int rec_count = m_listener.n_msgs - m_listener.rec_before;
     m_listener.rec_before = m_listener.n_msgs;
     return rec_count;
