@@ -7,9 +7,9 @@
 #include <fstream>
 #include <thread>
 #include <nlohmann/json.hpp>
-#include "test_errors.hpp"
 #include <sys/stat.h>
 #include <errno.h>
+#include "test_errors.hpp"
 
 #define CPUSET_MODE_T (S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH)
 
