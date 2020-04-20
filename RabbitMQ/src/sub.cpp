@@ -21,8 +21,7 @@ namespace RabbitmqTest{
 				const std::string& password="guest", 
 				const std::string& vhost="/", 
 				int max_frame=131072,
-				const std::string& exchange="amq.direct",
-				const std::string& routing_key="test"): 
+				const std::string& exchange="amq.direct"): 
 				TestMiddlewareSub<MsgType>(topic,msgCount,
 						prior,cpu_index,filename,topic_priority),
 				_exchange(exchange)
@@ -43,15 +42,18 @@ namespace RabbitmqTest{
 			return msg.timestamp;
 		}
 		bool receive() override{
-			AmqpClient::Envelope::ptr_t enve;
-			bool get=connection->BasicGet(enve,"");
-			if(get){
 			unsigned long int time = std::chrono::duration_cast<std::chrono::
                 			nanoseconds>(std::chrono::high_resolution_clock::
                 			now().time_since_epoch()).count();
+			AmqpClient::Envelope::ptr_t enve;
+			bool get=connection->BasicGet(enve,"");
+			if(get){
 			std::string str=enve->Message()->Body();
 			Message msg;
 			msg.set_from_bytes(str);
+			time = std::chrono::duration_cast<std::chrono::
+                			nanoseconds>(std::chrono::high_resolution_clock::
+                			now().time_since_epoch()).count() - time;
 			TestMiddlewareSub<MsgType>::write_received_msg(msg,time);}
 			return get;
 		}
@@ -61,8 +63,8 @@ namespace RabbitmqTest{
 
 
 int main(int argc,char** argv){
-	if(argc<2){
-		std::cout<<"No file name. Using: pub <filename>"<<std::endl;
+	if(argc<3){
+		std::cout<<"No file name. Using: pub <config_for_test> <config_for_connection>"<<std::endl;
 		return 1;
 	}
 	std::ifstream file(argv[1]);
