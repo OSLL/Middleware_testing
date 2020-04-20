@@ -9,7 +9,6 @@ namespace RabbitmqTest{
 	private:
 		AmqpClient::Channel::ptr_t connection;
 		std::string _exchange;
-		std::string _routing_key;
 	public:
 		Subscriber( std::string &topic, 
 				int msgCount, 
@@ -26,16 +25,14 @@ namespace RabbitmqTest{
 				const std::string& routing_key="test"): 
 				TestMiddlewareSub<MsgType>(topic,msgCount,
 						prior,cpu_index,filename,topic_priority),
-				_exchange(exchange),
-				_routing_key(routing_key)
-		
+				_exchange(exchange)
 		{
 			connection=AmqpClient::Channel::Create(host,port,username,password,vhost,max_frame);
 			connection->DeclareQueue("");
-			connection->BindQueue("",exchange,routing_key);
+			connection->BindQueue("",exchange,TestMiddlewareSub<MsgType>::_topic_name);
 		}
 		~Subscriber(){
-			connection->UnbindQueue("",_exchange,_routing_key);
+			connection->UnbindQueue("",_exchange,TestMiddlewareSub<MsgType>::_topic_name);
 			connection->DeleteQueue("");
 		}
 		short get_id(MsgType &msg) override{
@@ -70,7 +67,7 @@ int main(int argc,char** argv){
 	}
 	std::ifstream file(argv[1]);
 	if(!file){
-		std::cout<<"Can't open file"<<std::endl;
+		std::cout<<"Can't open file "<<argv[1]<<std::endl;
 		return 1;
 	}
 	nlohmann::json json;
@@ -82,7 +79,24 @@ int main(int argc,char** argv){
 	int prior=json["priority"][1];
 	int cpu=json["cpu_index"][1];
 	int topic_prior=json["topic_priority"];
-	RabbitmqTest::Subscriber<Message> sub(topic,m_count,prior,cpu,filename,topic_prior);
+
+	file.open(argv[2]);
+	if(!file){
+		std::cout<<"Can't open file "<<argv[2]<<std::endl;
+		return 1;
+	}
+	file>>json;
+	std::string host=json["host"];
+	int port=json["port"];
+	std::string username=json["username"];
+	std::string password=json["password"];
+	std::string vhost=json["vhost"];
+	int max_frame=json["max_frame"];
+	std::string exchange=json["exchange"];
+	file.close();
+
+	RabbitmqTest::Subscriber<Message> sub(topic,m_count,prior,cpu,filename,topic_prior,
+						host,port,username,password,vhost,max_frame,exchange);
 	if(sub.StartTest()){
 		std::cout<<"Error"<<std::endl;
 	}
