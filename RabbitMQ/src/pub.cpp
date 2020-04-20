@@ -28,8 +28,7 @@ namespace RabbitmqTest{
 				const std::string& password="guest", 
 				const std::string& vhost="/", 
 				int max_frame=131072,
-				const std::string& exchange="amq.direct",
-				const std::string& routing_key="test"): 
+				const std::string& exchange="amq.direct"): 
 			TestMiddlewarePub(topic,msgCount,prior,cpu_index,min_msg_size,max_msg_size,
 					step,interval,msgs_before_step,filename,topic_priority),
 			_exchange(exchange)
@@ -39,17 +38,20 @@ namespace RabbitmqTest{
 		~Publisher(){};
 
 		unsigned long int publish(short id, unsigned size) override{
-			std::string msg;
-			Message message(id,size,'a');
 			unsigned long proc_time= std::chrono::duration_cast<std::chrono::
                 		nanoseconds>(std::chrono::high_resolution_clock::
                 		now().time_since_epoch()).count();
+			std::string msg;
+			Message message(id,size,'a');
 			message.timestamp=proc_time;
 			message.get_bytes(msg);
 
 			connection->BasicPublish(_exchange,
 					_topic_name,
 					AmqpClient::BasicMessage::Create(msg));
+			proc_time= std::chrono::duration_cast<std::chrono::
+                		nanoseconds>(std::chrono::high_resolution_clock::
+                		now().time_since_epoch()).count() - proc_time;
 			return proc_time;
 		}
 
@@ -57,8 +59,8 @@ namespace RabbitmqTest{
 }
 
 int main(int argc,char** argv){
-	if(argc<2){
-		std::cout<<"No file name. Using: pub <filename>"<<std::endl;
+	if(argc<3){
+		std::cout<<"No file name. Using: pub <config_for_test> <config_for_connection>"<<std::endl;
 		return 1;
 	}
 	std::ifstream file(argv[1]);
