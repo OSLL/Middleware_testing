@@ -1,59 +1,83 @@
 #include <chrono>
-#include <ctime>
-#include <fstream>
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <unistd.h>
 #include "gen/TestData_DCPS.hpp"
-#include "test_interface.hpp"
+#include "../../../interface/sub_interface.hpp"
 
 
-class TestSubscriber: public TestMiddlewareSub{
+class TestSubscriber: public TestMiddlewareSub<TestDataType>{
 public:
-    TestSubscriber(std::string topic,  int msgCount=0, int prior=-1, int cpu_index=-1):
-            TestMiddlewareSub(topic, msgCount, prior, cpu_index),
+    TestSubscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_priority):
+            TestMiddlewareSub<TestDataType>(topic, msgCount, prior, cpu_index, filename, topic_priority),
             _dp(org::opensplice::domain::default_id()),
-            _topic(_dp,topic),
+            _provider("file://QoS.xml", "TestProfile"),
+            _topic(_dp, topic, _provider.topic_qos()),
             _subscriber(_dp),
-            _dr(_subscriber, _topic)
+            _dr(_subscriber, _topic, _provider.datareader_qos())
             {
-                setQoS("file://QoS.xml");
+                _dr.default_filter_state(dds::sub::status::DataState::new_data());
             }
 
 
-    void setQoS(std::string filename) override {
-        dds::core::QosProvider provider(filename, "TestProfile");
-    }
-
-    int receive() override {
-        int i = 0;
-        while(i < _msgCount){
-            auto samples = _dr.read();
-            for(auto j=samples.begin();  j != samples.end(); ++j){
-                if(j->info().state().sample_state() == dds::sub::status::SampleState::not_read()){
-                    msgs[i]=std::string(j->data().data().begin(), j->data().data().end());
-                    i++;
-                }
-            }
+    bool receive() override {
+        auto start_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        auto samples = _dr.read();
+        unsigned long proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - start_timestamp;
+        if(samples.length() > 0){
+            auto msg = samples.begin()->data();
+            write_received_msg(msg, proc_time);
+            //std::cout<< msg.id()<<std::endl;
         }
-        return i;
+        else
+            return false;
+        return true;
     }
 
+    short get_id(TestDataType &msg) override {
+        return msg.id();
+    }
+
+    unsigned long get_timestamp(TestDataType &msg) override {
+        return msg.timestamp();
+    }
 private:
     dds::domain::DomainParticipant _dp;
-    dds::topic::Topic <TestDataType> _topic;
+    dds::core::QosProvider _provider;
+    dds::topic::Topic<TestDataType> _topic;
     dds::sub::Subscriber _subscriber;
     dds::sub::DataReader <TestDataType> _dr;
 };
 
 int main(int argc, char **argv) {
+    if(argc < 2) {
+        std::cout << "Config file is not set!\n";
+        return 0;
+    }
+    nlohmann::json args;
+    std::ifstream file(argv[1]);
+    if(!file.is_open()) {
+        std::cout << "Cannot open file " << argv[1] << std::endl;
+        return 0;
+    }
+    file >> args;
+    file.close();
+    std::string topic = args["topic"];
+    std::string filename = args["res_filenames"][1];
+    int m_count = args["m_count"];
+    int priority = args["priority"][1];
+    int cpu_index = args["cpu_index"][1];
+    int topic_prior = args["topic_priority"];
     try {
-        TestSubscriber subscriber("/topic", 500);
+        TestSubscriber subscriber(topic, m_count, priority, cpu_index, filename, topic_prior);
         subscriber.StartTest();
     }
-    catch (...){
-        std::cout<< "Error!\n";
-        return -1;
+    catch (test_exception& e){
+        std::cout<< e.what() << std::endl;
+        return -e.get_ret_code();
+    }
+    catch (std::exception& e){
+        std::cout<< e.what()<< std::endl;
+        return -MIDDLEWARE_ERROR;
     }
 }

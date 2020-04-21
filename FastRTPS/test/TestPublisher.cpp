@@ -15,51 +15,43 @@ using namespace eprosima::fastrtps;
 using namespace eprosima::fastrtps::rtps;
 using namespace eprosima::fastrtps::types;
 
-TestPublisher::TestPublisher()
-    : mp_participant(nullptr)
+TestPublisher::TestPublisher(std::string topic,  int msgCount, int prior, int cpu_index,
+                  int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
+		  std::string &filename, int topic_priority)
+    : TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval, msgs_before_step, filename, topic_priority)
+    , mp_participant(nullptr)
     , mp_publisher(nullptr)
     , m_DynType(DynamicType_ptr(nullptr))
 {
-}
+    DynamicTypeBuilder_ptr builder = DynamicTypeBuilderFactory::get_instance()->create_struct_builder();
+    builder->add_member(0, "id", DynamicTypeBuilderFactory::get_instance()->create_int16_type());
+    builder->add_member(1, "sent_time", DynamicTypeBuilderFactory::get_instance()->create_uint64_type());
+    builder->add_member(2, "data", DynamicTypeBuilderFactory::get_instance()->create_string_type(max_msg_size));
 
-bool TestPublisher::init(std::string topic, int max_msglen)
-{
-    DynamicTypeBuilder_ptr created_builder = DynamicTypeBuilderFactory::get_instance()->create_string_builder(max_msglen);
-    DynamicType_ptr dynType = DynamicTypeBuilderFactory::get_instance()->create_type(created_builder.get());
+    DynamicType_ptr dynType(builder->build());
     m_DynType.SetDynamicType(dynType);
     m_DynMsg = DynamicDataFactory::get_instance()->create_data(dynType);
 
     ParticipantAttributes PParam;
     PParam.rtps.builtin.domainId = 0;
-    PParam.rtps.setName("DynTest_pub");
+    std::string name = "FastRTPSTest_pub" + std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+    PParam.rtps.setName(name.c_str());
     mp_participant = Domain::createParticipant(PParam);
-
-    if (mp_participant == nullptr)
-    {
-        return false;
-    }
 
     //REGISTER THE TYPE
     Domain::registerDynamicType(mp_participant, &m_DynType);
 
     //CREATE THE PUBLISHER
-    PublisherAttributes Wparam;
+//    PublisherAttributes Wparam;
     Wparam.topic.topicKind = NO_KEY;
     Wparam.topic.topicDataType = dynType->get_name();
     Wparam.topic.topicName = topic;
 
     Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
     Wparam.qos.m_reliability.kind = RELIABLE_RELIABILITY_QOS;
-    Wparam.qos.m_durability.kind = TRANSIENT_LOCAL_DURABILITY_QOS;
+    Wparam.qos.m_publishMode.kind = ASYNCHRONOUS_PUBLISH_MODE;
 
     mp_publisher = Domain::createPublisher(mp_participant,Wparam,(PublisherListener*)&m_listener);
-    if (mp_publisher == nullptr)
-    {
-        return false;
-    }
-
-    return true;
-
 }
 
 TestPublisher::~TestPublisher()
@@ -69,8 +61,6 @@ TestPublisher::~TestPublisher()
     DynamicDataFactory::get_instance()->delete_data(m_DynMsg);
 
     Domain::stopAll();
-
-    std::cout << "oooops.." << std::endl;
 }
 
 void TestPublisher::PubListener::onPublicationMatched(
@@ -90,20 +80,14 @@ void TestPublisher::PubListener::onPublicationMatched(
     }
 }
 
-void TestPublisher::run(
-        uint32_t samples,
-        uint32_t sleep)
-{
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    int i = 0;
-    std::string msg(10000, 'f');
-    while(i < samples) {
-        publish(msg);
-        ++i;
-    }
+void TestPublisher::publish(short id, unsigned size, unsigned long *proc_time) {
+    std::string data(size, 'a');
+    unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    m_DynMsg->set_int16_value(id, 0);
+    m_DynMsg->set_uint64_value(cur_time, 1);
+    m_DynMsg->set_string_value(std::string(size, 'a'), 2);
+    cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    mp_publisher->write((void*)m_DynMsg);
+    *proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
 }
 
-void TestPublisher::publish(std::string &msg) {
-    m_DynMsg->set_string_value(msg);
-    mp_publisher->write((void*)m_DynMsg);
-}

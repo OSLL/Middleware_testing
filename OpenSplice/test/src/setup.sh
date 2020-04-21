@@ -1,1 +1,1 @@
-export OSPL_URI=file:////usr/share/opensplice/cmake/../../../etc/opensplice/config/ospl.xml
+source  ../../../../../../OpenSplice/opensplice/install/HDE/x86_64.linux-dev/release.com
