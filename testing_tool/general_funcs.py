@@ -5,7 +5,7 @@ from os.path import isfile, isdir, join
 
 
 def get_configs(test_n, subtests=False):
-    directory = 'test_' + str(test_n) + '/config'
+    directory = f'test_{test_n}/config'
     if subtests:
         dirs = [d for d in os.listdir(directory) if isdir(join(directory, d))]
         return [[join(d, f) for f in os.listdir(join(directory, d)) 
@@ -16,7 +16,7 @@ def get_configs(test_n, subtests=False):
 
 
 def get_resfiles(test_n, subtest=False):
-    directory = 'test_'+str(test_n)+'/results'
+    directory = f'test_{test_n}/results'
     dirs = [join(directory, d) + '/data' for d in os.listdir(directory) 
             if isdir(join(directory, d))]
     if subtest:
@@ -38,7 +38,7 @@ def get_resfiles(test_n, subtest=False):
 
 
 def create_process(name, config, cwd):
-    command = name + ' "' + config + '"'
+    command = f'{name} "{config}"'
     return subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd=cwd)
 
 
@@ -54,7 +54,7 @@ def wait_and_end_process(process):
 
 
 def mk_nodedir(test_dir, node):
-    cwd = test_dir + '/results/' + node
+    cwd = f'{test_dir}/results/node'
     try:
         os.mkdir(cwd)
     except OSError:
@@ -69,21 +69,21 @@ def mk_nodedir(test_dir, node):
 
 def mkdir_config(test_n):
     try:
-        os.mkdir("test_" + str(test_n))
+        os.mkdir(f"test_{test_n}")
     except OSError:
         None
     try:
-        os.mkdir("test_" + str(test_n) + "/config")
+        os.mkdir(f"test_{test_n}/config")
     except OSError:
         None
 
 
 def constr_config(test_n, param, args):
-    name = 'test_' + str(test_n) + '/config/' + str(param) + '.json'
+    name = f'test_{test_n}/config/{param}.json'
     with open(name, 'w') as f:
         json.dump(args, f)
     return name
 
 
 def constr_resfilename(param, pub_or_sub):
-    return str(param) + '_' + pub_or_sub + 'ub.json'
+    return f'{param}_{pub_or_sub}ub.json'

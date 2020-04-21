@@ -99,7 +99,7 @@ def plot_boxes(data, positions, xlabel, unit, plot_filename):
     plt.boxplot(data, positions=positions, widths=widths, whis=[0,100])
     plt.xlim([0, positions[-1] + widths[-1]])
     plt.xticks(positions)
-    plt.ylabel('time, ' + unit)
+    plt.ylabel(f'time, {unit}')
     plt.xlabel(xlabel)
     plt.savefig(plot_filename)
     plt.clf()
@@ -107,7 +107,7 @@ def plot_boxes(data, positions, xlabel, unit, plot_filename):
 
 def plot_graph(ids, y, unit, plot_filename):
     plt.plot(ids, y)
-    plt.ylabel('time, ' + unit)
+    plt.ylabel('time, {unit}')
     plt.xlabel('number of message')
     plt.savefig(plot_filename)
     plt.clf()
@@ -129,8 +129,8 @@ def plot_pub_results(filename, directory, res_name):
         k = int(len(proc_time) * (i+1)/10)
         boxes.append(np.array(proc_time[0:k]))
     plot_boxes(boxes, [len(t) for t in boxes], 'count of messages', unit, 
-               directory + res_name + '_proc_time_box.png')
-    plot_graph(ids, proc_time, unit, directory + res_name + '_proc_time.png')
+               '{directory}{res_name}_proc_time_box.png')
+    plot_graph(ids, proc_time, unit, '{directory}{res_name}_proc_time.png')
 
 
 def plot_sub_results(filenames, directory, res_name):
@@ -148,14 +148,14 @@ def plot_sub_results(filenames, directory, res_name):
             delay.append(delay_time[0:k])
             k = int(len(read_proc_time) * (i+1)/10)
             proc_time.append(read_proc_time[0:k])
-        plot_message_queue(list_counts, directory + res_name + '_queue.png')
-        plot_graph(ids, delay[-1], unit, directory + res_name + '_delay.png')
+        plot_message_queue(list_counts, '{directory}{res_name}_queue.png')
+        plot_graph(ids, delay[-1], unit, '{directory}{res_name}_delay.png')
         plot_boxes(delay, [len(d) for d in delay], 'count of messages', unit,
-                   directory + res_name + '_delay_box.png')
+                   '{directory}{res_name}_delay_box.png')
         plot_graph(ids, read_proc_time, runit, 
-                   directory + res_name + '_read_proc_time.png')
+                   '{directory}{res_name}_read_proc_time.png')
         plot_boxes(proc_time, [len(d) for d in proc_time], 'count of messages', 
-                   runit, directory + res_name + '_read_proc_time_box.png')
+                   runit, '{directory}{res_name}_read_proc_time_box.png')
     else:
         delay = []
         for files in filenames:
@@ -163,7 +163,7 @@ def plot_sub_results(filenames, directory, res_name):
         (delay, unit) = scale_values(delay)
         plot_boxes(delay, [i for i in range(1, len(delay)+1)], 
                    'count of messages', unit, 
-                   directory + res_name + '_delay_box.png')
+                   '{directory}{res_name}_delay_box.png')
 
 
 def plot_results(filenames):
