@@ -5,11 +5,6 @@
 #ifndef OPENDDS_DEVGUIDE_MESSENGER_SUBSCRIBER_H
 #define OPENDDS_DEVGUIDE_MESSENGER_SUBSCRIBER_H
 
-//
-// Created by nata on 02.04.20.
-//
-
-
 #include <ace/Log_Msg.h>
 
 #include <dds/DdsDcpsInfrastructureC.h>
@@ -17,11 +12,12 @@
 #include <dds/DCPS/Marked_Default_Qos.h>
 #include <dds/DCPS/Service_Participant.h>
 #include <dds/DCPS/WaitSet.h>
-
 #include "dds/DCPS/StaticIncludes.h"
+#include <dds/DCPS/WaitSet.h>
+#include <MessengerTypeSupportImpl.h>
+#include <DataReaderListenerImpl.h>
 
-#include "MessengerTypeSupportImpl.h"
-#include "../src/dds/DataReaderListenerImpl.h"
+
 
 #include <sub_interface.hpp>
 
@@ -69,8 +65,9 @@ protected:
     Messenger::MessageDataReader_var _reader_i;
     DDS::DataReaderListener_var _listener;
     Messenger::MessageTypeSupport_var _ts;
-    //TestMiddlewareSub<Messenger::Message> _sub_interface;
 
+
+    int _id = 0;
 };
 
 #endif //OPENDDS_DEVGUIDE_MESSENGER_SUBSCRIBER_H

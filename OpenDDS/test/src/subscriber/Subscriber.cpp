@@ -9,6 +9,8 @@ void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
         // Initialize DomainParticipantFactory
         _dpf = TheParticipantFactoryWithArgs(argc, argv);
 
+
+
         // Create DomainParticipant
         _participant =
                 _dpf->create_participant(42,
@@ -57,11 +59,15 @@ void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
                     ACE_TEXT(" create_subscriber failed!\n")));
         }
 
+        DDS::DataReaderQos reader_qos;
+        _subscriber->get_default_datareader_qos(reader_qos);
+        reader_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+
         // Create DataReader
         _listener = new DataReaderListenerImpl;
 
         _reader = _subscriber->create_datareader(topic.in(),
-                                              DATAREADER_QOS_DEFAULT,
+                                                       reader_qos,
                                               _listener.in(),
                                               OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
@@ -118,22 +124,21 @@ bool Subscriber::receive() {
 
     if (error == DDS::RETCODE_OK) {
         if (_info[0].valid_data) {
+
+            _id++;
+
             write_received_msg(_messages[0], proc_time);
             _reader_i->return_loan(_messages, _info);
             return true;
-        } else
-            return false;
-
-    } else {
-        ACE_ERROR((LM_ERROR,
-                ACE_TEXT("ERROR: %N:%l: on_data_available() -")
-                ACE_TEXT(" take failed!\n")));
+        }
     }
     _reader_i->return_loan(_messages, _info);
     return false;
 };
 
 void Subscriber::cleanUp(){
+
+    std::cout << _id << std::endl;
     // Clean-up!
     _participant->delete_contained_entities();
     _dpf->delete_participant(_participant.in());
