@@ -29,8 +29,11 @@ class MiddlewareTesting(unittest.TestCase):
             None
         prefix = '../../../../'
         for i in range(0, len(self.pubs)):
+            print(" >>> testing " + self.nodes[i])
             cwd = mk_nodedir(test_dir, self.nodes[i])
-            for subtest in configs:
+            for subtest_n, subtest in enumerate(configs):
+                if len(configs) != 1:
+                    print(f" >>> subtest - {subtest_n+1}/{len(configs)}")
                 subs = []
                 try:
                     if subtest[0].find('/') != -1:
@@ -38,11 +41,14 @@ class MiddlewareTesting(unittest.TestCase):
                 except OSError:
                     None
                 for config in subtest:
+                    print(f"  >>> using config - {config}")
                     subs.append(create_process(prefix + self.subs[i], '../../../config/' + config, cwd))
                 p = create_process(prefix + self.pubs[i], '../../../config/' + subtest[0], cwd)
-                for s in subs:
+                for sub_n, s in enumerate(subs):
                     wait_and_end_process(s)
+                    print(f"subscriber №{sub_n+1} finished")
                 wait_and_end_process(p)
+                print("publisher finished")
 
     def test0(self):
         print(">>> running test0")
@@ -56,18 +62,21 @@ class MiddlewareTesting(unittest.TestCase):
         self.subtests = True
         self.startTest()
 
+    @unittest.skip("")
     def test5(self):
         print(">>> running test5")
         self.test_n = 5
         self.subtests = False
         self.startTest()
 
+    @unittest.skip("")
     def test6(self):
         print(">>> running test6")
         self.test_n = 6
         self.subtests = False
         self.startTest()
 
+    @unittest.skip("")
     def test7(self):
         print(">>> running test7")
         self.test_n = 7
