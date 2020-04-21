@@ -62,21 +62,18 @@ class MiddlewareTesting(unittest.TestCase):
         self.subtests = True
         self.startTest()
 
-    @unittest.skip("")
     def test5(self):
         print(">>> running test5")
         self.test_n = 5
         self.subtests = False
         self.startTest()
 
-    @unittest.skip("")
     def test6(self):
         print(">>> running test6")
         self.test_n = 6
         self.subtests = False
         self.startTest()
 
-    @unittest.skip("")
     def test7(self):
         print(">>> running test7")
         self.test_n = 7
