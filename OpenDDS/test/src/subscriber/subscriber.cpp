@@ -2,7 +2,9 @@
 #include <Subscriber.h>
 
 
-int main(int argc, char* argv[]) {
+
+
+int main(int argc, ACE_TCHAR *argv[]) {
 
     //*argv = const_cast<char *>(std::string{"-DCPSConfigFile shmem.ini"}.c_str());
 
@@ -11,7 +13,11 @@ int main(int argc, char* argv[]) {
             .required()
             .help("-c --conf is required arugment with config path");
 
+
     parser.add_argument("-DCPSConfigFile");
+    parser.add_argument("-ORBDebugLevel");
+    parser.add_argument("-ORBEndpoint");
+
 
     try {
         parser.parse_args(argc, argv);

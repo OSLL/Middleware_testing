@@ -53,9 +53,14 @@ void Publisher::createPublisher(int argc, ACE_TCHAR *argv[]) {
             return;
         }
 
+        DDS::DataWriterQos writer_qos;
+        publisher->get_default_datawriter_qos(writer_qos);
+        writer_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+        writer_qos.durability.kind = DDS::TRANSIENT_LOCAL_DURABILITY_QOS;
+
         // Create DataWriter
         _writer = publisher->create_datawriter(topic.in(),
-                                             DATAWRITER_QOS_DEFAULT,
+                                             writer_qos,
                                              DDS::DataWriterListener::_nil(),
                                              OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
@@ -76,6 +81,34 @@ void Publisher::createPublisher(int argc, ACE_TCHAR *argv[]) {
         return;
     }
 
+    // Block until Subscriber is available
+    DDS::StatusCondition_var condition = _writer->get_statuscondition();
+    condition->set_enabled_statuses(DDS::PUBLICATION_MATCHED_STATUS);
+
+    DDS::WaitSet_var ws = new DDS::WaitSet;
+    ws->attach_condition(condition);
+
+    while (true) {
+        DDS::PublicationMatchedStatus matches{};
+        if (_writer->get_publication_matched_status(matches) != ::DDS::RETCODE_OK) {
+            ACE_ERROR((LM_ERROR,
+                    ACE_TEXT("ERROR: %N:%l: main() -")
+                    ACE_TEXT(" get_publication_matched_status failed!\n")));
+        }
+
+        if (matches.current_count >= 1) {
+            break;
+        }
+
+        DDS::ConditionSeq conditions;
+        DDS::Duration_t timeout = { 60, 0 };
+        if (ws->wait(conditions, timeout) != DDS::RETCODE_OK) {
+            ACE_ERROR((LM_ERROR, ACE_TEXT("ERROR: %N:%l: main() -") ACE_TEXT(" wait failed!\n")));
+        }
+    }
+
+    ws->detach_condition(condition);
+
 };
 
 unsigned long Publisher::publish(short id, unsigned size) {
@@ -83,6 +116,9 @@ unsigned long Publisher::publish(short id, unsigned size) {
     unsigned long cur_time = std::chrono::duration_cast<std::chrono::
             nanoseconds>(std::chrono::high_resolution_clock::
             now().time_since_epoch()).count();
+
+
+    std::cout << "message " << id << " sent" << std::endl;
 
     // Write samples
     _message.id = id;
