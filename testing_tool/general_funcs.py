@@ -54,7 +54,7 @@ def wait_and_end_process(process):
 
 
 def mk_nodedir(test_dir, node):
-    cwd = f'{test_dir}/results/node'
+    cwd = f'{test_dir}/results/{node}'
     try:
         os.mkdir(cwd)
     except OSError:
