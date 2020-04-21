@@ -13,6 +13,7 @@
 #include <dds/DdsDcpsSubscriptionC.h>
 #include <dds/DCPS/LocalObject.h>
 #include <dds/DCPS/Definitions.h>
+#include <MessengerTypeSupportC.h>
 
 class DataReaderListenerImpl
   : public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener> {
@@ -43,6 +44,11 @@ public:
   virtual void on_sample_lost(
     DDS::DataReader_ptr reader,
     const DDS::SampleLostStatus& status);
+
+protected:
+    Messenger::MessageDataReader_var _reader_i;
+    Messenger::MessageSeq _messages;
+    DDS::SampleInfoSeq _info;
 };
 
 #endif /* DATAREADER_LISTENER_IMPL_H */
