@@ -107,7 +107,7 @@ def plot_boxes(data, positions, xlabel, unit, plot_filename):
 
 def plot_graph(ids, y, unit, plot_filename):
     plt.plot(ids, y)
-    plt.ylabel('time, {unit}')
+    plt.ylabel(f'time, {unit}')
     plt.xlabel('number of message')
     plt.savefig(plot_filename)
     plt.clf()
