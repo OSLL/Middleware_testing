@@ -1,8 +1,10 @@
 import os
 import subprocess
 import json
+from datetime import datetime
 from os.path import isfile, isdir, join
 
+log_file = open('log.txt', 'w')
 
 def get_configs(test_n, subtests=False):
     directory = f'test_{test_n}/config'
@@ -48,7 +50,7 @@ def wait_and_end_process(process):
     if process.poll() is None:
         process.wait()
     if process.poll() != 0:
-        print("Process finished incorrectly, exit code", process.poll())
+        print(datetime.now(), "Process finished incorrectly, exit code", process.poll(), file=log_file)
     process.stdout.close()
     process.stdin.close()
 
