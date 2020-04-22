@@ -2,8 +2,8 @@ import unittest
 import os
 import subprocess
 import json
-import time
-from general_funcs import get_configs, get_resfiles, mk_nodedir, create_process, wait_and_end_process
+from datetime import datetime
+from general_funcs import log_file, get_configs, get_resfiles, mk_nodedir, create_process, wait_and_end_process
 from plotting import plot_results
 
 class MiddlewareTesting(unittest.TestCase):
@@ -29,11 +29,11 @@ class MiddlewareTesting(unittest.TestCase):
             None
         prefix = '../../../../'
         for i in range(0, len(self.pubs)):
-            print(" >>> testing " + self.nodes[i])
+            print(datetime.now(), " >>> testing " + self.nodes[i], file=log_file)
             cwd = mk_nodedir(test_dir, self.nodes[i])
             for subtest_n, subtest in enumerate(configs):
                 if len(configs) != 1:
-                    print(f" >>> subtest - {subtest_n+1}/{len(configs)}")
+                    print(datetime.now(), f" >>> subtest - {subtest_n+1}/{len(configs)}", file=log_file)
                 subs = []
                 try:
                     if subtest[0].find('/') != -1:
@@ -41,41 +41,41 @@ class MiddlewareTesting(unittest.TestCase):
                 except OSError:
                     None
                 for config in subtest:
-                    print(f"  >>> using config - {config}")
+                    print(datetime.now(), f"  >>> using config - {config}", file=log_file)
                     subs.append(create_process(prefix + self.subs[i], '../../../config/' + config, cwd))
                 p = create_process(prefix + self.pubs[i], '../../../config/' + subtest[0], cwd)
                 for sub_n, s in enumerate(subs):
                     wait_and_end_process(s)
-                    print(f"subscriber №{sub_n+1} finished")
+                    print(datetime.now(), f"subscriber №{sub_n+1} finished", file=log_file)
                 wait_and_end_process(p)
-                print("publisher finished")
+                print(datetime.now(), "publisher finished", file=log_file)
 
     def test0(self):
-        print(">>> running test0")
+        print(datetime.now(), ">>> running test0", file=log_file)
         self.test_n = 0
         self.subtests = False
         self.startTest()
 
     def test3(self):
-        print(">>> running test3")
+        print(datetime.now(), ">>> running test3", file=log_file)
         self.test_n = 3
         self.subtests = True
         self.startTest()
 
     def test5(self):
-        print(">>> running test5")
+        print(datetime.now(), ">>> running test5", file=log_file)
         self.test_n = 5
         self.subtests = False
         self.startTest()
 
     def test6(self):
-        print(">>> running test6")
+        print(datetime.now(), ">>> running test6", file=log_file)
         self.test_n = 6
         self.subtests = False
         self.startTest()
 
     def test7(self):
-        print(">>> running test7")
+        print(datetime.now(), ">>> running test7", file=log_file)
         self.test_n = 7
         self.subtests = False
         self.startTest()
@@ -88,3 +88,4 @@ class MiddlewareTesting(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+    log_file.close()
