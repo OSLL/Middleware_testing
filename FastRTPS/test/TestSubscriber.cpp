@@ -45,7 +45,8 @@ TestSubscriber::TestSubscriber(std::string &topic, int msgCount, int prior, int 
     Rparam.qos.m_reliability.kind = RELIABLE_RELIABILITY_QOS;
 
     Rparam.topic.topicName = topic;
-    m_listener.m_DynMsg = DynamicDataFactory::get_instance()->create_data(dynType);
+    for(int i=0; i<_msgs.size(); ++i)
+        _msgs[i] = DynamicDataFactory::get_instance()->create_data(dynType);
 
     mp_subscriber = Domain::createSubscriber(mp_participant,Rparam,(SubscriberListener*)&m_listener);
 }
@@ -54,7 +55,8 @@ TestSubscriber::~TestSubscriber()
 {
     Domain::removeParticipant(mp_participant);
 
-    DynamicDataFactory::get_instance()->delete_data(m_listener.m_DynMsg);
+    for(int i=0; i<_msgs.size(); ++i)
+        DynamicDataFactory::get_instance()->delete_data(_msgs[i]);
 
     Domain::stopAll();
 }
@@ -69,13 +71,12 @@ void TestSubscriber::SubListener::onNewDataMessage(
         Subscriber* sub)
 {
     unsigned proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-    if (sub->takeNextData((void*)m_DynMsg, &m_info))
+    if (sub->takeNextData((void*)parent->_msgs[n_msgs], &m_info))
     {
         if (m_info.sampleKind == ALIVE)
         {
             proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - proc_time;
-            parent->write_received_msg(m_DynMsg, proc_time);
-	    m_DynMsg = DynamicDataFactory::get_instance()->create_data(parent->dynType);
+            parent->write_received_msg(parent->_msgs[n_msgs], proc_time);
             this->n_msgs++;
         }
     }
