@@ -3,9 +3,12 @@
 //
 
 #include "Subscriber.h"
+#include <time.h>
+#include <stdlib.h>
 
 void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
     try {
+	srand (time(NULL));
         // Initialize DomainParticipantFactory
         _dpf = TheParticipantFactoryWithArgs(argc, argv);
 
@@ -13,7 +16,7 @@ void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
 
         // Create DomainParticipant
         _participant =
-                _dpf->create_participant(42,
+                _dpf->create_participant(rand() % 214748364 + 1,
                                         PARTICIPANT_QOS_DEFAULT,
                                         DDS::DomainParticipantListener::_nil(),
                                         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
