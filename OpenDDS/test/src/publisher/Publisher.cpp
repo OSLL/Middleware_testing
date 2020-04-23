@@ -3,15 +3,19 @@
 //
 
 #include <Publisher.h>
+#include <time.h>
+#include <stdlib.h>
+
 
 void Publisher::createPublisher(int argc, ACE_TCHAR *argv[]) {
 
+    srand (time(NULL));
     try {
         // Initialize Domain_ParticipantFactory
         _dpf = TheParticipantFactoryWithArgs(argc, argv);
 
         // Create Domain_Participant
-        _participant = _dpf->create_participant(42,
+        _participant = _dpf->create_participant(rand() % 214748364 + 1,
                 PARTICIPANT_QOS_DEFAULT,
                 DDS::DomainParticipantListener::_nil(),
                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
