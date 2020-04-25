@@ -1,9 +1,32 @@
 import os
+from os.path import isfile, isdir, join
 import json
 import numpy as np
 import matplotlib.pyplot as plt
 
 count_qmsgs = 0
+
+
+def get_resfiles(test_n, subtest=False):
+    directory = f'test_{test_n}/results'
+    dirs = [join(directory, d) + '/data' for d in os.listdir(directory)
+            if isdir(join(directory, d))]
+    if subtest:
+        ldirs = [[join(direct, d) for d in os.listdir(direct)
+                  if isdir(join(direct, d))] for direct in dirs]
+        res = []
+        for dirs in ldirs:
+            subres = []
+            for d in dirs:
+                subres.append([join(d, f) for f in os.listdir(d)
+                               if isfile(join(d, f))])
+            res.append(subres)
+        return res
+    res = []
+    for direct in dirs:
+        res += [join(direct, f) for f in os.listdir(direct)
+                if isfile(join(direct, f)) and f.endswith('.json')]
+    return res
 
 
 def from_several_jsons(filenames):
@@ -92,7 +115,7 @@ def scale_values(delays):
     return ([d / scale for d in delays], unit)
 
 
-def plot_boxes(data, positions, xlabel, unit, plot_filename):
+def plot_boxes(data, positions, xlabel, unit, title, plot_filename):
     widths = [(positions[i]-positions[i-1]) * 2/5
               for i in range(1, len(positions))]
     widths.append(widths[-1])
@@ -101,14 +124,16 @@ def plot_boxes(data, positions, xlabel, unit, plot_filename):
     plt.xticks(positions)
     plt.ylabel(f'time, {unit}')
     plt.xlabel(xlabel)
+    plt.title(title)
     plt.savefig(plot_filename)
     plt.clf()
 
 
-def plot_graph(ids, y, unit, plot_filename):
+def plot_graph(ids, y, unit, title, plot_filename):
     plt.plot(ids, y)
     plt.ylabel(f'time, {unit}')
-    plt.xlabel('number of message')
+    plt.xlabel('message number')
+    plt.title(title)
     plt.savefig(plot_filename)
     plt.clf()
 
@@ -116,7 +141,8 @@ def plot_graph(ids, y, unit, plot_filename):
 def plot_message_queue(list_counts, plot_filename):
     plt.plot([i for i in range(1, len(list_counts)+1)], list_counts)
     plt.ylabel('messages in queue')
-    plt.xlabel('number of message')
+    plt.xlabel('message number')
+    plt.title('Message queue')
     plt.savefig(plot_filename)
     plt.clf()
 
@@ -128,9 +154,9 @@ def plot_pub_results(filename, directory, res_name):
     for i in range(0, 10):
         k = int(len(proc_time) * (i+1)/10)
         boxes.append(np.array(proc_time[0:k]))
-    plot_boxes(boxes, [len(t) for t in boxes], 'count of messages', unit, 
-               f'{directory}{res_name}_proc_time_box.png')
-    plot_graph(ids, proc_time, unit, f'{directory}{res_name}_proc_time.png')
+    plot_boxes(boxes, [len(t) for t in boxes], 'number of messages', unit, 
+               'Writing time boxes', f'{directory}{res_name}_proc_time_box.png')
+    plot_graph(ids, proc_time, unit, 'Writing time', f'{directory}{res_name}_proc_time.png')
 
 
 def plot_sub_results(filenames, directory, res_name):
@@ -149,20 +175,23 @@ def plot_sub_results(filenames, directory, res_name):
             k = int(len(read_proc_time) * (i+1)/10)
             proc_time.append(read_proc_time[0:k])
         plot_message_queue(list_counts, f'{directory}{res_name}_queue.png')
-        plot_graph(ids, delay[-1], unit, f'{directory}{res_name}_delay.png')
-        plot_boxes(delay, [len(d) for d in delay], 'count of messages', unit,
-                   f'{directory}{res_name}_delay_box.png')
-        plot_graph(ids, read_proc_time, runit, 
+        plot_graph(ids, delay[-1], unit, 'Delay time', 
+                   f'{directory}{res_name}_delay.png')
+        plot_boxes(delay, [len(d) for d in delay], 'number of messages', unit,
+                   'Delay time boxes', f'{directory}{res_name}_delay_box.png')
+        plot_graph(ids, read_proc_time, runit, 'Reading time',
                    f'{directory}{res_name}_read_proc_time.png')
-        plot_boxes(proc_time, [len(d) for d in proc_time], 'count of messages', 
-                   runit, f'{directory}{res_name}_read_proc_time_box.png')
+        plot_boxes(proc_time, [len(d) for d in proc_time], 
+                   'number of messages', runit, 'Reading time boxes', 
+                   f'{directory}{res_name}_read_proc_time_box.png')
     else:
         delay = []
         for files in filenames:
             delay.append(from_several_jsons(files))
         (delay, unit) = scale_values(delay)
         plot_boxes(delay, [i for i in range(1, len(delay)+1)], 
-                   'count of messages', unit, 
+                   'count of subscribers', unit, 
+                   'Delay time with multiple subscribers',
                    f'{directory}{res_name}_delay_box.png')
 
 
@@ -189,3 +218,12 @@ def plot_results(filenames):
         plot_sub_results(filenames, directory, res_name)
 
 
+if __name__ == '__main__':
+    for i in range(0, 8):
+        try:
+            resfiles = get_resfiles(i, i == 3)
+            for filename in resfiles:
+                plot_results([filename])
+        except OSError:
+            continue
+    plt.title('Message queue')
