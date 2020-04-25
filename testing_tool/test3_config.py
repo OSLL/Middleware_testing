@@ -8,7 +8,7 @@ def test3_config():
     args = {"topic":'test_topic', "res_filenames":['pub', 'sub'], 
             "m_count":1000, "min_msg_size":65536, "max_msg_size":65536,  
             "step":0, "msgs_before_step":1000, "priority":[99, 99], 
-            "cpu_index":[0, 1], "interval":50, "topic_priority":100}
+            "cpu_index":[-1, -1], "interval":50, "topic_priority":100}
     sub_count = range(1, 21)
     for i in sub_count:
         try:

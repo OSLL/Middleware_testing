@@ -8,7 +8,7 @@ def test5_config():
     args = {"topic":'test_topic', "res_filenames":['pub', 'sub'], 
             "m_count":3300, "min_msg_size":-896, "max_msg_size":2097152,  
             "step":64*1024, "msgs_before_step":100, "priority":[99, 99], 
-            "cpu_index":[0, 1], "interval":50, "topic_priority":100}
+            "cpu_index":[-1, -1], "interval":50, "topic_priority":100}
     freq = [1, 5, 10, 15, 20, 25, 30]
     for f in freq:
         args["interval"] = 1000/f
