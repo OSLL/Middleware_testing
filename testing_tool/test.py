@@ -3,8 +3,8 @@ import os
 import subprocess
 import json
 from datetime import datetime
-from general_funcs import log_file, get_configs, get_resfiles, mk_nodedir, create_process, wait_and_end_process
-from plotting import plot_results
+from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
+from plotting import get_resfiles, plot_results
 
 class MiddlewareTesting(unittest.TestCase):
     pubs = ["../FastRTPS/test/build/FastRTPSTest publisher"]
