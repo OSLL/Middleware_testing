@@ -64,12 +64,12 @@ namespace RabbitmqTest{
 
 int main(int argc,char** argv){
 	if(argc<3){
-		std::cout<<"No file name. Using: pub <config_for_test> <config_for_connection>"<<std::endl;
+		std::cout<<"No file name. Using: pub <config_for_connection> <config_for_test>"<<std::endl;
 		return 1;
 	}
-	std::ifstream file(argv[1]);
+	std::ifstream file(argv[2]);
 	if(!file){
-		std::cout<<"Can't open file "<<argv[1]<<std::endl;
+		std::cout<<"Can't open file "<<argv[2]<<std::endl;
 		return 1;
 	}
 	nlohmann::json json;
@@ -82,9 +82,9 @@ int main(int argc,char** argv){
 	int cpu=json["cpu_index"][1];
 	int topic_prior=json["topic_priority"];
 
-	file.open(argv[2]);
+	file.open(argv[1]);
 	if(!file){
-		std::cout<<"Can't open file "<<argv[2]<<std::endl;
+		std::cout<<"Can't open file "<<argv[1]<<std::endl;
 		return 1;
 	}
 	file>>json;
