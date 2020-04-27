@@ -23,8 +23,7 @@ public:
     };
 
     void setTransientLocal(int sec){
-        dds_qset_reliability (_qos, DDS_RELIABILITY_RELIABLE, DDS_SECS (10));
-        //dds_qset_durability_service(_qos, DDS_DURABILITY_TRANSIENT_LOCAL,)
+        dds_qset_durability(_qos, DDS_DURABILITY_TRANSIENT_LOCAL);
     };
 
     void deleteQos(){
