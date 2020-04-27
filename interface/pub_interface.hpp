@@ -98,15 +98,17 @@ public:
         std::string end_str;
         std::cin >> end_str;
 
+        cleanUp();
+
         if(end_str == "end") {
             to_Json();
             return 0;
         }
 
-        std::this_thread::sleep_for(std::chrono::seconds(20));
-
         return -1;
     }
+
+    virtual void cleanUp() {};
 
     void to_Json(){
         auto json = nlohmann::json::array();

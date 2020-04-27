@@ -1,0 +1,11 @@
+module Messenger
+{
+    struct Message
+    {
+        long id;
+        unsigned long timestamp;
+        string payload;
+    };
+    #pragma keylist Message id
+
+};

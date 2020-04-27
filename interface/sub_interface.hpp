@@ -108,11 +108,14 @@ public:
 
         }
 
+        cleanUp();
         to_json();
         return 0;
     }
     virtual short get_id(MsgType &msg) = 0;
     virtual unsigned long get_timestamp(MsgType &msg) = 0;
+
+    virtual void cleanUp() { };
 
     void to_json() {
 
