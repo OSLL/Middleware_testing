@@ -2,10 +2,6 @@
 // Created by egor on 27.04.2020.
 //
 
-//
-// Created by egor on 02.04.20.
-//
-
 #include <Subscriber.h>
 
 
