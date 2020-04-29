@@ -20,6 +20,9 @@ public:
         _topic_descriptor = &topic_descriptor;
         _topic = dds_create_topic (
                 participant._participant, &topic_descriptor, topic_name.c_str(), nullptr, nullptr);
+
+        std::cout << "topic: " << dds_strretcode(-_topic) << std::endl;
+
         if (_topic < 0)
             DDS_FATAL("dds_create_topic: %s\n", dds_strretcode(-_topic));
     }

@@ -98,9 +98,18 @@ public:
         std::string end_str;
         std::cin >> end_str;
 
+
+        std::cout << "Participant.closing " << std::endl;
+
+
         cleanUp();
 
+        std::cout << "Participant.closed: " << std::endl;
+
+
         if(end_str == "end") {
+            std::cout << "end: " << std::endl;
+
             to_Json();
             return 0;
         }

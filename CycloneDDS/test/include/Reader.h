@@ -26,6 +26,8 @@ public:
         _topic = topic;
         _participant = participant;
         _reader = dds_create_reader (_participant._participant, _topic._topic, qos._qos, nullptr);
+        std::cout << "Reader create: " << dds_strretcode(-_res_code) << std::endl;
+
         if (_reader < 0)
             DDS_FATAL("dds_create_reader: %s\n", dds_strretcode(-_reader));
 
@@ -34,7 +36,8 @@ public:
 
     bool receive(){
             _res_code = dds_take (_reader, _samples, _infos, MAX_SAMPLES, MAX_SAMPLES);
-            if (_res_code < 0) {
+
+        if (_res_code < 0) {
                 DDS_FATAL("dds_read: %s\n", dds_strretcode(-_res_code));
             }
 

@@ -9,6 +9,7 @@
 #include <QoS.h>
 #include <dds/dds.h>
 #include <cstdlib>
+#include <iostream>
 
 
 class Participant {
@@ -22,9 +23,10 @@ public:
     explicit Participant(int domain_id, QoS qos){
         assert(domain_id >= 0 && domain_id <= 230);
 
-        _participant = dds_create_participant (domain_id, qos._qos, nullptr);
+        auto _res_code = dds_create_participant (domain_id, qos._qos, nullptr);
+        std::cout << "participant create: " << dds_strretcode(-_res_code) << std::endl;
         if (_participant < 0)
-            DDS_FATAL("dds_create_participant: %s\n", dds_strretcode(-_participant));
+            DDS_FATAL("dds_create_participant: %s\n", dds_strretcode(-_res_code));
     };
 
     dds_return_t close(){
