@@ -5,7 +5,7 @@
 
 int main(int argc, char* argv[]) {
 
-    freopen("cyclone_pub_output.txt","w",stdout);
+    //freopen("cyclone_pub_output.txt","w",stdout);
 
     argparse::ArgumentParser parser("CycloneDDS publisher argparsing");
     parser.add_argument("-c", "--config")

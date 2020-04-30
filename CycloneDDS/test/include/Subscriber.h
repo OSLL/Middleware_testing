@@ -8,14 +8,11 @@
 #include <string>
 #include <chrono>
 
-#include <Topic.h>
-#include <Partisipant.h>
-#include <QoS.h>
-#include <Reader.h>
-
 #include <sub_interface.hpp>
+#include <dds/dds.h>
+#include <TypeData.h>
 
-
+#define MAX_SAMPLES 1
 
 using namespace std::chrono;
 
@@ -51,11 +48,14 @@ private:
     int _cpu_index; //def not stated
     std::string _filename;
 
-    MsgType _msg;
+    MsgType* _msg;
     int32_t _res_code;
-    Reader<MsgType> _reader_entity ;
-    Topic _topic_entity;
-    Participant _participant_entity;
+    dds_entity_t _writer_entity ;
+    dds_entity_t _topic_entity;
+    dds_entity_t _reader_entity;
+    dds_entity_t _participant;
+    void *_samples[MAX_SAMPLES];
+    dds_sample_info_t _infos[MAX_SAMPLES];
 
 
 };

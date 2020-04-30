@@ -13,7 +13,7 @@
 
 #include <TypeData.h>
 
-#define MAX_SAMPLES 1
+
 
 template <class MsgType>
 class Reader {
@@ -31,11 +31,14 @@ public:
         if (_reader < 0)
             DDS_FATAL("dds_create_reader: %s\n", dds_strretcode(-_reader));
 
+
         _samples[0] = Messenger_Message__alloc ();
+
     };
 
     bool receive(){
-            _res_code = dds_take (_reader, _samples, _infos, MAX_SAMPLES, MAX_SAMPLES);
+
+        _res_code = dds_read (_reader, _samples, _infos, MAX_SAMPLES, MAX_SAMPLES);
 
         if (_res_code < 0) {
                 DDS_FATAL("dds_read: %s\n", dds_strretcode(-_res_code));
@@ -43,8 +46,12 @@ public:
 
             if ((_res_code > 0) && (_infos[0].valid_data)) {
                 _msg = (MsgType*) _samples[0];
+
+                std::cout << _msg->id << std::endl;
                 return true;
             }
+
+            //std::cout << "no message" << std::endl;
 
             return false;
     }

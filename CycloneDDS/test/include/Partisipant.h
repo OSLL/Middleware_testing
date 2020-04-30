@@ -25,6 +25,7 @@ public:
 
         _participant = dds_create_participant (domain_id, qos._qos, nullptr);
         std::cout << "participant create: " << dds_strretcode(-_participant) << std::endl;
+
         if (_participant < 0)
             DDS_FATAL("dds_create_participant: %s\n", dds_strretcode(-_participant));
     };

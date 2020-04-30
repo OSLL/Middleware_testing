@@ -39,8 +39,6 @@ idlc_generate(${PROJECT_NAME}_lib "src/dds/TypeData.idl")
 
 add_executable(publisher ${SRC} ${INC} src/publisher/publisher.cpp src/publisher/Publisher.cpp)
 add_executable(subscriber ${SRC} ${INC} src/subscriber/subscriber.cpp src/subscriber/Subscriber.cpp)
-add_executable(orig_sub ${SRC} ${INC} orig_sub.cpp)
 
 target_link_libraries(publisher ${PROJECT_NAME}_lib CycloneDDS::ddsc )
 target_link_libraries(subscriber ${PROJECT_NAME}_lib CycloneDDS::ddsc )
-target_link_libraries(orig_sub ${PROJECT_NAME}_lib CycloneDDS::ddsc )

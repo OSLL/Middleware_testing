@@ -8,13 +8,8 @@
 #include <string>
 #include <chrono>
 
-
-#include <Topic.h>
-#include <Partisipant.h>
-#include <Writer.h>
-#include <QoS.h>
-#include <Reader.h>
-
+#include <dds/dds.h>
+#include <TypeData.h>
 
 #include <pub_interface.hpp>
 
@@ -50,9 +45,9 @@ public:
 private:
     MsgType _msg;
     int32_t _res_code;
-    Writer<MsgType> _writer_entity ;
-    Topic _topic_entity;
-    Participant _participant_entity;
+    dds_entity_t _writer_entity ;
+    dds_entity_t _topic_entity;
+    dds_entity_t _reader_entity;
 
     std::string _topic;
     int _msInterval;

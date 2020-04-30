@@ -30,8 +30,8 @@ public:
             DDS_FATAL("dds_set_status_mask: %s\n", dds_strretcode(-_res_code));
     }
 
-    dds_return_t write(MsgType &_msg){
-        return dds_write(_writer, &_msg);
+    dds_return_t write(MsgType& _msg){
+        return dds_write(_writer, &_msg);;
     }
 
 private:
