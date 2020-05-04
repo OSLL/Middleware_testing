@@ -48,7 +48,7 @@ class MiddlewareTesting(unittest.TestCase):
                     wait_and_end_process(s)
                     print(datetime.now(), f"subscriber №{sub_n+1} finished", file=log_file)
                 wait_and_end_process(p)
-                print(datetime.now(), "publisher finished", file=log_file)
+                print(datetime.now(), "publisher finished", file=log_file, flush=True)
 
     def test0(self):
         print(datetime.now(), ">>> running test0", file=log_file)
