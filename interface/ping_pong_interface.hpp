@@ -17,23 +17,19 @@
 template <class MsgType>
 class TestMiddlewarePingPong {
 public:
-    TestMiddlewarePingPong()(
+    TestMiddlewarePingPong(
             std::string &topic, int msgCount, int prior,
-            int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSize) :
+            int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSize, bool isFirst) :
             _topic_name(topic),
             _recieve_timestamps(msgCount),
             _msgs(msgCount),
-            _read_msg_time(msgCount),
             _topic_priority(topic_priority),
             _msgCount(msgCount),
             _priority(prior),
             _cpu_index(cpu_index),
             _filename(filename),
             _msInterval(msInterval),
-            _msgCount(msgCount),
-            _byteSizeMin(msgSize),
-            _byteSizeMax(msgSize),
-            _write_msg_time(msgCount)
+            _msgSize(msgSize)
             {
         pid_t id = getpid();
         if(prior >= 0){
@@ -79,41 +75,54 @@ public:
         }
     };
 
-    void write_received_msg(MsgType &msg, unsigned long proc_time) {
+    void write_received_msg(MsgType &msg) {
         _msgs[get_id(msg)] = msg;
         _recieve_timestamps[get_id(msg)] = std::chrono::duration_cast<std::chrono::
         nanoseconds>(std::chrono::high_resolution_clock::
                      now().time_since_epoch()).count();
-        _read_msg_time[get_id(msg)] = proc_time;
     };
 
     virtual bool receive() = 0;
 
     int StartTest(){
+        bool isTimeoutEx = false;
         unsigned long start_timeout, end_timeout;
+        std::this_thread::sleep_for(std::chrono::seconds(4));
         start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
         nanoseconds>(std::chrono::high_resolution_clock::
                      now().time_since_epoch()).count();
-        while (true) {
-            // true - принято
-            if(receive()) {
-                start_timeout = std::chrono::duration_cast<std::chrono::
-                nanoseconds>(std::chrono::high_resolution_clock::
-                             now().time_since_epoch()).count();
 
-            } else {
-                end_timeout = std::chrono::duration_cast<std::chrono::
-                nanoseconds>(std::chrono::high_resolution_clock::
-                             now().time_since_epoch()).count();
-                if (end_timeout - start_timeout > TIMEOUT)
+        for(int i = 0; i < _msgCount; i++){
+            if(_isFirst && i == 0)
+                publish(i, _msgSize);
+            while (true) {
+                // true - принято
+                if(receive()) {
+                    start_timeout = std::chrono::duration_cast<std::chrono::
+                    nanoseconds>(std::chrono::high_resolution_clock::
+                                 now().time_since_epoch()).count();
                     break;
-            }
+                } else {
+                    end_timeout = std::chrono::duration_cast<std::chrono::
+                    nanoseconds>(std::chrono::high_resolution_clock::
+                                 now().time_since_epoch()).count();
+                    if (end_timeout - start_timeout > TIMEOUT) {
+                        isTimeoutEx = true;
+                        break;
+                    }
+                }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+            if(_isFirst && i == 0)
+                continue;
+            publish(i, _msgSize);
 
         }
 
         to_json();
+        if(isTimeoutEx)
+            return TEST_ERROR;
         return 0;
     }
     virtual short get_id(MsgType &msg) = 0;
@@ -140,7 +149,7 @@ public:
         file << json_output;
     }
 
-    virtual unsigned long publish(short id, unsigned size)=0;
+    virtual void publish(short id, unsigned size)=0;
 
 protected:
     std::string _topic_name;
@@ -151,9 +160,7 @@ protected:
     int _priority; //def not stated
     int _cpu_index; //def not stated
     std::string _filename;
-
+    bool _isFirst;
     int _msInterval;
-    int _byteSizeMin;
-    int _byteSizeMax;
-    std::vector <unsigned long> _write_msg_time;
+    int _msgSize;
 };

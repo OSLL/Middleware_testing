@@ -85,6 +85,8 @@ public:
     virtual bool receive() = 0;
 
     int StartTest(){
+        bool isTimeoutEx = false;
+
         unsigned long start_timeout, end_timeout;
         start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
@@ -100,8 +102,10 @@ public:
                 end_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                              now().time_since_epoch()).count();
-                if (end_timeout - start_timeout > TIMEOUT)
+                if (end_timeout - start_timeout > TIMEOUT){
+                    isTimeoutEx = true;
                     break;
+                }
             }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -109,6 +113,9 @@ public:
         }
 
         to_json();
+
+        if(isTimeoutEx)
+            return TEST_ERROR;
         return 0;
     }
     virtual short get_id(MsgType &msg) = 0;
