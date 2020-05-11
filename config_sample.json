@@ -1,0 +1,14 @@
+{
+    "topic": "/topic",
+    "res_filenames": ["filename1.json", "filename2.json"],
+    "m_count": 5000,
+    "min_msg_size": 100,
+    "max_msg_size": 100,
+    "step": 0,
+    "msgs_before_step": 5000,
+    "priority": [-1, -1],
+    "cpu_index": [-1, -1],
+    "interval": 0,
+    "topic_priority": 100,
+    "isPingPong": true
+}
