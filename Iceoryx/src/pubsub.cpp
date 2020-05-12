@@ -44,10 +44,13 @@ public:
 			       filename, topic_priority)
 	{
 		iox::runtime::PoshRuntime::getInstance(std::string("/")+filename);
-		//const char* first="Iceoryx";
-		//const char* second=_topic_name.c_str();
-		//iox::capro::ServiceDescription sd(iox::cxx::Serialization::create(first,second));
-		pub=new iox::popo::Publisher({"Test","one"});
+		char param[100];
+		if(topic.length()<100) memcpy(param,topic.c_str(),topic.length()+1);
+		else{
+			memcpy(param,topic.c_str(),99);
+			param[99]='\0';
+		}
+		pub=new iox::popo::Publisher({"Iceoryx",param});
 		pub->offer();
 	}
 
@@ -107,10 +110,13 @@ public:
             			cpu_index, filename, topic_priority)
 	{
 		iox::runtime::PoshRuntime::getInstance(std::string("/")+filename);
-		//const char* first="Iceoryx";
-		//const char* second=TestMiddlewareSub<MsgType>::_topic_name.c_str();
-		//iox::capro::ServiceDescription sd(iox::cxx::Serialization::create(first,second));
-		sub=new iox::popo::Subscriber({"Test","one"});//TestMiddlewareSub<MsgType>::_topic_name});
+		char param[100];
+		if(topic.length()<100) memcpy(param,topic.c_str(),topic.length()+1);
+		else{
+			memcpy(param,topic.c_str(),99);
+			param[99]='\0';
+		}
+		sub=new iox::popo::Subscriber({"Iceoryx",param});
 		sub->subscribe(10);
 	}
 
@@ -185,12 +191,15 @@ public:
 				topic_priority, interval, msg_size, isFirst)
 	{
 		iox::runtime::PoshRuntime::getInstance(std::string("/")+filename);
-		//const char* first="Iceoryx";
-		//const char* second=_topic_name.c_str();
-		//iox::capro::ServiceDescription sd(iox::cxx::Serialization::create(first,second));
-		pub=new iox::popo::Publisher({"Test","one"});
+		char param[100];
+		if(topic.length()<100) memcpy(param,topic.c_str(),topic.length()+1);
+		else{
+			memcpy(param,topic.c_str(),99);
+			param[99]='\0';
+		}
+		pub=new iox::popo::Publisher({"Iceoryx",param});
 		pub->offer();
-		sub=new iox::popo::Subscriber({"Test","one"});
+		sub=new iox::popo::Subscriber({"Iceoryx",param});
 		sub->subscribe(10);
 	}
 
