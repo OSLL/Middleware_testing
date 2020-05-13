@@ -19,10 +19,6 @@ struct Message{
 	size_t len;
 };
 
-struct Counts{
-	int id;
-};
-
 class Publisher: public TestMiddlewarePub{
 private:
 	std::string _name;
@@ -78,19 +74,6 @@ public:
 		return time;
 	}
 
-	void publish(int id){
-		auto sample=static_cast<Counts*>(pub->allocateChunk(sizeof(Counts)));
-		sample->id=id;
-		pub->sendChunk(sample);
-	}
-
-	void pubMes(int count){
-		for(int i=count;i>0;i--){
-			publish(i);
-			std::cout<<"Send: "<<i<<std::endl;
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
-	}
 };
 
 
@@ -157,17 +140,6 @@ public:
 		return get;
 	}
 
-	void gets(int count){
-		int c=0;
-		const void * chunk=nullptr;
-		while(c<count){
-			if(sub->getChunk(&chunk)){
-				auto sample=static_cast<const Counts*>(chunk);
-				std::cout<<"Get: "<<sample->id<<std::endl;
-				c++;
-			}
-		}
-	}
 };
 
 
@@ -197,9 +169,11 @@ public:
 			memcpy(param,topic.c_str(),99);
 			param[99]='\0';
 		}
-		pub=new iox::popo::Publisher({"Iceoryx",param});
+		if(isFirst) pub=new iox::popo::Publisher({"Iceoryx",param,"first"});
+		else pub=new iox::popo::Publisher({"Iceoryx",param,"second"});
 		pub->offer();
-		sub=new iox::popo::Subscriber({"Iceoryx",param});
+		if(isFirst) sub=new iox::popo::Subscriber({"Iceoryx",param,"second"});
+		else sub=new iox::popo::Subscriber({"Iceoryx",param,"first"});
 		sub->subscribe(10);
 	}
 
@@ -219,7 +193,6 @@ public:
 				now().time_since_epoch()).count();
 		sample->len=size-sizeof(Message);
 		memset(sample+sizeof(Message),'a',sample->len);
-
 
 		pub->sendChunk(sample);
 		return ;
@@ -258,16 +231,16 @@ int main(int argc, char** argv){
 		std::cout<<"Usage: pubsub <type> <config_file>"<<std::endl;
 		return 1;
 	}
+	std::ifstream file(argv[2]);
+	if(!file){
+		std::cout<<"Can't open file "<<argv[2]<<std::endl;
+		return 2;
+	}
+	nlohmann::json json;
+	file>>json;
+	file.close();
 	if(!strcmp(argv[1],"publisher")){
 
-		std::ifstream file(argv[2]);
-		if(!file){
-			std::cout<<"Can't open file "<<argv[2]<<std::endl;
-			return 2;
-		}
-		nlohmann::json json;
-		file>>json;
-		file.close();
 		std::string topic=json["topic"];
 		std::string filename=json["res_filenames"][0];
 		int m_count=json["m_count"];
@@ -289,14 +262,6 @@ int main(int argc, char** argv){
 	}
 	if(!strcmp(argv[1],"subscriber")){
 
-		std::ifstream file(argv[2]);
-		if(!file){
-			std::cout<<"Can't open file "<<argv[2]<<std::endl;
-			return 1;
-		}
-		nlohmann::json json;
-		file>>json;
-		file.close();	
 		std::string topic=json["topic"];
 		std::string filename=json["res_filenames"][1];
 		int m_count=json["m_count"];
@@ -310,25 +275,31 @@ int main(int argc, char** argv){
 		sub.StartTest();
 		std::cout<<"End Subscriber"<<std::endl;
 	}
-	if(!strcmp(argv[1],"ping_pong")){
-
-		std::ifstream file(argv[2]);
-		if(!file){
-			std::cout<<"Can't open file "<<argv[2]<<std::endl;
+	if(!strcmp(argv[1],"ping_pong")||json["isPingPong"]){
+		if(argc<4){
+			std::cout<<"No config for PingPong"<<std::endl;
 			return 2;
 		}
-		nlohmann::json json;
-		file>>json;
+		file=std::ifstream(argv[3]);
+		if(!file){
+			std::cout<<"Can't open file "<<argv[3]<<std::endl;
+			return 2;
+		}
+		nlohmann::json json_pp;
+		file>>json_pp;
 		file.close();
-		std::string topic=json["topic"];
-		std::string filename=json["res_filenames"][0];
-		int m_count=json["m_count"];
-		int min_size=json["min_msg_size"];
-		int prior=json["priority"][0];
-		int cpu=json["cpu_index"][0];
-		int interval=json["interval"];
-		int topic_prior=json["topic_priority"];
-		bool isFirst=json["isPingPong"];
+		bool isFirst=json_pp["isPingPong"];
+		int i;
+		if(isFirst) i=0;
+		else i=1;
+		std::string topic=json_pp["topic"];
+		std::string filename=json_pp["res_filenames"][i];
+		int m_count=json_pp["m_count"];
+		int min_size=json_pp["min_msg_size"];
+		int prior=json_pp["priority"][i];
+		int cpu=json_pp["cpu_index"][i];
+		int interval=json_pp["interval"];
+		int topic_prior=json_pp["topic_priority"];
 
 		std::cout<<"PingPong"<<std::endl;
 		PingPong<Message> ping_pong(topic, m_count, prior, cpu, filename, topic_prior,
