@@ -93,7 +93,7 @@ public:
                      now().time_since_epoch()).count();
 
         for(int i = 0; i < _msgCount; i++){
-            if(_isFirst && i == 0)
+            if(_isFirst)
                 publish(i, _msgSize);
             while (true) {
                 // true - принято
@@ -114,7 +114,9 @@ public:
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
-            if(_isFirst && i == 0)
+            if(isTimeoutEx)
+                break;
+            if(_isFirst)
                 continue;
             publish(i, _msgSize);
 
