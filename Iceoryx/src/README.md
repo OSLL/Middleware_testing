@@ -16,7 +16,18 @@
 5. (Не обязательный шаг) Скопировать из папки ```build/install/prefix/bin``` RouDi и стандартный конфигурационный файл
 для него из папки ```build/install/prefix/etc``` в удобное для запуска место
 
+### Сборка
+
+```
+mkdir <folder_name> && cd <folder_name>
+cmake ..
+make
+```
+
 ### Запуск
 
 * Запустить RouDi, через ключ ```-c``` передаётся абсолютный путь к config-файлу
-* Запустить Publisher и Subscriber
+* Запустить ```./PubSub <type> <config_file> <config_for_ping_pong>```
+    * где type: publisher, subscriber, ping_pong
+    * где config_file - конфигурационный файл для теста
+    * где config_for_ping_pong - конфигурационный файл для ping_pong теста
