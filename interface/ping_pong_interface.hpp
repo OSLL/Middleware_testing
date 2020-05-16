@@ -28,6 +28,7 @@ public:
             _priority(prior),
             _cpu_index(cpu_index),
             _filename(filename),
+            _isFirst(isFirst),
             _msInterval(msInterval),
             _msgSize(msgSize)
             {
@@ -101,7 +102,6 @@ public:
                     start_timeout = std::chrono::duration_cast<std::chrono::
                     nanoseconds>(std::chrono::high_resolution_clock::
                                  now().time_since_epoch()).count();
-                    break;
                 } else {
                     end_timeout = std::chrono::duration_cast<std::chrono::
                     nanoseconds>(std::chrono::high_resolution_clock::
@@ -116,13 +116,11 @@ public:
             }
             if(isTimeoutEx)
                 break;
-            if(_isFirst)
-                continue;
-            publish(i, _msgSize);
-
+            if(!_isFirst)
+                publish(i, _msgSize);
         }
-
-        to_json();
+        if(_isFirst)
+            to_json();
         if(isTimeoutEx)
             return TEST_ERROR;
         return 0;
