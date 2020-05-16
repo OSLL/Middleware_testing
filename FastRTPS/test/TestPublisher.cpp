@@ -80,7 +80,7 @@ void TestPublisher::PubListener::onPublicationMatched(
     }
 }
 
-void TestPublisher::publish(short id, unsigned size, unsigned long *proc_time) {
+unsigned long TestPublisher::publish(short id, unsigned size) {
     std::string data(size, 'a');
     unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     m_DynMsg->set_int16_value(id, 0);
@@ -88,6 +88,6 @@ void TestPublisher::publish(short id, unsigned size, unsigned long *proc_time) {
     m_DynMsg->set_string_value(std::string(size, 'a'), 2);
     cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     mp_publisher->write((void*)m_DynMsg);
-    *proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
 }
 
