@@ -18,9 +18,10 @@ template <class MsgType>
 class TestMiddlewarePingPong {
 public:
     TestMiddlewarePingPong(
-            std::string &topic, int msgCount, int prior,
+            std::string &topic1, std::string topic2, int msgCount, int prior,
             int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSize, bool isFirst) :
-            _topic_name(topic),
+            _topic_name1(topic1),
+            _topic_name2(topic2),
             _recieve_timestamps(msgCount),
             _msgs(msgCount),
             _topic_priority(topic_priority),
@@ -89,19 +90,20 @@ public:
         bool isTimeoutEx = false;
         unsigned long start_timeout, end_timeout;
         std::this_thread::sleep_for(std::chrono::seconds(4));
-        start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
-        nanoseconds>(std::chrono::high_resolution_clock::
-                     now().time_since_epoch()).count();
 
         for(int i = 0; i < _msgCount; i++){
             if(_isFirst)
                 publish(i, _msgSize);
-            while (true) {
+
+            start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
+            nanoseconds>(std::chrono::high_resolution_clock::
+                         now().time_since_epoch()).count();
+
+            bool notReceived = true;
+            while (notReceived) {
                 // true - принято
                 if(receive()) {
-                    start_timeout = std::chrono::duration_cast<std::chrono::
-                    nanoseconds>(std::chrono::high_resolution_clock::
-                                 now().time_since_epoch()).count();
+                    notReceived = false;
                 } else {
                     end_timeout = std::chrono::duration_cast<std::chrono::
                     nanoseconds>(std::chrono::high_resolution_clock::
@@ -119,8 +121,9 @@ public:
             if(!_isFirst)
                 publish(i, _msgSize);
         }
-        if(_isFirst)
-            to_json();
+
+        to_json();
+
         if(isTimeoutEx)
             return TEST_ERROR;
         return 0;
@@ -152,7 +155,8 @@ public:
     virtual void publish(short id, unsigned size)=0;
 
 protected:
-    std::string _topic_name;
+    std::string _topic_name1;
+    std::string _topic_name2;
     std::vector<unsigned long> _recieve_timestamps;
     std::vector<MsgType> _msgs;
     int _topic_priority;

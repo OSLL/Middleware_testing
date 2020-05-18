@@ -41,7 +41,8 @@ int main(int argc, char **argv) {
     file >> args;
     file.close();
 
-    std::string topic = args["topic"];
+    std::string topic1 = args["topic"][0];
+    std::string topic2 = args["topic"][1];
     std::string filename_pub = args["res_filenames"][0];
     std::string filename_sub = args["res_filenames"][1];
     int m_count = args["m_count"];
@@ -58,12 +59,12 @@ int main(int argc, char **argv) {
 
     try {
         if (type_name == "publisher"){
-            TestPublisher publisher(topic, m_count, priority_pub, cpu_index_pub, min_msg_size, max_msg_size, step, interval,
+            TestPublisher publisher(topic1, m_count, priority_pub, cpu_index_pub, min_msg_size, max_msg_size, step, interval,
                                      msgs_before_step, filename_pub, topic_prior);
             publisher.StartTest();
         }
         if (type_name == "subscriber") {
-            TestSubscriber subscriber(topic, m_count, priority_sub, cpu_index_sub, filename_sub, topic_prior);
+            TestSubscriber subscriber(topic1, m_count, priority_sub, cpu_index_sub, filename_sub, topic_prior);
             subscriber.StartTest();
         }
         if (type_name == "ping_pong"){
@@ -72,7 +73,7 @@ int main(int argc, char **argv) {
                 filename = filename_pub;
             else
                 filename = filename_sub;
-            TestPingPongNode ping_pong(topic, m_count, priority_pub, cpu_index_pub, filename, topic_prior, interval,
+            TestPingPongNode ping_pong(topic1, topic2, m_count, priority_pub, cpu_index_pub, filename, topic_prior, interval,
                                     min_msg_size, isFirst);
             ping_pong.StartTest();
         }
