@@ -1,5 +1,5 @@
 {
-    "topic": "/topic",
+    "topic": ["/topic1", "/topic2"],
     "res_filenames": ["pub_res_test1.json", "sub_res_test1.json"],
     "m_count": 5000,
     "min_msg_size": 100,
