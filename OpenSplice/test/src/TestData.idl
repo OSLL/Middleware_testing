@@ -3,4 +3,4 @@ struct TestDataType {
 	unsigned long long timestamp;
 	sequence<char> data;
 };
-#pragma keylist TestDataType
+#pragma keylist TestDataType id
