@@ -1,6 +1,6 @@
 #include "TestPublisher.h"
 #include "TestSubscriber.h"
-#include "../../nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 #include <fastrtps/Domain.h>
 
