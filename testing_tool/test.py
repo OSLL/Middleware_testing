@@ -7,9 +7,12 @@ from general_funcs import log_file, get_configs, mk_nodedir, create_process, wai
 from plotting import get_resfiles, plot_results
 
 class MiddlewareTesting(unittest.TestCase):
-    pubs = ["../FastRTPS/test/build/FastRTPSTest publisher"]
-    subs = ["../FastRTPS/test/build/FastRTPSTest subscriber"]
+    pubs = ["../FastRTPS/test/build/FastRTPSTest"]
+    subs = ["../FastRTPS/test/build/FastRTPSTest"]
     nodes = []
+    
+    stype = 'subscriber'
+    ptype = 'publisher'
 
     @classmethod
     def setUpClass(self):
@@ -42,8 +45,8 @@ class MiddlewareTesting(unittest.TestCase):
                     None
                 for config in subtest:
                     print(datetime.now(), f"  >>> using config - {config}", file=log_file)
-                    subs.append(create_process(prefix + self.subs[i], '../../../config/' + config, cwd))
-                p = create_process(prefix + self.pubs[i], '../../../config/' + subtest[0], cwd)
+                    subs.append(create_process(prefix + self.subs[i], '../../../config/' + config, self.stype, cwd))
+                p = create_process(prefix + self.pubs[i], '../../../config/' + subtest[0], self.ptype, cwd, True)
                 for sub_n, s in enumerate(subs):
                     wait_and_end_process(s)
                     print(datetime.now(), f"subscriber №{sub_n+1} finished", file=log_file)
@@ -78,6 +81,14 @@ class MiddlewareTesting(unittest.TestCase):
         print(datetime.now(), ">>> running test7", file=log_file)
         self.test_n = 7
         self.subtests = False
+        self.startTest()
+    
+    def test8(self):
+        print(datetime.now(), ">>> running test8", file=log_file)
+        self.test_n = 8
+        self.subtests = False
+        self.ptype = 'ping_pong'
+        self.stype = 'ping_pong'
         self.startTest()
 
     def tearDown(self):
