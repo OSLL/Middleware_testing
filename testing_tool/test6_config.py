@@ -5,7 +5,7 @@ from general_funcs import mkdir_config, constr_resfilename, constr_config
 def test6_config():
     configs = []
     mkdir_config(6)
-    args = {"topic":'test_topic', "res_filenames":['pub', 'sub'], 
+    args = {"topic":['test_topic', 'test_topic1'], "res_filenames":['pub', 'sub'], 
             "m_count":5000, "min_msg_size":64*1024, "max_msg_size":64*1024,
             "step":0, "msgs_before_step":100, "priority":[99, 99], 
             "cpu_index":[0, 1], "interval":0, "topic_priority":100}
