@@ -10,6 +10,8 @@
 #include <fastrtps/types/DynamicData.h>
 #include <fastrtps/types/DynamicPubSubType.h>
 
+#include <sys/stat.h>
+
 #include "../../interface/sub_interface.hpp"
 
 class TestSubscriber : public TestMiddlewareSub<eprosima::fastrtps::types::DynamicData*>
@@ -54,8 +56,6 @@ class TestSubscriber : public TestMiddlewareSub<eprosima::fastrtps::types::Dynam
 
                 void onNewDataMessage(
                         eprosima::fastrtps::Subscriber* sub) override;
-
-                eprosima::fastrtps::types::DynamicData* m_DynMsg;
 
                 eprosima::fastrtps::SampleInfo_t m_info;
 
