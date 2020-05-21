@@ -21,7 +21,7 @@ class TestPublisher : public TestMiddlewarePub
 
         virtual ~TestPublisher();
 
-	void publish(short id, unsigned size, unsigned long *proc_time);
+	unsigned long publish(short id, unsigned size);
 
     private:
 

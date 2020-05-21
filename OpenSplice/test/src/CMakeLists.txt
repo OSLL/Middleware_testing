@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 set(CMAKE_MODULE_PATH ../cmake)
-project (dds-tutorial)
+project (dds-testing)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include (MacroOpenSplice)
 include (osmacros)
@@ -27,20 +29,14 @@ foreach(idl ${idls})
 	set(OpenSplice_DATAMODEL ${OpenSplice_DATAMODEL} ${VARS_1} ${VARS_2} ${VARS_3} ${VARS_4} ${VARS_5} ${VARS_6} ${VARS_7} ${VARS_8} ${VARS_9})
 endforeach(idl)
 
-set (PUB_SOURCES
- pub.cpp
-)
-set (SUB_SOURCES
- sub.cpp
- 
+set (NODE_SOURCES
+        opensplice_node.cpp
 )
 
-set (PUB_EXE pub)
-set (SUB_EXE sub)
+set (NODE_EXE opensplice_node)
 set (DATAMODEL datamodel)
 
-add_executable (${PUB_EXE} ${PUB_SOURCES})
-add_executable (${SUB_EXE} ${SUB_SOURCES})
+add_executable (${NODE_EXE} ${NODE_SOURCES})
 add_library (${DATAMODEL} SHARED ${OpenSplice_DATAMODEL})
 
 add_definitions (
@@ -53,12 +49,8 @@ target_link_libraries (
   ${OpenSplice_LIBRARIES}
 )
 
-target_link_libraries (${PUB_EXE}
+target_link_libraries (${NODE_EXE}
  ${OpenSplice_LIBRARIES}
  ${DATAMODEL} 
 )
 
-target_link_libraries (${SUB_EXE}
- ${OpenSplice_LIBRARIES}
- ${DATAMODEL}
-)
