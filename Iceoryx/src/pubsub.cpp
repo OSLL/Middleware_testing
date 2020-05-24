@@ -6,6 +6,7 @@
 #include"../../interface/sub_interface.hpp"
 #include"../../interface/ping_pong_interface.hpp"
 #include<cstring>
+#include<argparse/argparse.hpp>
 
 #include<string>
 #include<cstring>
@@ -150,7 +151,8 @@ private:
 	iox::popo::Publisher* pub;
 	iox::popo::Subscriber* sub;
 public:
-	PingPong(std::string& topic,	
+	PingPong(std::string& topic1,
+		  std::string& topic2,	
 		  int msgCount, 
 		  int prior, 
 		  int cpu_index,
@@ -159,21 +161,27 @@ public:
 		  int interval, 
 		  int msg_size, 
 		  bool isFirst
-			): TestMiddlewarePingPong<MsgType>(topic, msgCount, prior, cpu_index, filename,
+			): TestMiddlewarePingPong<MsgType>(topic1, topic2, msgCount, prior, cpu_index, filename,
 				topic_priority, interval, msg_size, isFirst)
 	{
 		iox::runtime::PoshRuntime::getInstance(std::string("/")+filename);
-		char param[100];
-		if(topic.length()<100) memcpy(param,topic.c_str(),topic.length()+1);
+		char param1[100];
+		char param2[100];
+		if(topic1.length()<100) memcpy(param1,topic1.c_str(),topic1.length()+1);
 		else{
-			memcpy(param,topic.c_str(),99);
-			param[99]='\0';
+			memcpy(param1,topic1.c_str(),99);
+			param1[99]='\0';
 		}
-		if(isFirst) pub=new iox::popo::Publisher({"Iceoryx",param,"first"});
-		else pub=new iox::popo::Publisher({"Iceoryx",param,"second"});
+		if(topic2.length()<100) memcpy(param2,topic2.c_str(),topic2.length()+1);
+		else{
+			memcpy(param2,topic2.c_str(),99);
+			param2[99]='\0';
+		}
+		if(isFirst) pub=new iox::popo::Publisher({"Iceoryx",param1});
+		else pub=new iox::popo::Publisher({"Iceoryx",param2});
 		pub->offer();
-		if(isFirst) sub=new iox::popo::Subscriber({"Iceoryx",param,"second"});
-		else sub=new iox::popo::Subscriber({"Iceoryx",param,"first"});
+		if(isFirst) sub=new iox::popo::Subscriber({"Iceoryx",param2});
+		else sub=new iox::popo::Subscriber({"Iceoryx",param1});
 		sub->subscribe(10);
 	}
 
@@ -227,19 +235,36 @@ public:
 };
 
 int main(int argc, char** argv){
-	if(argc<3){
-		std::cout<<"Usage: pubsub <type> <config_file>"<<std::endl;
+	argparse::ArgumentParser program("PubSub");
+	
+	program.add_argument("-c","--config")
+			.required()
+			.help("-c/--config is a config for testing");
+	program.add_argument("-t","--type")
+			.required()
+			.help("-t/--type is a type of the node: publisher, subscriber or ping_pong");
+	program.add_argument("--first")
+			.help("--first is a config for ping_pong test");
+	
+
+	try{
+		program.parse_args(argc, argv);
+	}catch(const std::runtime_error& err){
+		std::cout << err.what() << std::endl;
+		std::cout << program<<std::endl;
 		return 1;
 	}
-	std::ifstream file(argv[2]);
-	if(!file){
-		std::cout<<"Can't open file "<<argv[2]<<std::endl;
-		return 2;
-	}
-	nlohmann::json json;
-	file>>json;
-	file.close();
-	if(!strcmp(argv[1],"publisher")){
+	auto type=program.get<std::string>("-t");
+	if(!type.compare("publisher")){
+		auto conf_path=program.get<std::string>("-c");
+		std::ifstream file(conf_path);
+		if(!file){
+			std::cout<<"Can't open file "<<conf_path<<std::endl;
+			return 2;
+		}
+		nlohmann::json json;
+		file>>json;
+		file.close();
 
 		std::string topic=json["topic"];
 		std::string filename=json["res_filenames"][0];
@@ -260,7 +285,16 @@ int main(int argc, char** argv){
 		pub.StartTest();
 		std::cout<<"End Publisher"<<std::endl;
 	}
-	if(!strcmp(argv[1],"subscriber")){
+	if(!type.compare("subscriber")){
+		auto conf_path=program.get<std::string>("-c");
+		std::ifstream file(conf_path);
+		if(!file){
+			std::cout<<"Can't open file "<<conf_path<<std::endl;
+			return 2;
+		}
+		nlohmann::json json;
+		file>>json;
+		file.close();
 
 		std::string topic=json["topic"];
 		std::string filename=json["res_filenames"][1];
@@ -275,24 +309,27 @@ int main(int argc, char** argv){
 		sub.StartTest();
 		std::cout<<"End Subscriber"<<std::endl;
 	}
-	if(!strcmp(argv[1],"ping_pong")||json["isPingPong"]){
-		if(argc<4){
-			std::cout<<"No config for PingPong"<<std::endl;
-			return 2;
-		}
-		file=std::ifstream(argv[3]);
-		if(!file){
-			std::cout<<"Can't open file "<<argv[3]<<std::endl;
-			return 2;
-		}
+	if(!type.compare("ping_pong")){
 		nlohmann::json json_pp;
-		file>>json_pp;
-		file.close();
+		if(auto conf_pp=program.present("--first")){
+			std::ifstream file=std::ifstream(*conf_pp);
+			if(!file){
+				std::cout<<"Can't open file "<<argv[4]<<std::endl;
+				return 2;
+			}
+			file>>json_pp;
+			file.close();
+		}else{
+			std::cout<<"No config for ping_pong test"<<std::endl;
+			std::cout<<program<<std::endl;
+			return 3;
+		}
 		bool isFirst=json_pp["isPingPong"];
 		int i;
 		if(isFirst) i=0;
 		else i=1;
-		std::string topic=json_pp["topic"];
+		std::string topic1=json_pp["topic"][i];
+		std::string topic2=json_pp["topic"][i];
 		std::string filename=json_pp["res_filenames"][i];
 		int m_count=json_pp["m_count"];
 		int min_size=json_pp["min_msg_size"];
@@ -302,7 +339,7 @@ int main(int argc, char** argv){
 		int topic_prior=json_pp["topic_priority"];
 
 		std::cout<<"PingPong"<<std::endl;
-		PingPong<Message> ping_pong(topic, m_count, prior, cpu, filename, topic_prior,
+		PingPong<Message> ping_pong(topic1, topic2, m_count, prior, cpu, filename, topic_prior,
 						interval, min_size, isFirst);
 		ping_pong.StartTest();
 		std::cout<<"End PingPong"<<std::endl;
