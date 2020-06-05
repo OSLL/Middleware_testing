@@ -232,4 +232,3 @@ if __name__ == '__main__':
                 plot_results([filename], i == 8)
         except OSError:
             continue
-    plt.title('Message queue')
