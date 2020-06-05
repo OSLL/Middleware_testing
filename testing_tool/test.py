@@ -94,7 +94,7 @@ class MiddlewareTesting(unittest.TestCase):
     def tearDown(self):
         resfiles = get_resfiles(self.test_n, self.subtests)
         for filename in resfiles:
-            plot_results([filename])
+            plot_results([filename], self.test_n == 8)
 
 
 if __name__ == "__main__":
