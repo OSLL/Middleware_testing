@@ -18,7 +18,7 @@ def get_configs(test_n, subtests=False):
 
 
 def create_process(name, config, ntype, cwd, isFirst=False):
-    command = f'{name} -c {config} -t {ntype}'
+    command = f'{name} -c "{config}" -t {ntype}'
     print(command)
     if isFirst:
         command += ' --first'
