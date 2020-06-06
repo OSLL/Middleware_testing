@@ -190,6 +190,9 @@ def plot_sub_results(filenames, directory, res_name, isPingPong=False):
             plot_boxes(proc_time, [len(d) for d in proc_time], 
                    'number of messages', runit, 'Reading time boxes', 
                    f'{directory}{res_name}_read_proc_time_box.png')
+        mean = np.mean(delay[-1])
+        plot_graph(ids, [abs(mean - d) for d in delay[-1]], unit, 
+                   'Jitter', f'{directory}{res_name}_jitter.png')
     else:
         delay = []
         for files in filenames:
