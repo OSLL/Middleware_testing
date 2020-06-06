@@ -38,14 +38,17 @@ def from_several_jsons(filenames):
     return delay
 
 
-def sub_from_json(filename):
+def sub_from_json(filename, isPingPong=False):
     with open(filename, 'r') as f:
         data = json.load(f)
     ids = [msg["msg"]["id"] for msg in data]
     send_time = [msg["msg"]["sent_time"] for msg in data]
     rec_time = [msg["msg"]["recieve_timestamp"] for msg in data]
     delay = [msg["msg"]["delay"] for msg in data]
-    read_proc_time = [msg["msg"]["read_proc_time"] for msg in data]
+    if not isPingPong:
+        read_proc_time = [msg["msg"]["read_proc_time"] for msg in data]
+    else:
+        read_proc_time = []
     return (send_time, rec_time, read_proc_time, delay, ids)
 
 
@@ -159,13 +162,15 @@ def plot_pub_results(filename, directory, res_name):
     plot_graph(ids, proc_time, unit, 'Writing time', f'{directory}{res_name}_proc_time.png')
 
 
-def plot_sub_results(filenames, directory, res_name):
+def plot_sub_results(filenames, directory, res_name, isPingPong=False):
     if len(filenames) == 1:
         (send_time, receive_time,
-         read_proc_time, delay_time, ids) = sub_from_json(filenames[0])
+         read_proc_time, 
+         delay_time, ids) = sub_from_json(filenames[0], isPingPong)
 
         (delay_time, unit) = scale_values(delay_time)
-        (read_proc_time, runit) = scale_values(read_proc_time)
+        if not isPingPong:
+            (read_proc_time, runit) = scale_values(read_proc_time)
         list_counts = queue_size(send_time, receive_time)
         delay = []
         proc_time = []
@@ -179,11 +184,15 @@ def plot_sub_results(filenames, directory, res_name):
                    f'{directory}{res_name}_delay.png')
         plot_boxes(delay, [len(d) for d in delay], 'number of messages', unit,
                    'Delay time boxes', f'{directory}{res_name}_delay_box.png')
-        plot_graph(ids, read_proc_time, runit, 'Reading time',
-                   f'{directory}{res_name}_read_proc_time.png')
-        plot_boxes(proc_time, [len(d) for d in proc_time], 
+        if not isPingPong:
+            plot_graph(ids, read_proc_time, runit, 'Reading time',
+                       f'{directory}{res_name}_read_proc_time.png')
+            plot_boxes(proc_time, [len(d) for d in proc_time], 
                    'number of messages', runit, 'Reading time boxes', 
                    f'{directory}{res_name}_read_proc_time_box.png')
+        mean = np.mean(delay[-1])
+        plot_graph(ids, [abs(mean - d) for d in delay[-1]], unit, 
+                   'Jitter', f'{directory}{res_name}_jitter.png')
     else:
         delay = []
         for files in filenames:
@@ -195,7 +204,7 @@ def plot_sub_results(filenames, directory, res_name):
                    f'{directory}{res_name}_delay_box.png')
 
 
-def plot_results(filenames):
+def plot_results(filenames, isPingPong=False):
     if isinstance(filenames[0], list):
         filenames = filenames[0]
         directory = filenames[0][0][:filenames[0][0].rfind('data/')] + 'plots/'
@@ -212,18 +221,17 @@ def plot_results(filenames):
     except OSError:
         None
     res_name = filenames[0][filenames[0].rfind('/')+1:filenames[0].rfind('_')]
-    if filenames[0].endswith('_pub.json'):
+    if filenames[0].endswith('_pub.json') and not isPingPong:
         plot_pub_results(filenames[0], directory, res_name)
     else:
-        plot_sub_results(filenames, directory, res_name)
+        plot_sub_results(filenames, directory, res_name, isPingPong)
 
 
 if __name__ == '__main__':
-    for i in range(0, 8):
+    for i in range(0, 9):
         try:
             resfiles = get_resfiles(i, i == 3)
             for filename in resfiles:
-                plot_results([filename])
+                plot_results([filename], i == 8)
         except OSError:
             continue
-    plt.title('Message queue')
