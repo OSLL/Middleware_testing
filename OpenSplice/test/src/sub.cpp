@@ -45,36 +45,3 @@ private:
     dds::sub::Subscriber _subscriber;
     dds::sub::DataReader <TestDataType> _dr;
 };
-
-int main(int argc, char **argv) {
-    if(argc < 2) {
-        std::cout << "Config file is not set!\n";
-        return 0;
-    }
-    nlohmann::json args;
-    std::ifstream file(argv[1]);
-    if(!file.is_open()) {
-        std::cout << "Cannot open file " << argv[1] << std::endl;
-        return 0;
-    }
-    file >> args;
-    file.close();
-    std::string topic = args["topic"];
-    std::string filename = args["res_filenames"][1];
-    int m_count = args["m_count"];
-    int priority = args["priority"][1];
-    int cpu_index = args["cpu_index"][1];
-    int topic_prior = args["topic_priority"];
-    try {
-        TestSubscriber subscriber(topic, m_count, priority, cpu_index, filename, topic_prior);
-        subscriber.StartTest();
-    }
-    catch (test_exception& e){
-        std::cout<< e.what() << std::endl;
-        return -e.get_ret_code();
-    }
-    catch (std::exception& e){
-        std::cout<< e.what()<< std::endl;
-        return -MIDDLEWARE_ERROR;
-    }
-}
