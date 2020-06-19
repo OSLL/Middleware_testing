@@ -1,3 +1,4 @@
+#pragma once
 #include <open62541/client_config_default.h>
 #include <open62541/client_highlevel.h>
 #include <open62541/client_subscriptions.h>
@@ -62,7 +63,7 @@ public:
     bool receive() override {
         isReceived = false;
         isRunning = true;
-        UA_Client_run_iterate(client, 2000);
+        UA_Client_run_iterate(client, 1);
         return isReceived;
         isRunning = false;
     }
@@ -98,7 +99,7 @@ protected:
                 high_resolution_clock::now().time_since_epoch()).count() - start_timestamp;
         if(retval == UA_STATUSCODE_GOOD && UA_Variant_isScalar(val)) {
             data = *((TestData *)val->data);
-            //((TestSubscriber *)subContext)->write_received_msg(data, proc_time);
+            ((TestSubscriber *)subContext)->write_received_msg(data, proc_time);
             printf("the value is: %d %lu\n", data.id, data.timestamp);
         }
         UA_Variant_delete(val);
@@ -106,12 +107,12 @@ protected:
 };
 
 
-int main(int argc, char *argv[]) {
+/*int main(int argc, char *argv[]) {
     std::string topic("test_topic");
-    std::string res("res.txt");
-    TestSubscriber sub(topic, 10, -1, -1, res, 0);
+    std::string res("res_sub.txt");
+    TestSubscriber sub(topic, 15, -1, -1, res, 0);
     sub.StartTest();
-   /*
+   
     UA_Client_run_iterate(client, 1000);
 
 
@@ -124,5 +125,5 @@ int main(int argc, char *argv[]) {
 
     UA_Client_disconnect(client);
     UA_Client_delete(client);
-    return EXIT_SUCCESS;*/
-}
+    return EXIT_SUCCESS;
+}*/

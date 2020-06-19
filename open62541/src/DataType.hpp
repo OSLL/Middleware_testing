@@ -1,3 +1,4 @@
+#pragma once
 #define data_type_binary_encoding_id 1
 
 typedef struct {

@@ -1,3 +1,4 @@
+#pragma once
 #include <open62541/client_config_default.h>
 #include <open62541/client_highlevel.h>
 #include <open62541/plugin/log_stdout.h>
@@ -75,10 +76,10 @@ protected:
 };
 
 
-int main(int argc, char *argv[]) {
+/*int main(int argc, char *argv[]) {
     std::string topic("test_topic");
     std::string res("res.txt");
-    TestPublisher pub(topic, 15, -1, -1, 50, 50, 0, 50,
+    TestPublisher pub(topic, 15, -1, -1, 50, 50, 0, 100,
             100, res, 0);
     try {
         pub.StartTest();
@@ -87,4 +88,4 @@ int main(int argc, char *argv[]) {
         std::cout<<e.what();
     }
     return 0;
-}
+}*/

@@ -1,11 +1,12 @@
 #include <argparse/argparse.hpp>
 #include <nlohmann/json.hpp>
-#include "server.cpp"
-//#include "sub.cpp"
+//#include "server.cpp"
+#include "client_sub.cpp"
+#include "client_pub.cpp"
 //#include "ping_pong_node.cpp"
 
 int main(int argc, char **argv) {
-    argparse::ArgumentParser parser("OpenSplice node argparsing");
+    argparse::ArgumentParser parser("open62541 node argparsing");
     parser.add_argument("-c", "--config")
             .required()
             .help("-c --conf is required argument with config path");
@@ -58,7 +59,7 @@ int main(int argc, char **argv) {
     int topic_prior = args["topic_priority"];
 
     try {
-        /*if (type_name == "publisher"){
+        if (type_name == "publisher"){
             TestPublisher publisher(topic1, m_count, priority_pub, cpu_index_pub, min_msg_size, max_msg_size, step, interval,
                                      msgs_before_step, filename_pub, topic_prior);
             publisher.StartTest();
@@ -67,7 +68,7 @@ int main(int argc, char **argv) {
             TestSubscriber subscriber(topic1, m_count, priority_sub, cpu_index_sub, filename_sub, topic_prior);
             subscriber.StartTest();
         }
-        if (type_name == "ping_pong"){
+        /*if (type_name == "ping_pong"){
             std::string filename;
             if(isFirst)
                 filename = filename_pub;
