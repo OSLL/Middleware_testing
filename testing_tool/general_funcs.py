@@ -28,6 +28,8 @@ def create_process(name, config, ntype, cwd, isFirst=False):
 def wait_and_end_process(process):
     end = str.encode("end")
     out, err = process.communicate(end)
+    if out is not None:
+        print(datetime.now(), out, file=log_file)
     if err is not None:
         print(datetime.now(), err, file=log_file)
     if process.poll() is None:
