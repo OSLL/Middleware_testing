@@ -1,0 +1,4 @@
+/home/andrew/work/dds_testing/OpenSplice/src/CMakeFiles/rebuild_cache.dir
+/home/andrew/work/dds_testing/OpenSplice/src/CMakeFiles/edit_cache.dir
+/home/andrew/work/dds_testing/OpenSplice/src/CMakeFiles/opensplice_node.dir
+/home/andrew/work/dds_testing/OpenSplice/src/CMakeFiles/datamodel.dir
