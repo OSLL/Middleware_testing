@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC   -shared -Wl,-soname,libdatamodel.so -o libdatamodel.so CMakeFiles/datamodel.dir/gen/TestData.cpp.o CMakeFiles/datamodel.dir/gen/TestDataSplDcps.cpp.o  -L/home/andrew/work/opensplice/install/HDE/x86_64.linux/lib -Wl,-rpath,/home/andrew/work/opensplice/install/HDE/x86_64.linux/lib -lddskernel -ldcpsisocpp2 
