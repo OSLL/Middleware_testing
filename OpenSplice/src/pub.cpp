@@ -6,7 +6,7 @@
 #include <vector>
 #include <unistd.h>
 #include "gen/TestData_DCPS.hpp"
-#include "../../../interface/pub_interface.hpp"
+#include "../../interface/pub_interface.hpp"
 
 class TestPublisher: public TestMiddlewarePub{
 public:

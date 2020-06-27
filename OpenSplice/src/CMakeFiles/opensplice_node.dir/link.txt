@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/opensplice_node.dir/opensplice_node.cpp.o  -o opensplice_node  -L/home/andrew/work/opensplice/install/HDE/x86_64.linux/lib -Wl,-rpath,/home/andrew/work/opensplice/install/HDE/x86_64.linux/lib:/home/andrew/work/dds_testing/OpenSplice/src -lddskernel -ldcpsisocpp2 libdatamodel.so -lddskernel -ldcpsisocpp2 
