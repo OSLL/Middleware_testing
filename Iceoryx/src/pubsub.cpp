@@ -14,10 +14,13 @@
 #include<ctime>
 #include<iostream>
 
+#define QUEUE_SIZE 256
+
 struct Message{
 	unsigned long int timestamp;
 	short id;
 	size_t len;
+	char* str;
 };
 
 class Publisher: public TestMiddlewarePub{
@@ -25,7 +28,8 @@ private:
 	std::string _name;
 	iox::popo::Publisher* pub;
 public:
-	Publisher(std::string& topic,	
+	Publisher(std::string& name,
+		  std::string& topic,	
 		  int msgCount, 
 		  int prior, 
 		  int cpu_index,
@@ -40,14 +44,14 @@ public:
 			       max_msg_size, step, interval, msgs_before_step, 
 			       filename, topic_priority)
 	{
-		iox::runtime::PoshRuntime::getInstance(std::string("/")+filename);
+		iox::runtime::PoshRuntime::getInstance(name);
 		char param[100];
 		if(topic.length()<100) memcpy(param,topic.c_str(),topic.length()+1);
 		else{
 			memcpy(param,topic.c_str(),99);
 			param[99]='\0';
 		}
-		pub=new iox::popo::Publisher({"Iceoryx",param});
+		pub=new iox::popo::Publisher({"Test","Iceoryx",param});
 		pub->offer();
 	}
 
@@ -57,21 +61,20 @@ public:
 	}
 
 	unsigned long publish(short id, unsigned size) override{
+		std::string str(size,'a');
 		unsigned long time=std::chrono::duration_cast<std::chrono::
-                nanoseconds>(std::chrono::high_resolution_clock::
-                now().time_since_epoch()).count();
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count();
 
-		auto sample=static_cast<Message*>(pub->allocateChunk(size));
+		auto sample=static_cast<Message*>(pub->allocateChunk(size+sizeof(Message),true));
 		sample->id=id;
 		sample->timestamp=time;
-		sample->len=size-sizeof(Message);
-		memset(sample+sizeof(Message),'a',sample->len);
-
+		sample->len=size;
+		memcpy(((void*)sample)+sizeof(Message),str.c_str(),sample->len);
+		pub->sendChunk(sample);
 		time=std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                 now().time_since_epoch()).count()-time;
-
-		pub->sendChunk(sample);
 		return time;
 	}
 
@@ -84,7 +87,8 @@ private:
 	std::string _name;
 	iox::popo::Subscriber* sub;
 public:
-	Subscriber(std::string &topic, 
+	Subscriber(std::string& name,
+			std::string &topic, 
 			int msgCount, 
 			int prior,
 			int cpu_index, 
@@ -93,15 +97,15 @@ public:
 			): TestMiddlewareSub<MsgType>(topic, msgCount, prior,
             			cpu_index, filename, topic_priority)
 	{
-		iox::runtime::PoshRuntime::getInstance(std::string("/")+filename);
+		iox::runtime::PoshRuntime::getInstance(name);
 		char param[100];
 		if(topic.length()<100) memcpy(param,topic.c_str(),topic.length()+1);
 		else{
 			memcpy(param,topic.c_str(),99);
 			param[99]='\0';
 		}
-		sub=new iox::popo::Subscriber({"Iceoryx",param});
-		sub->subscribe(10);
+		sub=new iox::popo::Subscriber({"Test", "Iceoryx",param});
+		sub->subscribe(QUEUE_SIZE);
 	}
 
 	~Subscriber(){
@@ -119,24 +123,24 @@ public:
 	
 	bool receive() override{
 		const void* chunk=nullptr;
+		unsigned long time=std::chrono::duration_cast<std::chrono::
+			nanoseconds>(std::chrono::high_resolution_clock::
+			now().time_since_epoch()).count();
 		bool get=sub->getChunk(&chunk);
 		if(get){
 			auto sample=static_cast<const Message*>(chunk);
-			unsigned long time=std::chrono::duration_cast<std::chrono::
-				nanoseconds>(std::chrono::high_resolution_clock::
-				now().time_since_epoch()).count();
 			Message msg;
 			msg.timestamp=sample->timestamp;
 			msg.id=sample->id;
 			msg.len=sample->len;
-			std::string str((char*)sample+sizeof(Message),msg.len);
+			msg.str=(char*)malloc(sample->len);
+			std::string str(((char*)sample)+sizeof(Message),msg.len);
 			sub->releaseChunk(chunk);
 
 			time=std::chrono::duration_cast<std::chrono::
 				nanoseconds>(std::chrono::high_resolution_clock::
 				now().time_since_epoch()).count()-time;
 			TestMiddlewareSub<MsgType>::write_received_msg(msg,time);
-
 		}
 		return get;
 	}
@@ -151,7 +155,8 @@ private:
 	iox::popo::Publisher* pub;
 	iox::popo::Subscriber* sub;
 public:
-	PingPong(std::string& topic1,
+	PingPong(std::string& name,
+		  std::string& topic1,
 		  std::string& topic2,	
 		  int msgCount, 
 		  int prior, 
@@ -164,7 +169,7 @@ public:
 			): TestMiddlewarePingPong<MsgType>(topic1, topic2, msgCount, prior, cpu_index, filename,
 				topic_priority, interval, msg_size, isFirst)
 	{
-		iox::runtime::PoshRuntime::getInstance(std::string("/")+filename);
+		iox::runtime::PoshRuntime::getInstance(name);
 		char param1[100];
 		char param2[100];
 		if(topic1.length()<100) memcpy(param1,topic1.c_str(),topic1.length()+1);
@@ -182,7 +187,7 @@ public:
 		pub->offer();
 		if(isFirst) sub=new iox::popo::Subscriber({"Iceoryx",param2});
 		else sub=new iox::popo::Subscriber({"Iceoryx",param1});
-		sub->subscribe(10);
+		sub->subscribe(QUEUE_SIZE);
 	}
 
 	~PingPong(){
@@ -193,18 +198,18 @@ public:
 	}
 
 	void publish(short id, unsigned size) override{
+		std::string str(size,'a');
 
-		auto sample=static_cast<Message*>(pub->allocateChunk(size));
+		auto sample=static_cast<Message*>(pub->allocateChunk(size+sizeof(Message),true));
 		sample->id=id;
 		sample->timestamp=std::chrono::duration_cast<std::chrono::
-				nanoseconds>(std::chrono::high_resolution_clock::
-				now().time_since_epoch()).count();
-		sample->len=size-sizeof(Message);
-		memset(sample+sizeof(Message),'a',sample->len);
-
+			nanoseconds>(std::chrono::high_resolution_clock::
+			now().time_since_epoch()).count();
+		sample->len=size;
+		memcpy(((void*)sample)+sizeof(Message),str.c_str(),sample->len);
 		pub->sendChunk(sample);
-		return ;
 	}
+
 	
 	short get_id(MsgType &msg) override{
 		return msg.id;
@@ -216,6 +221,9 @@ public:
 	
 	bool receive() override{
 		const void* chunk=nullptr;
+		unsigned long time=std::chrono::duration_cast<std::chrono::
+			nanoseconds>(std::chrono::high_resolution_clock::
+			now().time_since_epoch()).count();
 		bool get=sub->getChunk(&chunk);
 		if(get){
 			auto sample=static_cast<const Message*>(chunk);
@@ -223,11 +231,14 @@ public:
 			msg.timestamp=sample->timestamp;
 			msg.id=sample->id;
 			msg.len=sample->len;
-			std::string str((char*)sample+sizeof(Message),msg.len);
+			msg.str=(char*)malloc(sample->len);
+			std::string str(((char*)sample)+sizeof(Message),msg.len);
 			sub->releaseChunk(chunk);
 
+			time=std::chrono::duration_cast<std::chrono::
+				nanoseconds>(std::chrono::high_resolution_clock::
+				now().time_since_epoch()).count()-time;
 			TestMiddlewarePingPong<MsgType>::write_received_msg(msg);
-
 		}
 		return get;
 	}
@@ -244,6 +255,8 @@ int main(int argc, char** argv){
 			.required()
 			.help("-t/--type is a type of the node: publisher, subscriber or ping_pong");
 	program.add_argument("--first")
+			.implicit_value(true)
+			.default_value(false)
 			.help("--first is a config for ping_pong test");
 	
 
@@ -255,94 +268,75 @@ int main(int argc, char** argv){
 		return 1;
 	}
 	auto type=program.get<std::string>("-t");
-	if(!type.compare("publisher")){
-		auto conf_path=program.get<std::string>("-c");
-		std::ifstream file(conf_path);
-		if(!file){
-			std::cout<<"Can't open file "<<conf_path<<std::endl;
-			return 2;
-		}
-		nlohmann::json json;
-		file>>json;
-		file.close();
-
-		std::string topic=json["topic"];
-		std::string filename=json["res_filenames"][0];
-		int m_count=json["m_count"];
-		int min_size=json["min_msg_size"];
-		int max_size=json["max_msg_size"];
-		int step=json["step"];
-		int before_step=json["msgs_before_step"];
-		int prior=json["priority"][0];
-		int cpu=json["cpu_index"][0];
-		int interval=json["interval"];
-		int topic_prior=json["topic_priority"];
-
+	auto conf_path=program.get<std::string>("-c");
+	
+	std::ifstream file(conf_path);
+	if(!file){
+		std::cout<<"Can't open file "<<conf_path<<std::endl;
+		return 2;
+	}
+	nlohmann::json json;
+	file>>json;
+	file.close();
+	
+	std::string topic1=json["topic"][0];
+	std::string topic2=json["topic"][1];
+	std::string filename1=json["res_filenames"][0];
+	std::string filename2=json["res_filenames"][1];
+	int m_count=json["m_count"];
+	int prior1=json["priority"][0];
+	int prior2=json["priority"][1];
+	int cpu1=json["cpu_index"][0];
+	int cpu2=json["cpu_index"][1];
+	int min_size=json["min_msg_size"];
+	int max_size=json["max_msg_size"];
+	int step=json["step"];
+	int before_step=json["msgs_before_step"];
+	int interval=json["interval"];
+	int topic_prior=json["topic_priority"];
+	
+	unsigned long count_name=std::chrono::duration_cast<std::chrono::
+		nanoseconds>(std::chrono::high_resolution_clock::
+		now().time_since_epoch()).count() ;
+	if(type == "publisher"){
 		std::string name=std::string("/pub");
+		name+=std::to_string(count_name);
+
 		std::cout<<"Publisher"<<std::endl;
-		Publisher pub(topic, m_count, prior, cpu,  min_size, max_size, step,
-				interval, before_step, filename, topic_prior);
+		Publisher pub(name, topic1, m_count, prior1, cpu1,  min_size, max_size, step,
+				interval, before_step, filename1, topic_prior);
 		pub.StartTest();
 		std::cout<<"End Publisher"<<std::endl;
 	}
-	if(!type.compare("subscriber")){
-		auto conf_path=program.get<std::string>("-c");
-		std::ifstream file(conf_path);
-		if(!file){
-			std::cout<<"Can't open file "<<conf_path<<std::endl;
-			return 2;
-		}
-		nlohmann::json json;
-		file>>json;
-		file.close();
-
-		std::string topic=json["topic"];
-		std::string filename=json["res_filenames"][1];
-		int m_count=json["m_count"];
-		int prior=json["priority"][1];
-		int cpu=json["cpu_index"][1];
-		int topic_prior=json["topic_priority"];
-
+	else if(type == "subscriber"){
 		std::string name=std::string("/sub");
+		name+=std::to_string(count_name);
+
 		std::cout<<"Subscriber"<<std::endl;
-		Subscriber<Message> sub(topic, m_count, prior, cpu, filename, topic_prior);
+		Subscriber<Message> sub(name, topic1, m_count, prior2, cpu2, filename2, topic_prior);
 		sub.StartTest();
 		std::cout<<"End Subscriber"<<std::endl;
 	}
-	if(!type.compare("ping_pong")){
-		nlohmann::json json_pp;
-		if(auto conf_pp=program.present("--first")){
-			std::ifstream file=std::ifstream(*conf_pp);
-			if(!file){
-				std::cout<<"Can't open file "<<argv[4]<<std::endl;
-				return 2;
-			}
-			file>>json_pp;
-			file.close();
-		}else{
-			std::cout<<"No config for ping_pong test"<<std::endl;
-			std::cout<<program<<std::endl;
-			return 3;
-		}
-		bool isFirst=json_pp["isPingPong"];
-		int i;
-		if(isFirst) i=0;
-		else i=1;
-		std::string topic1=json_pp["topic"][i];
-		std::string topic2=json_pp["topic"][i];
-		std::string filename=json_pp["res_filenames"][i];
-		int m_count=json_pp["m_count"];
-		int min_size=json_pp["min_msg_size"];
-		int prior=json_pp["priority"][i];
-		int cpu=json_pp["cpu_index"][i];
-		int interval=json_pp["interval"];
-		int topic_prior=json_pp["topic_priority"];
+	else if(type == "ping_pong"){
+		bool isFirst=program.get<bool>("--first");
+		
+		std::string name=std::string("/ping_pong");
+		name+=std::to_string(count_name);
 
 		std::cout<<"PingPong"<<std::endl;
-		PingPong<Message> ping_pong(topic1, topic2, m_count, prior, cpu, filename, topic_prior,
+		if(isFirst){
+			PingPong<Message> ping_pong(name, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
 						interval, min_size, isFirst);
-		ping_pong.StartTest();
+			ping_pong.StartTest();
+		}else{
+			PingPong<Message> ping_pong(name, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+						interval, min_size, isFirst);
+			ping_pong.StartTest();	
+		}
 		std::cout<<"End PingPong"<<std::endl;
+	}else{
+		std::cout<<"Wrong node type"<<std::endl;
+		return 3;
 	}
 
 	return 0;
