@@ -1,4 +1,4 @@
-#include "../../../interface/ping_pong_interface.hpp"
+#include "../../interface/ping_pong_interface.hpp"
 #include "gen/TestData_DCPS.hpp"
 
 class TestPingPongNode: public TestMiddlewarePingPong<TestDataType>{
