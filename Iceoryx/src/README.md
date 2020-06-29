@@ -27,7 +27,6 @@ make
 ### Запуск
 
 * Запустить RouDi, через ключ ```-c``` передаётся абсолютный путь к config-файлу
-* Запустить ```./PubSub <type> <config_file> <config_for_ping_pong>```
-    * где type: publisher, subscriber, ping_pong
-    * где config_file - конфигурационный файл для теста
-    * где config_for_ping_pong - конфигурационный файл для ping_pong теста
+* Запустить ```./PubSub```
+    * Ключ -t(--type) - тип узла: publisher, subscriber или ping_pong
+    * Ключ -c(--config) - конфигурационный файл для тестов
