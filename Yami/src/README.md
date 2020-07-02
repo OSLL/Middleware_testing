@@ -2,7 +2,7 @@
 
 ## Установка
 
-(Yami)[http://www.inspirel.com/yami4/]
+[Yami](http://www.inspirel.com/yami4/)
 
 * Скачивать архив "Universal source package: libraries and services"
 * Распаковать архив
