@@ -3,20 +3,25 @@
 #include <open62541/client_highlevel.h>
 #include <open62541/client_subscriptions.h>
 #include <open62541/plugin/log_stdout.h>
-#include "../../interface/sub_interface.hpp"
 #include "DataType.hpp"
+#include "../../interface/ping_pong_interface.hpp"
 
-static bool isRunning;
-
-class TestSubscriber: public TestMiddlewareSub<TestData>{
+class TestPingPongNode: public TestMiddlewarePingPong<TestData>{
 public:
-    TestSubscriber(std::string &topic, int msgCount, int prior,
-                   int cpu_index, std::string &filename, int topic_priority):
-                   TestMiddlewareSub<TestData>(topic, msgCount, prior, cpu_index,
-                           filename, topic_priority),
-                            isReceived(false){
+    TestPingPongNode(
+            std::string &topic1, std::string &topic2, int msgCount, int prior,
+            int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSize, bool isFirst
+    ): TestMiddlewarePingPong<TestData>(topic1, topic2, msgCount, prior, cpu_index, filename, topic_priority, msInterval, msgSize, isFirst)
+    {
+        strcpy(topic_name1, _topic_name1.c_str());
+        strcpy(topic_name2, _topic_name2.c_str());
+        if (!_isFirst){
+            strcpy(topic_name1, _topic_name2.c_str());
+            strcpy(topic_name2, _topic_name1.c_str());
+        }
+
+
         types[0] = DataType;
-        strcpy(topic_name, _topic_name.c_str());
         client = UA_Client_new();
         cc = UA_Client_getConfig(client);
         UA_ClientConfig_setDefault(cc);
@@ -40,7 +45,7 @@ public:
 
         isRunning = false;
         UA_MonitoredItemCreateRequest monRequest =
-                UA_MonitoredItemCreateRequest_default(UA_NODEID_STRING(1, topic_name));
+                UA_MonitoredItemCreateRequest_default(UA_NODEID_STRING(1, topic_name2));
         UA_MonitoredItemCreateResult monResponse =
                 UA_Client_MonitoredItems_createDataChange(client, response.subscriptionId,
                                                           UA_TIMESTAMPSTORETURN_BOTH,
@@ -50,14 +55,6 @@ public:
 
 
     }
-    ~TestSubscriber(){
-        if(UA_Client_Subscriptions_deleteSingle(client, subId) == UA_STATUSCODE_GOOD)
-            printf("Subscription removed\n");
-        UA_Variant_clear(&value);
-        UA_Client_disconnect(client);
-        UA_Client_delete(client);
-    }
-
 
     bool receive() override {
         isReceived = false;
@@ -72,33 +69,54 @@ public:
         return msg.timestamp;
     }
 
+    void publish(short id, unsigned size) override {
+        std::string data(size, 'a');
+        char msg_data[size];
+        strcpy(msg_data, data.c_str());
+        auto str = UA_STRING(msg_data);
+
+        UA_Variant *myVariant = UA_Variant_new();
+        unsigned long long  timestamp = std::chrono::duration_cast<std::chrono::
+        nanoseconds>(std::chrono::high_resolution_clock::
+                     now().time_since_epoch()).count();
+        TestData msg = {str, id, timestamp};
+
+        UA_Variant_setScalarCopy(myVariant, &msg, &DataType);
+
+        UA_Client_writeValueAttribute(client, nodeId, myVariant);
+
+        UA_Variant_delete(myVariant);
+    }
+
 protected:
+    UA_NodeId nodeId;
     UA_ClientConfig *cc;
     UA_Client *client;
     UA_DataType types[1];
     UA_DataTypeArray customDataTypes = {NULL, 1, types};
     UA_Variant value;
-    char topic_name[100];
+    char topic_name1[100];
+    char topic_name2[100];
     bool isReceived;
     UA_UInt32 subId;
     static void handler_ValChanged(UA_Client *client, UA_UInt32 subId, void *subContext,
-                             UA_UInt32 monId, void *monContext, UA_DataValue *value) {
+                                   UA_UInt32 monId, void *monContext, UA_DataValue *value) {
         if(!isRunning)
             return;
-        char *topic = ((TestSubscriber *)subContext)->topic_name;
+        char *topic = ((TestPingPongNode *)subContext)->topic_name2;
         TestData data;
         UA_Variant *val = UA_Variant_new();
         auto start_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::
-                now().time_since_epoch()).count();
+                                                                                    now().time_since_epoch()).count();
         UA_StatusCode retval = UA_Client_readValueAttribute(client, UA_NODEID_STRING(1,
                                                                                      topic), val);
         unsigned long proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::
-                high_resolution_clock::now().time_since_epoch()).count() - start_timestamp;
+                                                                                       high_resolution_clock::now().time_since_epoch()).count() - start_timestamp;
         if(retval == UA_STATUSCODE_GOOD && UA_Variant_isScalar(val)) {
             data = *((TestData *)val->data);
-            ((TestSubscriber *)subContext)->write_received_msg(data, proc_time);
-            ((TestSubscriber *)subContext)->isReceived = true;
-            //printf("the value is: %d %lu\n", data.id, data.timestamp);
+            ((TestPingPongNode *)subContext)->write_received_msg(data);
+            ((TestPingPongNode *)subContext)->isReceived = true;
+            printf("the value is: %d %lu\n", data.id, data.timestamp);
         }
         UA_Variant_delete(val);
     }
