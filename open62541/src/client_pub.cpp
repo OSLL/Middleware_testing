@@ -3,7 +3,6 @@
 #include <open62541/client_highlevel.h>
 #include <open62541/plugin/log_stdout.h>
 #include "DataType.hpp"
-#include <cstdlib>
 #include "../../interface/pub_interface.hpp"
 
 class TestPublisher: public TestMiddlewarePub{
@@ -27,6 +26,9 @@ public:
             UA_Client_delete(client);
             throw test_exception("Connection error!", MIDDLEWARE_ERROR);
         }
+        strcpy(topic_name, _topic_name.c_str());
+        nodeId = UA_NODEID_STRING(1, topic_name);
+
         UA_Variant_init(&value);
 
     }
@@ -37,10 +39,6 @@ public:
     }
 
     unsigned long publish(short id, unsigned size) override {
-        char topic_name[100];
-        strcpy(topic_name, _topic_name.c_str());
-        nodeId = UA_NODEID_STRING(1, topic_name);
-
         std::string data(size, 'a');
         char msg_data[size];
         strcpy(msg_data, data.c_str());
@@ -66,6 +64,7 @@ public:
     }
 
 protected:
+    char topic_name[100];
     UA_ClientConfig *cc;
     UA_Client *client;
     UA_DataType types[1];
@@ -74,18 +73,3 @@ protected:
     UA_NodeId nodeId;
 
 };
-
-
-/*int main(int argc, char *argv[]) {
-    std::string topic("test_topic");
-    std::string res("res.txt");
-    TestPublisher pub(topic, 15, -1, -1, 50, 50, 0, 100,
-            100, res, 0);
-    try {
-        pub.StartTest();
-    }
-    catch (test_exception e) {
-        std::cout<<e.what();
-    }
-    return 0;
-}*/
