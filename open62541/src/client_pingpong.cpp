@@ -38,7 +38,7 @@ public:
         request.requestedPublishingInterval = 6.0;
         UA_CreateSubscriptionResponse response = UA_Client_Subscriptions_create(client, request,
                                                                                 this, NULL, NULL);
-
+        nodeId = UA_NODEID_STRING(1, topic_name1);
         subId = response.subscriptionId;
         if(response.responseHeader.serviceResult != UA_STATUSCODE_GOOD)
             throw test_exception("Error with creating subscription!", MIDDLEWARE_ERROR);
@@ -106,17 +106,13 @@ protected:
         char *topic = ((TestPingPongNode *)subContext)->topic_name2;
         TestData data;
         UA_Variant *val = UA_Variant_new();
-        auto start_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::
-                                                                                    now().time_since_epoch()).count();
         UA_StatusCode retval = UA_Client_readValueAttribute(client, UA_NODEID_STRING(1,
                                                                                      topic), val);
-        unsigned long proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::
-                                                                                       high_resolution_clock::now().time_since_epoch()).count() - start_timestamp;
         if(retval == UA_STATUSCODE_GOOD && UA_Variant_isScalar(val)) {
             data = *((TestData *)val->data);
             ((TestPingPongNode *)subContext)->write_received_msg(data);
             ((TestPingPongNode *)subContext)->isReceived = true;
-            printf("the value is: %d %lu\n", data.id, data.timestamp);
+            //printf("%s the value is: %d %lu\n", topic, data.id, data.timestamp);
         }
         UA_Variant_delete(val);
     }
