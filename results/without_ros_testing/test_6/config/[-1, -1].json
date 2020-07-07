@@ -1,1 +1,0 @@
-{"topic": ["test_topic", "test_topic1"], "res_filenames": ["[-1, -1]_pub.json", "[-1, -1]_sub.json"], "m_count": 5000, "min_msg_size": 65536, "max_msg_size": 65536, "step": 0, "msgs_before_step": 100, "priority": [99, 99], "cpu_index": [-1, -1], "interval": 0, "topic_priority": 100}
