@@ -93,8 +93,15 @@ class MiddlewareTesting(unittest.TestCase):
 
     def tearDown(self):
         resfiles = get_resfiles(self.test_n, self.subtests)
-        for filename in resfiles:
-            plot_results([filename], self.test_n == 8)
+        if self.subtests:
+            for filenames in resfiles:
+                plot_results([filenames], self.subtests)
+        elif i != 8:
+            resfiles = get_grouped_filenames(resfiles)
+            for files in resfiles:
+                plot_results(files)
+        else:
+            plot_results(resfiles, False, True)
 
 
 if __name__ == "__main__":
