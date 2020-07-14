@@ -5,6 +5,8 @@ import json
 from datetime import datetime
 from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
 from plotting import get_resfiles, plot_results
+from get_sys_info import system, max_ram, scale_ram
+from multiprocessing import Process, Value
 
 class MiddlewareTesting(unittest.TestCase):
     pubs = ["../FastRTPS/test/build/FastRTPSTest"]
@@ -14,6 +16,8 @@ class MiddlewareTesting(unittest.TestCase):
     stype = 'subscriber'
     ptype = 'publisher'
 
+    sys = system()
+
     @classmethod
     def setUpClass(self):
         for p in self.pubs:
@@ -22,6 +26,9 @@ class MiddlewareTesting(unittest.TestCase):
             self.nodes.append(p[start+1 : start+end+1])
 
     def startTest(self):
+        val = Value('i',0)
+        proc = Process(target=max_ram, args=(val,))
+        proc.start()
         test_dir = 'test_' + str(self.test_n)
         configs = get_configs(self.test_n, self.subtests)
         if isinstance(configs[0], str):
@@ -52,6 +59,8 @@ class MiddlewareTesting(unittest.TestCase):
                     print(datetime.now(), f"subscriber №{sub_n+1} finished", file=log_file)
                 wait_and_end_process(p)
                 print(datetime.now(), "publisher finished", file=log_file, flush=True)
+        proc.terminate()
+        self.sys.ram_tests['Max RAM test_' + str(self.test_n)] = scale_ram(val.value)
 
     def test0(self):
         print(datetime.now(), ">>> running test0", file=log_file)
@@ -92,6 +101,8 @@ class MiddlewareTesting(unittest.TestCase):
         self.startTest()
 
     def tearDown(self):
+        with open('system_info.json','w') as out:
+            out.write(self.sys.get_info())
         resfiles = get_resfiles(self.test_n, self.subtests)
         for filename in resfiles:
             plot_results([filename], self.test_n == 8)
