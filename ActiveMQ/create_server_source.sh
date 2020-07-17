@@ -1,0 +1,1 @@
+$ACTIVEMQ_ARTEMIS_DIR/artemis-distribution/target/apache-artemis-*.*.*-bin/apache-artemis-*.*.*/bin/artemis create --allow-anonymous --silent --force --user guest --password guest --role guest --port-offset 0 --data ./data --allow-anonymous --no-web --no-autotune --verbose --aio ./server
