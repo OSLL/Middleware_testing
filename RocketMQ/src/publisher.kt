@@ -1,43 +1,47 @@
-import org.apache.rocketmq.client.exception.MQClientException
+import com.github.ajalt.clikt.output.TermUi.echo
+
 import org.apache.rocketmq.client.producer.DefaultMQProducer
 import org.apache.rocketmq.client.producer.SendCallback
 import org.apache.rocketmq.client.producer.SendResult
 import org.apache.rocketmq.common.message.Message
 import org.apache.rocketmq.remoting.common.RemotingHelper
-import java.io.UnsupportedEncodingException
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import java_interface.PublisherInterface
 
-fun main(
-        args: Array<String>) {
-    val producer = DefaultMQProducer("Jodie_Daily_test")
-    producer.setNamesrvAddr("localhost:9876");
-    producer.start()
-    producer.retryTimesWhenSendAsyncFailed = 0
-    val messageCount = 100
-    val countDownLatch = CountDownLatch(messageCount)
-    for (i in 0 until messageCount) {
+class Publisher(val topic: String, val msgCount: Int, val prior: Int, val cpu_index: Int,
+                val min_msg_size: Int, val max_msg_size: Int, val step: Int, val interval: Int,
+                val msgs_before_step: Int, val filename: String, val topic_priority: Int):
+        PublisherInterface(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval,
+                msgs_before_step, filename, topic_priority) {
+    val producer = DefaultMQProducer("publishers")
+    init {
+        producer.setNamesrvAddr("localhost:9876");
+        producer.start()
+        producer.retryTimesWhenSendAsyncFailed = 0
+    }
+
+    override fun publish(id: Int, size: Int): Long {
+        val data = "a".padEnd(size, 'a')
         try {
+            var curTime = System.nanoTime()
             val msg = Message("TopicTest",
                     "TagA",
                     "OrderID188",
-                    "Hello world".toByteArray(charset(RemotingHelper.DEFAULT_CHARSET)))
+                    "${id}ts:${curTime}data:$data".toByteArray(charset(RemotingHelper.DEFAULT_CHARSET)))
             producer.send(msg, object : SendCallback {
                 override fun onSuccess(sendResult: SendResult) {
-                    countDownLatch.countDown()
-                    System.out.printf("%-10d OK %s %n", i, sendResult.msgId)
+                    echo ("$id OK")
                 }
 
                 override fun onException(e: Throwable) {
-                    countDownLatch.countDown()
-                    System.out.printf("%-10d Exception %s %n", i, e)
+                    echo ("$id Exception!")
                     e.printStackTrace()
                 }
             })
+            return curTime - System.nanoTime()
         } catch (e: Exception) {
             e.printStackTrace()
+            return 0
         }
     }
-    countDownLatch.await(5, TimeUnit.SECONDS)
-    producer.shutdown()
+
 }
