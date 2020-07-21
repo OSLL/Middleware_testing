@@ -232,27 +232,29 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                 if scale > mscale:
                     mscale = scale
                     munit = unit
-                if not isPingPong:
-                    (read_proc_time, runit, _) = scale_values(read_proc_time)
-                    plot_graph(ids, read_proc_time, runit, 'Reading time',
-                                 f'{directory}{res_name}_read_proc_time.png')
-                    proc_time = []
-                    for i in range(0, 10):
-                        k = int(len(read_proc_time) * (i+1)/10)
-                        proc_time.append(read_proc_time[0:k])
-                    plot_boxes(proc_time, [len(d) for d in proc_time], 
-                             'number of messages', runit, 'Reading time boxes', 
-                               f'{directory}{res_name}_read_proc_time_box.png')
+                (read_proc_time, runit, _) = scale_values(read_proc_time)
+                plot_graph(ids, read_proc_time, runit, 'Reading time',
+                             f'{directory}{res_name}_read_proc_time.png')
+                proc_time = []
+                for i in range(0, 10):
+                    k = int(len(read_proc_time) * (i+1)/10)
+                    proc_time.append(read_proc_time[0:k])
+                plot_boxes(proc_time, [len(d) for d in proc_time], 
+                        'number of messages', runit, 
+                        f'{node_name}: Reading time boxes', 
+                        f'{directory}{node_name}_{res_name}_read_proc_time_box.png')
                 list_counts = queue_size(send_time, receive_time)
                 plot_message_queue(list_counts, 
-                                    f'{directory}{res_name}_queue.png')
+                                f'{directory}{node_name}_{res_name}_queue.png')
+                plot_graph(ids, delay_time, unit, f'{node_name}: Delay time', 
+                           f'{direct}{node_name}_{res_name}_delay.png')
                 delay = []
                 for i in range(0, 10):
                     k = int(len(delay_time) * (i+1)/10)
                     delay.append(delay_time[0:k])
-                plot_boxes(delay, [len(d) for d in delay], 'number of messages', 
-                       unit, 'Delay time boxes', 
-                       f'{directory}{res_name}_delay_box.png')
+                plot_boxes(delay, [len(d) for d in delay],'number of messages', 
+                       unit, f'{node_name}: Delay time boxes', 
+                       f'{directory}{node_name}_{res_name}_delay_box.png')
         saved_delay = [[d/mscale for d in saved_delay[i]] 
                         for i in range(0, len(saved_delay))]
         plot_graph(saved_ids, saved_delay, munit, 'Delay time', 
@@ -260,7 +262,7 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
         mean = [np.mean(d) for d in saved_delay]
         plot_graph(saved_ids, [[abs(mean[i] - d) for d in saved_delay[i]] 
                    for i in range(0, len(mean))], munit, 
-                   'Jitter', f'{direct}{res_name}_jitter.png', labels)
+                   f'Jitter', f'{direct}{res_name}_jitter.png', labels)
     else:
         delay = []
         for files in filenames:
