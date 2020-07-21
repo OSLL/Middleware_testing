@@ -76,7 +76,7 @@ public abstract class PublisherInterface extends TestMiddlewareInterface{
     public void to_Json(){
         JSONArray json = new JSONArray();
 
-        for(int i=0; i<_msgCount; i++){
+        for(int i=0; i<_write_msg_time.size(); i++){
             JSONObject obj = new JSONObject();
             Map map = new HashMap();
             map.put("id", i);
