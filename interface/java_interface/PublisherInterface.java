@@ -42,7 +42,7 @@ public abstract class PublisherInterface extends TestMiddlewareInterface{
             Thread.currentThread().sleep(4*1000);
 
             int cur_size = _byteSizeMin;
-            for(int i=0; i<_msgCount; i++){
+            for(int i=0; i<_write_msg_time.size(); i++){
                 if(i % (_msg_count_befor_step - 1) == 0 && cur_size<=_byteSizeMax)
                     cur_size += _step;
 

@@ -76,7 +76,7 @@ public abstract class SubscriberInterface<T> extends TestMiddlewareInterface{
     public void to_Json(){
         JSONArray json = new JSONArray();
 
-        for(int i=0; i<_msgCount; i++){
+        for(int i=0; i < _read_msg_time.size(); i++){
             JSONObject obj = new JSONObject();
             T msg = _msgs.get(i);
             Map map = new HashMap();
