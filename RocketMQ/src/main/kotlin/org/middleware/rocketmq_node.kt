@@ -31,7 +31,7 @@ class RocketmqNode: CliktCommand() {
             val pubCpuIndex = ((jsonObj["cpu_index"] as JSONArray)[0] as Long).toInt()
             val subCpuIndex = ((jsonObj["cpu_index"] as JSONArray)[1] as Long).toInt()
             val minMsgSize = (jsonObj["min_msg_size"] as Long).toInt()
-            val maxMsgSize = (jsonObj["maotlx_msg_size"] as Long).toInt()
+            val maxMsgSize = (jsonObj["max_msg_size"] as Long).toInt()
             val step = (jsonObj["step"] as Long).toInt()
             val msgsBeforeStep = (jsonObj["msgs_before_step"] as Long).toInt()
             val interval = (jsonObj["interval"] as Long).toInt()
