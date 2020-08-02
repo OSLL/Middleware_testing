@@ -10,9 +10,9 @@ import java.util.*;
 public abstract class SubscriberInterface<T> extends TestMiddlewareInterface{
 
     protected String _topic_name;
-    protected ArrayList<Long> _recieve_timestamps;
-    protected ArrayList<Long> _read_msg_time;
-    protected ArrayList<T> _msgs;
+    protected long[] _recieve_timestamps;
+    protected long[] _read_msg_time;
+    protected T[] _msgs;
     protected int _msgCount;
     protected String _filename;
     protected int _topic_prior;
@@ -21,23 +21,23 @@ public abstract class SubscriberInterface<T> extends TestMiddlewareInterface{
     protected long TIMEOUT = 20_000_000_000L;
 
     public SubscriberInterface(String topic, int msgCount, int prior, int cpu_index,
-            String filename, int topic_prior){
+            String filename, int topic_prior, Class<T>dataType){
         super(cpu_index, prior, true);
         this._topic_name = topic;
         this._msgCount = msgCount;
         this._cpu_index = cpu_index;
         this._filename = filename;
         this._topic_prior = topic_prior;
-        this._recieve_timestamps = new ArrayList<Long>(msgCount);
-        this._read_msg_time = new ArrayList<Long>(msgCount);
-        this._msgs = new ArrayList<T>(msgCount);
+        this._recieve_timestamps = new long[msgCount];
+        this._read_msg_time = new long[msgCount];
+        this._msgs = (T[]) java.lang.reflect.Array.newInstance(dataType, msgCount);
     }
 
     public void write_received_msg(T msg, long proc_time){
-        _msgs.add(get_id(msg), msg);
-        _recieve_timestamps.add(get_id(msg), System.currentTimeMillis() * 
-                TIME_SCALE + System.nanoTime());
-        _read_msg_time.add(get_id(msg), proc_time);
+        _msgs[get_id(msg)] = msg;
+        _recieve_timestamps[get_id(msg)] = System.currentTimeMillis() *
+                TIME_SCALE + System.nanoTime();
+        _read_msg_time[get_id(msg)] = proc_time;
     }
 
     public int startTest() {
@@ -75,15 +75,15 @@ public abstract class SubscriberInterface<T> extends TestMiddlewareInterface{
 
     public void to_Json(){
         JSONArray json = new JSONArray();
-        for(int i=0; i < _msgs.size(); i++){
+        for(int i=0; i < _msgs.length; i++){
             JSONObject obj = new JSONObject();
-            T msg = _msgs.get(i);
+            T msg = _msgs[i];
             Map map = new HashMap();
             map.put("id", get_id(msg));
             map.put("sent_time", get_timestamp(msg));
-            map.put("recieve_timestamp", _recieve_timestamps.get(i));
-            map.put("delay", _recieve_timestamps.get(i) - get_timestamp(msg));
-            map.put("read_proc_time", _read_msg_time.get(i));
+            map.put("recieve_timestamp", _recieve_timestamps[i]);
+            map.put("delay", _recieve_timestamps[i] - get_timestamp(msg));
+            map.put("read_proc_time", _read_msg_time[i]);
             obj.put("msg", map);
             json.add(obj);
         }

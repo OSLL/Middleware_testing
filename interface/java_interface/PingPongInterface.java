@@ -9,8 +9,8 @@ import java.util.*;
 
 public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
 
-    protected ArrayList<Long> _recieve_timestamps;
-    protected ArrayList<T> _msgs;
+    protected long[] _recieve_timestamps;
+    protected T[] _msgs;
     protected int _msgSize;
     protected String _filename;
     protected String _topic_name1;
@@ -24,7 +24,7 @@ public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
     protected long TIMEOUT = 20_000_000_000L;
 
     public PingPongInterface(String topic1, String topic2, int msgCount, int prior, int cpu_index,
-            String filename, int topic_priority, int msInterval, int msgSize, boolean isFirst){
+            String filename, int topic_priority, int msInterval, int msgSize, boolean isFirst,  Class<T>dataType){
         super(prior, cpu_index, false);
         this._filename = filename;
         this._topic_name1 = topic1;
@@ -35,13 +35,14 @@ public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
         this._msgSize = msgSize;
         this._isFirst = isFirst;
         this._topic_priority = topic_priority;
-        this._recieve_timestamps = new ArrayList<Long>(msgCount);
-        this._msgs = new ArrayList<T>(msgCount);
+        this._recieve_timestamps = new long[msgCount];
+        this._msgs = (T[]) java.lang.reflect.Array.newInstance(dataType, msgCount);
+
     }
     public void write_received_msg(T msg){
-        _msgs.add(get_id(msg), msg);
-        _recieve_timestamps.add(get_id(msg), System.currentTimeMillis() * 
-                TIME_SCALE + System.nanoTime());
+        _msgs[get_id(msg)] = msg;
+        _recieve_timestamps[get_id(msg)] = System.currentTimeMillis() *
+                TIME_SCALE + System.nanoTime();
     }
 
     public int startTest() {
@@ -93,12 +94,12 @@ public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
 
         for(int i=0; i<_msgCount; i++){
             JSONObject obj = new JSONObject();
-            T msg = _msgs.get(i);
+            T msg = _msgs[i];
             Map map = new HashMap();
             map.put("id", get_id(msg));
             map.put("sent_time", get_timestamp(msg));
-            map.put("recieve_timestamp", _recieve_timestamps.get(i));
-            map.put("delay", _recieve_timestamps.get(i) - get_timestamp(msg));
+            map.put("recieve_timestamp", _recieve_timestamps[i]);
+            map.put("delay", _recieve_timestamps[i] - get_timestamp(msg));
             obj.put("msg", map);
             json.add(obj);
         }
