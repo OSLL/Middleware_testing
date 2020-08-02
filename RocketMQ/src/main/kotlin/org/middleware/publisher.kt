@@ -1,7 +1,5 @@
 package org.middleware
 
-
-import com.github.ajalt.clikt.output.TermUi.echo
 import org.apache.rocketmq.client.producer.DefaultMQProducer
 import org.apache.rocketmq.client.producer.SendCallback
 import org.apache.rocketmq.client.producer.SendResult
@@ -16,7 +14,7 @@ class Publisher(topic: String, msgCount: Int, prior: Int, cpu_index: Int,
                 msgs_before_step, filename, topic_priority) {
     val producer = DefaultMQProducer("publishers")
     init {
-        producer.setNamesrvAddr("localhost:9876");
+        producer.namesrvAddr = "localhost:9876";
         producer.start()
         producer.retryTimesWhenSendAsyncFailed = 0
     }
@@ -25,17 +23,17 @@ class Publisher(topic: String, msgCount: Int, prior: Int, cpu_index: Int,
         val data = "a".padEnd(size, 'a')
         try {
             var curTime = System.nanoTime()
-            val msg = Message("topic1",
+            val msg = Message(_topic_name,
                     "TagA",
-                    "OrderID188",
+                    "OrderID1",
                     "${id}ts:${curTime}data:$data".toByteArray(charset(RemotingHelper.DEFAULT_CHARSET)))
             producer.send(msg, object : SendCallback {
                 override fun onSuccess(sendResult: SendResult) {
-                     echo ("$id OK")
+                     // print ("$id OK")
                 }
 
                 override fun onException(e: Throwable) {
-                    echo ("$id Exception!")
+                    // print ("$id Exception!")
                     e.printStackTrace()
                 }
             })

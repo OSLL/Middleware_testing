@@ -42,18 +42,24 @@ class RocketmqNode: CliktCommand() {
                             interval, msgsBeforeStep, pubFilename, topicPrior)
                     echo("pub")
                     publisher.startTest()
-                    echo("test ends")
                     publisher.stopNode()
                 }
                 "subscriber" -> {
                     echo("sub")
                     val subscriber = Subscriber(topic1, msgCount, subPriority, subCpuIndex, subFilename, topicPrior)
                     subscriber.startTest()
-                    echo("test ends")
                     subscriber.stopNode()
                 }
                 "ping_pong" -> {
-                    TODO("Implement ping_pong node class")
+                    val filename: String
+                    if (isFirst)
+                        filename = pubFilename
+                    else
+                        filename = subFilename
+                    val pingPong = PingPong(topic1, topic2, msgCount, pubPriority, pubCpuIndex, filename, topicPrior,
+                            interval, minMsgSize, isFirst)
+                    pingPong.startTest()
+                    pingPong.stopNode()
                 }
             }
 
@@ -63,8 +69,6 @@ class RocketmqNode: CliktCommand() {
             e.printStackTrace()
             exitProcess(1)
         }
-        echo("$type $configFilename $isFirst")
-
         exitProcess(0)
     }
 }
