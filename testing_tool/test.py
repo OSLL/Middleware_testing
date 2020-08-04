@@ -4,11 +4,11 @@ import subprocess
 import json
 from datetime import datetime
 from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
-from plotting import get_resfiles, plot_results
+from plotting import get_resfiles, get_grouped_filenames, plot_results
 
 class MiddlewareTesting(unittest.TestCase):
-    pubs = ["../FastRTPS/test/build/FastRTPSTest"]
-    subs = ["../FastRTPS/test/build/FastRTPSTest"]
+    pubs = ["../NSQ/go/src/main/main"]
+    subs = ["../NSQ/go/src/main/main"]
     nodes = []
     
     stype = 'subscriber'
@@ -96,7 +96,7 @@ class MiddlewareTesting(unittest.TestCase):
         if self.subtests:
             for filenames in resfiles:
                 plot_results([filenames], self.subtests)
-        elif i != 8:
+        elif self.test_n != 8:
             resfiles = get_grouped_filenames(resfiles)
             for files in resfiles:
                 plot_results(files)

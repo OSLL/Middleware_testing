@@ -26,7 +26,7 @@ def create_process(name, config, ntype, cwd, isFirst=False):
 
 
 def wait_and_end_process(process):
-    end = str.encode("end")
+    end = str.encode("end\n")
     out, err = process.communicate(end)
     if out is not None:
         print(datetime.now(), out, file=log_file)

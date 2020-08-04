@@ -247,7 +247,7 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                 plot_message_queue(list_counts, 
                                 f'{directory}{node_name}_{res_name}_queue.png')
                 plot_graph(ids, delay_time, unit, f'{node_name}: Delay time', 
-                           f'{direct}{node_name}_{res_name}_delay.png')
+                           f'{directory}{node_name}_{res_name}_delay.png')
                 delay = []
                 for i in range(0, 10):
                     k = int(len(delay_time) * (i+1)/10)
