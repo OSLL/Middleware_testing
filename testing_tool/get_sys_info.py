@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import psutil
+import time
 
 def get_ram_info():
     p = subprocess.Popen(args=['dmidecode', '-t', '17'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -17,7 +18,7 @@ def get_ram_info():
             number+=1
         if line.find('Speed') == -1 and line.find('Size') == -1:
             continue
-        lst = line.split(':')
+        lst = line.split(': ')
         res['RAM'+str(number)+' '+lst[0][1:]]=lst[1]
     return res
 
@@ -36,6 +37,7 @@ def max_ram(val):
         if ram > max_ram:
             max_ram = ram
             val.value = max_ram - start_ram
+        time.sleep(1/1000)
 
 class system:
     sys_platform = platform.platform()
