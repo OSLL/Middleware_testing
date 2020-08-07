@@ -1,23 +1,27 @@
 package org.middleware
 
+import java_interface.SubscriberInterface
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere
 import org.apache.rocketmq.common.message.MessageExt
 import org.apache.rocketmq.client.consumer.listener.*
-import java_interface.SubscriberInterface
+import java.util.concurrent.atomic.AtomicBoolean
 
 class Subscriber(topic: String, msgCount: Int, prior: Int, cpu_index: Int,
                  filename: String, topic_prior: Int):
         SubscriberInterface<MessageExt>(topic, msgCount, prior, cpu_index, filename, topic_prior, MessageExt::class.java){
     private val consumer = DefaultMQPushConsumer("subscribers")
-    private var isReceived = false
+    protected var isReceived: AtomicBoolean = AtomicBoolean(false)
     val listener = Listener()
     inner class Listener: MessageListenerOrderly{
-        override fun consumeMessage(msgs: List<MessageExt>, context: ConsumeOrderlyContext): ConsumeOrderlyStatus {
+        @Synchronized override fun consumeMessage(msgs: List<MessageExt>, context: ConsumeOrderlyContext): ConsumeOrderlyStatus {
+            this@Subscriber.isReceived.set(true)
             for (msg in msgs) {
-                this@Subscriber.write_received_msg(msg, 0)
+                if (msg.reconsumeTimes < 1) {
+                    print("${String(msg.body)} ${msg.topic} \n")
+                    this@Subscriber.write_received_msg(msg, 0)
+                }
             }
-            this@Subscriber.isReceived = true
             return ConsumeOrderlyStatus.SUCCESS
         }
     }
@@ -31,19 +35,17 @@ class Subscriber(topic: String, msgCount: Int, prior: Int, cpu_index: Int,
     }
 
     override fun get_id(message: MessageExt?): Int {
-        val msg = String(message!!.body)
-        return msg.subSequence(0, msg.indexOf("ts:")).toString().toInt()
+        val msg = message?.body?.let { String(it) }
+        return msg?.subSequence(0, msg.indexOf("ts:")).toString().toInt()
     }
 
     override fun get_timestamp(message: MessageExt?): Long {
-        val msg = String(message!!.body)
-        return msg.subSequence(msg.indexOf("ts:") + "ts:".length, msg.indexOf("data:")).toString().toLong()
+        val msg = message?.body?.let { String(it) }
+        return msg?.subSequence(msg.indexOf("ts:") + "ts:".length, msg.indexOf("data:")).toString().toLong()
     }
 
     override fun receive(): Boolean {
-        isReceived = false
-        Thread.sleep(5)
-        return isReceived
+        return isReceived.compareAndSet(true, false)
     }
 
     fun stopNode(){

@@ -1,5 +1,6 @@
 package org.middleware
 
+import java_interface.PingPongInterface
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer
 import org.apache.rocketmq.client.producer.DefaultMQProducer
 import org.apache.rocketmq.client.producer.SendCallback
@@ -11,7 +12,7 @@ import org.apache.rocketmq.remoting.common.RemotingHelper
 import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyContext
 import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus
 import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly
-import java_interface.PingPongInterface
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class PingPong(topic1: String, topic2: String, msgCount: Int, prior: Int, cpu_index: Int,
@@ -21,15 +22,17 @@ class PingPong(topic1: String, topic2: String, msgCount: Int, prior: Int, cpu_in
 
     val producer = DefaultMQProducer("publishers")
     private val consumer = DefaultMQPushConsumer("subscribers")
-    protected var isReceived = false
+    protected var isReceived: AtomicBoolean = AtomicBoolean(false)
     val listener = Listener()
     inner class Listener: MessageListenerOrderly {
-        override fun consumeMessage(msgs: List<MessageExt>, context: ConsumeOrderlyContext): ConsumeOrderlyStatus {
+        @Synchronized override fun consumeMessage(msgs: List<MessageExt>, context: ConsumeOrderlyContext): ConsumeOrderlyStatus {
+            this@PingPong.isReceived.set(true)
             for (msg in msgs) {
-                // print(String(msg.body))
-                this@PingPong.write_received_msg(msg)
+                if (msg.reconsumeTimes < 1) {
+                    print("${String(msg.body)} ${msg.topic} \n")
+                    this@PingPong.write_received_msg(msg)
+                }
             }
-            this@PingPong.isReceived = true
             return ConsumeOrderlyStatus.SUCCESS
         }
     }
@@ -39,7 +42,7 @@ class PingPong(topic1: String, topic2: String, msgCount: Int, prior: Int, cpu_in
         producer.retryTimesWhenSendAsyncFailed = 0
         consumer.namesrvAddr = "localhost:9876"
         consumer.consumeFromWhere = ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET
-        consumer.subscribe(_topic_name1, "*")
+        consumer.subscribe(_topic_name2, "*")
         consumer.registerMessageListener(listener)
         consumer.start()
     }
@@ -47,7 +50,8 @@ class PingPong(topic1: String, topic2: String, msgCount: Int, prior: Int, cpu_in
     override fun publish(id: Int, size: Int): Unit {
         val data = "a".padEnd(size, 'a')
         try {
-            var curTime = System.nanoTime()
+            var curTime = System.currentTimeMillis() * TIME_SCALE + System.nanoTime()
+            print("Publishing to $_topic_name1 \n")
             val msg = Message(_topic_name1,
                     "TagA",
                     "OrderID1",
@@ -73,14 +77,14 @@ class PingPong(topic1: String, topic2: String, msgCount: Int, prior: Int, cpu_in
     }
 
     override fun get_timestamp(message: MessageExt?): Long {
-        val msg = String(message!!.body)
-        return msg.subSequence(msg.indexOf("ts:") + "ts:".length, msg.indexOf("data:")).toString().toLong()
+        val msg = message?.body?.let { String(it) }
+        return msg?.subSequence(msg.indexOf("ts:") + "ts:".length, msg.indexOf("data:")).toString().toLong()
     }
 
     override fun receive(): Boolean {
-        isReceived = false
-        Thread.sleep(5)
-        return isReceived
+        //if (isReceived.get())
+        //    print("true\n")
+        return isReceived.compareAndSet(true, false)
     }
 
     fun stopNode(){

@@ -27,8 +27,14 @@ public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
             String filename, int topic_priority, int msInterval, int msgSize, boolean isFirst,  Class<T>dataType){
         super(prior, cpu_index, false);
         this._filename = filename;
-        this._topic_name1 = topic1;
-        this._topic_name2 = topic2;
+        if (isFirst) {
+            this._topic_name1 = topic1;
+            this._topic_name2 = topic2;
+        }
+        else {
+            this._topic_name1 = topic2;
+            this._topic_name2 = topic1;
+        }
         this._msInterval = msInterval;
         this._cpu_index = cpu_index;
         this._msgCount = msgCount;

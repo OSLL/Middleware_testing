@@ -1,11 +1,11 @@
 package org.middleware
 
+import java_interface.PublisherInterface
 import org.apache.rocketmq.client.producer.DefaultMQProducer
 import org.apache.rocketmq.client.producer.SendCallback
 import org.apache.rocketmq.client.producer.SendResult
 import org.apache.rocketmq.common.message.Message
 import org.apache.rocketmq.remoting.common.RemotingHelper
-import java_interface.PublisherInterface
 
 class Publisher(topic: String, msgCount: Int, prior: Int, cpu_index: Int,
                 min_msg_size: Int, max_msg_size: Int, step: Int, interval: Int,
@@ -13,6 +13,7 @@ class Publisher(topic: String, msgCount: Int, prior: Int, cpu_index: Int,
         PublisherInterface(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval,
                 msgs_before_step, filename, topic_priority) {
     val producer = DefaultMQProducer("publishers")
+    protected var TIME_SCALE = 1000000L
     init {
         producer.namesrvAddr = "localhost:9876";
         producer.start()
@@ -22,18 +23,15 @@ class Publisher(topic: String, msgCount: Int, prior: Int, cpu_index: Int,
     override fun publish(id: Int, size: Int): Long {
         val data = "a".padEnd(size, 'a')
         try {
-            var curTime = System.nanoTime()
+            var curTime = System.currentTimeMillis() * this.TIME_SCALE + System.nanoTime()
             val msg = Message(_topic_name,
                     "TagA",
                     "OrderID1",
                     "${id}ts:${curTime}data:$data".toByteArray(charset(RemotingHelper.DEFAULT_CHARSET)))
             producer.send(msg, object : SendCallback {
                 override fun onSuccess(sendResult: SendResult) {
-                     // print ("$id OK")
                 }
-
                 override fun onException(e: Throwable) {
-                    // print ("$id Exception!")
                     e.printStackTrace()
                 }
             })

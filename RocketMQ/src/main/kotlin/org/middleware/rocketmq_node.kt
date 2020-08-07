@@ -15,7 +15,7 @@ import kotlin.system.exitProcess
 
 class RocketmqNode: CliktCommand() {
     private val configFilename by option("-c", "--config", help = "Path to test configuration file").file(mustExist = true).required()
-    private val type: String by option("-t", "--type", help = "").choice("publisher", "subscriber", "ping_pong").required()
+    private val type: String by option("-t", "--type", help = "Type of node").choice("publisher", "subscriber", "ping_pong").required()
     private val isFirst: Boolean by option("--first").flag()
     override fun run() {
         val parser = JSONParser()
