@@ -8,8 +8,8 @@ from plotting import get_resfiles, get_grouped_filenames, plot_results
 from get_sys_info import system
 
 class MiddlewareTesting(unittest.TestCase):
-    pubs = ["../qpid/release/build/QpidPubSub -a 127.0.0.1:25565 ", "../iceoryx/my_release/build/PubSub "]
-    subs = ["../qpid/release/build/QpidPubSub -a 127.0.0.1:25565 ", "../iceoryx/my_release/build/PubSub "]
+    pubs = ["../NSQ/go/src/main/main"]
+    subs = ["../NSQ/go/src/main/main"]
     nodes = []
     
     stype = 'subscriber'

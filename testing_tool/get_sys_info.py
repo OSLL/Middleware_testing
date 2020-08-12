@@ -9,9 +9,9 @@ from multiprocessing import Process, Value
 import shlex
 
 def get_commands():
+    # for files use absolute path
     cmd = {}
-    cmd['qpid'] = 'qpidd -p 25565 --tcp-nodelay --max-connections 0 --ha-flow-messages 0 --session-max-unacked 10000 --default-queue-limit 0'
-    cmd['iceoryx'] = '/home/mira/project_one/iceoryx/my_release/RouDi -c /home/mira/project_one/iceoryx/my_release/roudi_config_example.toml'
+    cmd['Qpid'] = 'qpidd -p 25565 --tcp-nodelay --max-connections 0 --ha-flow-messages 0 --session-max-unacked 10000 --default-queue-limit 0'
     return cmd
 
 def get_ram_info():
