@@ -5,6 +5,14 @@ import os
 import subprocess
 import psutil
 import time
+from multiprocessing import Process, Value
+import shlex
+
+def get_commands():
+    cmd = {}
+    cmd['qpid'] = 'qpidd -p 25565 --tcp-nodelay --max-connections 0 --ha-flow-messages 0 --session-max-unacked 10000 --default-queue-limit 0'
+    cmd['iceoryx'] = '/home/mira/project_one/iceoryx/my_release/RouDi -c /home/mira/project_one/iceoryx/my_release/roudi_config_example.toml'
+    return cmd
 
 def get_ram_info():
     p = subprocess.Popen(args=['dmidecode', '-t', '17'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -44,6 +52,7 @@ class system:
     cpu = cpuinfo.get_cpu_info()
     ram = get_ram_info()
     ram_tests = {}
+    cmd = get_commands()
 
     def get_info(self):
         res = {"System": self.sys_platform}
@@ -52,6 +61,24 @@ class system:
         res.update(self.ram_tests)
         return json.dumps(res,indent=4, separators=(',', ': '))
 
+    def start(self, framework):
+        self.val = Value('i',0)
+        self.check_ram = Process(target=max_ram, args=(self.val,))
+        self.check_ram.start()
+        self.framework = framework
+        if framework == '':
+            return
+        if not self.cmd.get(framework):
+            print('No such command for the framework')
+            return
+        self.proc = subprocess.Popen(shlex.split(self.cmd[framework]), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False, close_fds=True)
+        time.sleep(2)
+
+    def end(self, test_n):
+        self.proc.terminate()
+        time.sleep(2)
+        self.check_ram.terminate()
+        self.ram_tests[self.framework + ' Max RAM test_' + str(test_n)] = scale_ram(self.val.value)
 
 
 
