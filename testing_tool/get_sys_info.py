@@ -52,13 +52,16 @@ class system:
     cpu = cpuinfo.get_cpu_info()
     ram = get_ram_info()
     ram_tests = {}
+    losses = {}
     cmd = get_commands()
+    proc = None
 
     def get_info(self):
         res = {"System": self.sys_platform}
         res.update(self.cpu)
         res.update(self.ram)
         res.update(self.ram_tests)
+        res.update(self.losses)
         return json.dumps(res,indent=4, separators=(',', ': '))
 
     def start(self, framework):
@@ -66,8 +69,6 @@ class system:
         self.check_ram = Process(target=max_ram, args=(self.val,))
         self.check_ram.start()
         self.framework = framework
-        if framework == '':
-            return
         if not self.cmd.get(framework):
             print('No such command for the framework')
             return
@@ -75,10 +76,27 @@ class system:
         time.sleep(2)
 
     def end(self, test_n):
-        self.proc.terminate()
+        if self.proc != None:
+            self.proc.terminate()
         time.sleep(2)
         self.check_ram.terminate()
         self.ram_tests[self.framework + ' Max RAM test_' + str(test_n)] = scale_ram(self.val.value)
 
+    def packet_loss(self, resfiles, test_n, isPingPong=False):
+        packets = {}
+        for filenames in resfiles:
+            node_name = filenames[0][:filenames[0].rfind('/data/')]
+            node_name = node_name[node_name.rfind('/')+1:]
+            packets[node_name] = [0, 0]
+            for filename in filenames:
+                if not isPingPong and filename.find('sub') == -1:
+                    continue
+                with open(filename, 'r') as f:
+                    data = json.load(f)
+                send_time = [msg["msg"]["sent_time"] for msg in data]
+                packets[node_name][0] += send_time.count(0)
+                packets[node_name][1] += len(send_time)
+        for framework, loss in packets.items():
+            self.losses[framework + ' packet loss test_' + str(test_n)] = str(loss[0] / loss[1] * 100) + '%'
 
 

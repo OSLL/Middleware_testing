@@ -101,9 +101,10 @@ class MiddlewareTesting(unittest.TestCase):
         self.startTest()
 
     def tearDown(self):
+        resfiles = get_resfiles(self.test_n, self.subtests)
+        self.sys.packet_loss(resfiles, self.test_n, self.test_n==8)
         with open('system_info.json','w') as out:
             out.write(self.sys.get_info())
-        resfiles = get_resfiles(self.test_n, self.subtests)
         if self.subtests:
             for filenames in resfiles:
                 plot_results([filenames], self.subtests)
