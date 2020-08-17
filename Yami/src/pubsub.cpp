@@ -13,20 +13,12 @@ struct Message{
 	std::string str;
 };
 
-//This function need for "publish_confirm"
-//if not using send_one_way
-void callback(yami::outgoing_message& om){
-	yami::message_state state=om.get_state();
-	if(state==yami::rejected){
-		std::cout<<"Rejected"<<std::endl;
-	}
-}
-
 
 class Publisher: public TestMiddlewarePub{
 private:
 	yami::agent agent;
 	std::string _address;
+        yami::value_publisher val;
 public:
 	Publisher(std::string& address,
 		std::string &topic, 
@@ -45,6 +37,8 @@ public:
 			filename, topic_priority),
 		_address(address)
 	{
+                agent.add_listener(_address);
+                agent.register_value_publisher(topic, val);
 	}
 	~Publisher(){};
 
@@ -57,7 +51,7 @@ public:
 		cont.set_integer("id",id);
 		cont.set_long_long("timestamp",time);
 		cont.set_binary_shallow("str",str.c_str(),str.length());
-		agent.send_one_way(_address,_topic_name,"publish_confirm",cont);
+		val.publish(cont);
 		time=std::chrono::duration_cast<std::chrono::
                 	nanoseconds>(std::chrono::high_resolution_clock::
                 	now().time_since_epoch()).count()-time;
@@ -94,10 +88,21 @@ public:
 		rec(false),
                 _address(address)
 	{
-		agent.register_raw_object("handler",update_sub<MsgType>,this);
-		yami::parameters param;
-		param.set_string("destination_object","handler");
-		agent.send_one_way(_address,topic,"subscribe",param);
+                unsigned long long int start, end;
+                start = end = std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count();
+                try{
+		        agent.register_raw_object("handler",update_sub<MsgType>,this);
+		        yami::parameters param;
+		        param.set_string("destination_object","handler");
+		        agent.send_one_way(_address,topic,"subscribe",param);
+                }catch(yami::yami_runtime_error e){
+                        end = std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count();
+                        if(end - start > TIMEOUT) throw e;
+                }
 		std::cout<<"Subscribed"<<std::endl;
 
 	}
@@ -132,7 +137,8 @@ template<class MsgType>
 class PingPong: public TestMiddlewarePingPong<MsgType>{
 private:
 	yami::agent agent;
-        std::string _address;
+        std::string _address1, _address2;
+        yami::value_publisher val;
 	bool rec;
 public:
 	PingPong(std::string& address,
@@ -150,26 +156,44 @@ public:
 				cpu_index,filename, topic_priority, msInterval, 
 				msgSize, isFirst),
 		rec(false),
-                _address(address)
+                _address1(address + '1'),
+                _address2(address + '2')
 	{
-		agent.register_raw_object("handler",update_ping_pong<MsgType>,this);
-		yami::parameters param;
-		param.set_string("destination_object","handler");
-	        if(TestMiddlewarePingPong<MsgType>::_isFirst) agent.send_one_way(_address,TestMiddlewarePingPong<MsgType>::_topic_name2,"subscribe",param);
-                else agent.send_one_way(_address,TestMiddlewarePingPong<MsgType>::_topic_name1,"subscribe",param);
+                if(isFirst) agent.add_listener(_address1);
+                else agent.add_listener(_address2);
+                unsigned long long int start, end;
+                start = end = std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count();
+                try{
+		        agent.register_raw_object("handler",update_ping_pong<MsgType>,this);
+		        yami::parameters param;
+		        param.set_string("destination_object","handler");
+	                if(isFirst){
+                                agent.register_value_publisher(topic1, val);
+                                agent.send_one_way(_address2,topic2,"subscribe",param);
+                        }else{
+                                agent.register_value_publisher(topic2, val);
+                                agent.send_one_way(_address1,topic1,"subscribe",param);
+                        }
+                }catch(yami::yami_runtime_error e){
+                        end = std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count();
+                        if(end - start > TIMEOUT) throw e;
+                }
 		std::cout<<"Subscribed"<<std::endl;
 	}
 	
 	~PingPong(){
                 yami::parameters param;
 	        param.set_string("destination_object","handler");
-	        if(TestMiddlewarePingPong<MsgType>::_isFirst) agent.send_one_way(_address,TestMiddlewarePingPong<MsgType>::_topic_name2,"unsubscribe",param);
-                else agent.send_one_way(_address,TestMiddlewarePingPong<MsgType>::_topic_name1,"unsubscribe",param);
+	        if(TestMiddlewarePingPong<MsgType>::_isFirst) agent.send_one_way(_address2,TestMiddlewarePingPong<MsgType>::_topic_name2,"unsubscribe",param);
+                else agent.send_one_way(_address1,TestMiddlewarePingPong<MsgType>::_topic_name1,"unsubscribe",param);
         };
 	
 	bool receive(){
 		if(rec){
-                    std::cout<<"TRUE"<<std::endl;
 			rec=false;
 			return true;
 		}
@@ -195,8 +219,7 @@ public:
 		cont.set_integer("id",id);
 		cont.set_long_long("timestamp",time);
 		cont.set_binary_shallow("str",str.c_str(),str.length());
-		if(TestMiddlewarePingPong<MsgType>::_isFirst) agent.send_one_way(_address,TestMiddlewarePingPong<MsgType>::_topic_name1,"publish_confirm",cont);
-                else agent.send_one_way(_address,TestMiddlewarePingPong<MsgType>::_topic_name2,"publish_confirm",cont);
+                val.publish(cont);
 	} 
 	
 };
