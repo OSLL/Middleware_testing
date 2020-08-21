@@ -77,7 +77,7 @@ func main() {
 			prior = config.Priority[1]
 			cpu_index = config.Cpu_index[1]
 		}
-		var pingpong = TestPingPong.New(topic1, topic2, config.M_count, prior, cpu_index, config.Max_msg_size, config.Interval, filename, config.Topic_priority, *isFirst)
+		var pingpong = TestPingPong.New(topic1, topic2, config.M_count, prior, cpu_index, config.Min_msg_size, config.Interval, filename, config.Topic_priority, *isFirst)
 
 		defer pingpong.Close()
 
