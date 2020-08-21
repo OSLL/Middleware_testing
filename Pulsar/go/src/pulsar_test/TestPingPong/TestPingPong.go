@@ -46,7 +46,7 @@ type TestPingPong struct {
 	isFirst bool
 	client pulsar.Client
 	producer pulsar.Producer
-	consumer pulsar.Consumer
+	consumer pulsar.Reader
 	ctx context.Context
         cancel context.CancelFunc
 	msgs [][]byte
@@ -108,11 +108,10 @@ func New(topic1 string, topic2 string, msgCount int, prior int, cpu_index int, m
             Topic: "non-persistent://public/default/" + topic1,
         })
 
-	consumer, err := client.Subscribe(pulsar.ConsumerOptions{
+	consumer, err := client.CreateReader(pulsar.ReaderOptions{
                 Topic:            "non-persistent://public/default/" + topic2,
-                SubscriptionName: "my-sub",
-                Type:             pulsar.Shared,
                 ReceiverQueueSize: 10000,
+		StartMessageID: pulsar.EarliestMessageID(),
         })
         if err != nil {
                 log.Fatal(err)
@@ -185,13 +184,11 @@ func (pingpong TestPingPong) toJson(){
 }
 
 func (pingpong TestPingPong) receive() bool{
-	msg, err := pingpong.consumer.Receive(pingpong.ctx)
+	msg, err := pingpong.consumer.Next(pingpong.ctx)
         if err != nil {
                 return false
         }
-        //pingpong.read_msg_time[*pingpong.n_received] = time.Now().UnixNano()
         pingpong.msgs[*pingpong.n_received] = msg.Payload()
-        //pingpong.read_msg_time[*pingpong.n_received] = time.Now().UnixNano() - pingpong.read_msg_time[*pingpong.n_received]
         pingpong.receive_timestamp[*pingpong.n_received] = time.Now().UnixNano()
         *pingpong.n_received += 1
         return true

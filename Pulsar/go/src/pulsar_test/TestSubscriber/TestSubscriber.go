@@ -39,7 +39,7 @@ type TestSubscriber struct{
 	filename string
 	topic_priority int
 	client pulsar.Client
-	consumer pulsar.Consumer
+	consumer pulsar.Reader
 	ctx context.Context
 	cancel context.CancelFunc
 	read_msg_time []int64
@@ -98,15 +98,15 @@ func New(topic string, msgCount int, prior int, cpu_index int, max_msg_size int,
         if err != nil {
 		log.Fatal(err)
         }
-	consumer, err := client.Subscribe(pulsar.ConsumerOptions{
+	consumer, err := client.CreateReader(pulsar.ReaderOptions{
                 Topic:            "non-persistent://public/default/" + topic,
-                SubscriptionName: "my-sub",
-                Type:             pulsar.Shared,
 		ReceiverQueueSize: 10000,
+		StartMessageID: pulsar.EarliestMessageID(),
         })
         if err != nil {
 		log.Fatal(err)
         }
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Microsecond)
 
 	sub := TestSubscriber{topic, msgCount, prior, cpu_index, max_msg_size, step, interval, msgs_before_step, filename, topic_priority, client, consumer, ctx, cancel, make([]int64, msgCount, msgCount), make([][]byte, msgCount, msgCount), make([]int64, msgCount, msgCount), new(int)}
@@ -136,10 +136,7 @@ func (sub TestSubscriber) toJson(){
 	n := len(sub.msgs)
 	info := make([]info, n, n)
 	for i := 0; i<n; i++{
-		err := json.Unmarshal(sub.msgs[i], &info[i].Msg)
-		if err != nil{
-			log.Fatal(err)
-		}
+		json.Unmarshal(sub.msgs[i], &info[i].Msg)
 		info[i].Msg.Read_proc_time = sub.read_msg_time[i]
 		info[i].Msg.Receive_timestamp = sub.receive_timestamp[i]
 		info[i].Msg.Delay = info[i].Msg.Receive_timestamp - info[i].Msg.Sent_time
@@ -160,7 +157,7 @@ func (sub TestSubscriber) toJson(){
 }
 
 func (sub TestSubscriber) receive() bool{
-	msg, err := sub.consumer.Receive(sub.ctx)
+	msg, err := sub.consumer.Next(sub.ctx)
 	if err != nil {
 		return false
 	}
