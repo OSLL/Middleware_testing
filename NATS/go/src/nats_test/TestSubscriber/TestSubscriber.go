@@ -38,11 +38,11 @@ type TestSubscriber struct{
 	filename string
 	topic_priority int
 	nc *nats.Conn
+	sub *nats.Subscription
 	read_msg_time []int64
 	msgs [][]byte
 	receive_timestamp []int64
-	n_received int
-	rec_before int
+	n_received *int
 }
 
 func New(topic string, msgCount int, prior int, cpu_index int, max_msg_size int, step int, interval int, msgs_before_step int, filename string, topic_priority int) TestSubscriber{
@@ -90,14 +90,8 @@ func New(topic string, msgCount int, prior int, cpu_index int, max_msg_size int,
         if err != nil {
                 log.Fatal(err)
         }
-	sub := TestSubscriber{topic, msgCount, prior, cpu_index, max_msg_size, step, interval, msgs_before_step, filename, topic_priority, nc, make([]int64, msgCount, msgCount), make([][]byte, msgCount, msgCount), make([]int64, msgCount, msgCount), 0, 0}
-	nc.Subscribe(topic, func(msg *nats.Msg) {
-		sub.read_msg_time[sub.n_received] = time.Now().UnixNano()
-		sub.msgs[sub.n_received] = msg.Data
-		sub.read_msg_time[sub.n_received] = time.Now().UnixNano() - sub.read_msg_time[sub.n_received]
-		sub.receive_timestamp[sub.n_received] = time.Now().UnixNano()
-		sub.n_received += 1
-	})
+	subsc, _ := nc.SubscribeSync(topic)
+	sub := TestSubscriber{topic, msgCount, prior, cpu_index, max_msg_size, step, interval, msgs_before_step, filename, topic_priority, nc, subsc, make([]int64, msgCount, msgCount), make([][]byte, msgCount, msgCount), make([]int64, msgCount, msgCount), new(int)}
 	return sub
 }
 
@@ -123,10 +117,7 @@ func (sub TestSubscriber) toJson(){
 	n := len(sub.msgs)
 	info := make([]info, n, n)
 	for i := 0; i<n; i++{
-		err := json.Unmarshal(sub.msgs[i], &info[i].Msg)
-		if err != nil{
-			log.Fatal(err)
-		}
+		json.Unmarshal(sub.msgs[i], &info[i].Msg)
 		info[i].Msg.Read_proc_time = sub.read_msg_time[i]
 		info[i].Msg.Receive_timestamp = sub.receive_timestamp[i]
 		info[i].Msg.Delay = info[i].Msg.Receive_timestamp - info[i].Msg.Sent_time
@@ -147,9 +138,16 @@ func (sub TestSubscriber) toJson(){
 }
 
 func (sub TestSubscriber) receive() bool{
-	count := sub.n_received - sub.rec_before
-	sub.rec_before = sub.n_received
-	return count > 0
+	msg, err := sub.sub.NextMsg(time.Millisecond)
+	if err != nil {
+		return false
+	}
+	sub.read_msg_time[*sub.n_received] = time.Now().UnixNano()
+	sub.msgs[*sub.n_received] = msg.Data
+	sub.read_msg_time[*sub.n_received] = time.Now().UnixNano() - sub.read_msg_time[*sub.n_received]
+	sub.receive_timestamp[*sub.n_received] = time.Now().UnixNano()
+	*sub.n_received += 1
+	return true
 }
 
 func (sub TestSubscriber) Close(){
