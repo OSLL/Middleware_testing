@@ -169,12 +169,12 @@ def plot_message_queue(list_counts, plot_filename):
 
 
 def plot_pub_results(filenames, directory, res_name):
-    try:
-        os.makedirs(directory)
-    except OSError:
-        None
     for filename in filenames:
         directory = filename[:filename.rfind('data/')] + 'plots/'
+        try:
+            os.mkdir(directory)
+        except OSError:
+            None
         (proc_time, ids) = pub_from_json(filename)
         (proc_time, unit, _) = scale_values(proc_time)
         boxes = []
@@ -187,10 +187,6 @@ def plot_pub_results(filenames, directory, res_name):
 
 
 def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=False):
-    try:
-        os.makedirs(direct)
-    except OSError:
-        None
     if not isMultisub:
         mscale = 1
         munit = 'nsec'
@@ -225,6 +221,10 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
         else:
             for filename in filenames:
                 directory = filename[:filename.rfind('data/')] + 'plots/'
+                try:
+                    os.mkdir(directory)
+                except OSError:
+                    None
                 node_name = filename[:filename.rfind('/data/')]
                 node_name = node_name[node_name.rfind('/')+1:]
                 labels.append(node_name)
