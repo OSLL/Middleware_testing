@@ -156,10 +156,7 @@ func (pingpong TestPingPong) toJson(){
 	n := len(pingpong.msgs)
 	info := make([]info, n, n)
 	for i := 0; i<n; i++{
-		err := json.Unmarshal(pingpong.msgs[i], &info[i].Msg)
-		if err != nil{
-			log.Fatal(err)
-		}
+		json.Unmarshal(pingpong.msgs[i], &info[i].Msg)
 		info[i].Msg.Receive_timestamp = pingpong.receive_timestamp[i]
 		info[i].Msg.Delay = info[i].Msg.Receive_timestamp - info[i].Msg.Sent_time
 	}
