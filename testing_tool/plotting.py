@@ -1,9 +1,33 @@
-import matplotlib.pyplot as plt
 import os
+from os.path import isfile, isdir, join
 import json
 import numpy as np
+import matplotlib.pyplot as plt
 
 count_qmsgs = 0
+
+
+def get_resfiles(test_n, subtest=False):
+    directory = f'test_{test_n}/results'
+    dirs = [join(directory, d) + '/data' for d in os.listdir(directory)
+            if isdir(join(directory, d))]
+    if subtest:
+        ldirs = [[join(direct, d) for d in os.listdir(direct)
+                  if isdir(join(direct, d))] for direct in dirs]
+        res = []
+        for dirs in ldirs:
+            subres = []
+            for d in dirs:
+                subres.append([join(d, f) for f in os.listdir(d)
+                               if isfile(join(d, f))])
+            res.append(subres)
+        return res
+    res = []
+    for direct in dirs:
+        res += [join(direct, f) for f in os.listdir(direct)
+                if isfile(join(direct, f)) and f.endswith('.json')]
+    return res
+
 
 def from_several_jsons(filenames):
     res = []
@@ -11,8 +35,8 @@ def from_several_jsons(filenames):
         if f.endswith('_sub.json'):
             res.append(sub_from_json(f))
     delay = np.mean([r[3] for r in res], axis=0)
-    #ids = res[np.argmax([len(r) for r in res])][3]
     return delay
+
 
 def sub_from_json(filename):
     with open(filename, 'r') as f:
@@ -24,12 +48,14 @@ def sub_from_json(filename):
     read_proc_time = [msg["msg"]["read_proc_time"] for msg in data]
     return (send_time, rec_time, read_proc_time, delay, ids)
 
+
 def pub_from_json(filename):
     with open(filename, 'r') as f:
         data = json.load(f)
     ids = [msg["msg"]["id"] for msg in data]
     proc_time = [msg["msg"]["proc_time"] for msg in data]
     return (proc_time, ids)
+
 
 def from_txt(fpub, fsub):
     send_time = []
@@ -45,7 +71,8 @@ def from_txt(fpub, fsub):
         receive_time.append(list(map(int, line.split())))
     receive.close()
     return (send_time, receive_time)
-    
+
+
 def check_size(i,common):
     global count_qmsgs
     if common[i][1] is 'pub':
@@ -53,6 +80,7 @@ def check_size(i,common):
     else:
         count_qmsgs-=1
     return count_qmsgs
+
 
 def queue_size(sent, recieved):
     sent_list = [(sent[i], 'pub') for i in range(0, len(sent))]
@@ -65,6 +93,7 @@ def queue_size(sent, recieved):
         if common[i][1] == 'pub':
             list_counts.append(list_[i])
     return list_counts
+
 
 def scale_values(delays):
     if isinstance(delays[0], np.ndarray):
@@ -86,67 +115,84 @@ def scale_values(delays):
     return ([d / scale for d in delays], unit)
 
 
-def plot_boxes(data, positions, xlabel, unit, plot_filename):
-    widths = [2*(positions[i]-positions[i-1])/5 for i in range(1, len(positions))]
+def plot_boxes(data, positions, xlabel, unit, title, plot_filename):
+    widths = [(positions[i]-positions[i-1]) * 2/5
+              for i in range(1, len(positions))]
     widths.append(widths[-1])
     plt.boxplot(data, positions=positions, widths=widths, whis=[0,100])
     plt.xlim([0, positions[-1] + widths[-1]])
     plt.xticks(positions)
-    plt.ylabel('time, ' + unit)
+    plt.ylabel(f'time, {unit}')
     plt.xlabel(xlabel)
+    plt.title(title)
     plt.savefig(plot_filename)
     plt.clf()
 
-def plot_graph(ids, y, unit, plot_filename):
+
+def plot_graph(ids, y, unit, title, plot_filename):
     plt.plot(ids, y)
-    plt.ylabel('time, ' + unit)
-    plt.xlabel('number of message')
+    plt.ylabel(f'time, {unit}')
+    plt.xlabel('message number')
+    plt.title(title)
     plt.savefig(plot_filename)
     plt.clf()
+
 
 def plot_message_queue(list_counts, plot_filename):
     plt.plot([i for i in range(1, len(list_counts)+1)], list_counts)
     plt.ylabel('messages in queue')
-    plt.xlabel('number of message')
+    plt.xlabel('message number')
+    plt.title('Message queue')
     plt.savefig(plot_filename)
     plt.clf()
+
 
 def plot_pub_results(filename, directory, res_name):
     (proc_time, ids) = pub_from_json(filename)
     (proc_time, unit) = scale_values(proc_time)
     boxes = []
     for i in range(0, 10):
-        k = int((i+1)*len(proc_time)/10)
+        k = int(len(proc_time) * (i+1)/10)
         boxes.append(np.array(proc_time[0:k]))
-    plot_boxes(boxes, [len(t) for t in boxes], 'count of messages', unit, directory + res_name + '_proc_time_box.png')
-    plot_graph(ids, proc_time, unit, directory + res_name + '_proc_time.png')
-    
+    plot_boxes(boxes, [len(t) for t in boxes], 'number of messages', unit, 
+               'Writing time boxes', f'{directory}{res_name}_proc_time_box.png')
+    plot_graph(ids, proc_time, unit, 'Writing time', f'{directory}{res_name}_proc_time.png')
+
+
 def plot_sub_results(filenames, directory, res_name):
     if len(filenames) == 1:
-        (send_time, receive_time, read_proc_time, delay_time, ids) = sub_from_json(filenames[0])
+        (send_time, receive_time,
+         read_proc_time, delay_time, ids) = sub_from_json(filenames[0])
+
         (delay_time, unit) = scale_values(delay_time)
         (read_proc_time, runit) = scale_values(read_proc_time)
         list_counts = queue_size(send_time, receive_time)
         delay = []
         proc_time = []
         for i in range(0, 10):
-            k = int((i+1)*len(delay_time)/10)
+            k = int(len(delay_time) * (i+1)/10)
             delay.append(delay_time[0:k])
-            k = int((i+1)*len(read_proc_time)/10)
+            k = int(len(read_proc_time) * (i+1)/10)
             proc_time.append(read_proc_time[0:k])
-        plot_message_queue(list_counts, directory + res_name + '_queue.png')
-        plot_graph(ids, delay[-1], unit, directory + res_name + '_delay.png')
-        plot_boxes(delay, [len(d) for d in delay], 'count of messages', unit, directory + res_name + '_delay_box.png')
-        plot_graph(ids, read_proc_time, runit, directory + res_name + '_read_proc_time.png')
-        plot_boxes(proc_time, [len(d) for d in proc_time], 'count of messages', runit, directory + res_name + '_read_proc_time_box.png')
+        plot_message_queue(list_counts, f'{directory}{res_name}_queue.png')
+        plot_graph(ids, delay[-1], unit, 'Delay time', 
+                   f'{directory}{res_name}_delay.png')
+        plot_boxes(delay, [len(d) for d in delay], 'number of messages', unit,
+                   'Delay time boxes', f'{directory}{res_name}_delay_box.png')
+        plot_graph(ids, read_proc_time, runit, 'Reading time',
+                   f'{directory}{res_name}_read_proc_time.png')
+        plot_boxes(proc_time, [len(d) for d in proc_time], 
+                   'number of messages', runit, 'Reading time boxes', 
+                   f'{directory}{res_name}_read_proc_time_box.png')
     else:
         delay = []
         for files in filenames:
             delay.append(from_several_jsons(files))
-        print(len(delay), len(delay[0]))
         (delay, unit) = scale_values(delay)
-        print(len(delay), len(delay[0]))
-        plot_boxes(delay, [i for i in range(1, len(delay)+1)], 'count of messages', unit, directory + res_name + '_delay_box.png')
+        plot_boxes(delay, [i for i in range(1, len(delay)+1)], 
+                   'count of subscribers', unit, 
+                   'Delay time with multiple subscribers',
+                   f'{directory}{res_name}_delay_box.png')
 
 
 def plot_results(filenames):
@@ -170,3 +216,14 @@ def plot_results(filenames):
         plot_pub_results(filenames[0], directory, res_name)
     else:
         plot_sub_results(filenames, directory, res_name)
+
+
+if __name__ == '__main__':
+    for i in range(0, 8):
+        try:
+            resfiles = get_resfiles(i, i == 3)
+            for filename in resfiles:
+                plot_results([filename])
+        except OSError:
+            continue
+    plt.title('Message queue')

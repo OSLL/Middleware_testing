@@ -7,7 +7,11 @@
 #include <fstream>
 #include <thread>
 #include <nlohmann/json.hpp>
+#include <sys/stat.h>
+#include <errno.h>
 #include "test_errors.hpp"
+
+#define CPUSET_MODE_T (S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH)
 
 class TestMiddlewarePub {
 public:
@@ -37,11 +41,32 @@ public:
             }
         }
         if(cpu_index >= 0){
+            int err = mkdir("/sys/fs/cgroup/cpuset/pub_cpuset", CPUSET_MODE_T);
+            if(errno != EEXIST && err != 0)
+                throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
+            std::ofstream f_cpu("/sys/fs/cgroup/cpuset/pub_cpuset/cpuset.cpus", std::ios_base::out);
+            if(!f_cpu.is_open()){
+                throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
+            }
+            f_cpu.write(std::to_string(cpu_index).c_str(), std::to_string(cpu_index).size());
+            f_cpu.close();
+            std::ofstream f_exclusive("/sys/fs/cgroup/cpuset/pub_cpuset/cpuset.cpu_exclusive", std::ios_base::out);
+            if(!f_exclusive.is_open()){
+                throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
+            }
+            f_exclusive.write("1", 1);
+            f_exclusive.close();
+            std::ofstream f_mem("/sys/fs/cgroup/cpuset/pub_cpuset/cpuset.mems", std::ios_base::out);
+            if(!f_mem.is_open()){
+                throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
+            }
+            f_mem.write("0", 1);
+            f_mem.close();
             std::ofstream f_task("/sys/fs/cgroup/cpuset/pub_cpuset/tasks", std::ios_base::out);
             if(!f_task.is_open()){
                 throw test_exception("Error in adding to cpuset!", CPUSET_ERROR);
             }
-            else {                                                   //TODO: добавить изменения номера ядра для привязки
+            else {
                 auto s = std::to_string(id);
                 f_task.write(s.c_str(),s.length());
             }
