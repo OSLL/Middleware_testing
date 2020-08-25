@@ -15,21 +15,24 @@
 #define TIMEOUT 2 * pow(10, 10)
 
 template <class MsgType>
-class TestMiddlewareSub {
-
+class TestMiddlewarePingPong {
 public:
-    TestMiddlewareSub(
-            std::string &topic, int msgCount, int prior,
-            int cpu_index, std::string &filename, int topic_priority) :
-            _topic_name(topic),
+    TestMiddlewarePingPong(
+            std::string &topic1, std::string topic2, int msgCount, int prior,
+            int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSize, bool isFirst) :
+            _topic_name1(topic1),
+            _topic_name2(topic2),
             _recieve_timestamps(msgCount),
             _msgs(msgCount),
-            _read_msg_time(msgCount),
             _topic_priority(topic_priority),
             _msgCount(msgCount),
             _priority(prior),
             _cpu_index(cpu_index),
-            _filename(filename) {
+            _filename(filename),
+            _isFirst(isFirst),
+            _msInterval(msInterval),
+            _msgSize(msgSize)
+            {
         pid_t id = getpid();
         if(prior >= 0){
             sched_param priority;
@@ -74,45 +77,51 @@ public:
         }
     };
 
-    void write_received_msg(MsgType &msg, unsigned long proc_time) {
+    void write_received_msg(MsgType &msg) {
         _msgs[get_id(msg)] = msg;
         _recieve_timestamps[get_id(msg)] = std::chrono::duration_cast<std::chrono::
-                nanoseconds>(std::chrono::high_resolution_clock::
-                now().time_since_epoch()).count();
-        _read_msg_time[get_id(msg)] = proc_time;
+        nanoseconds>(std::chrono::high_resolution_clock::
+                     now().time_since_epoch()).count();
     };
 
     virtual bool receive() = 0;
 
     int StartTest(){
         bool isTimeoutEx = false;
-
         unsigned long start_timeout, end_timeout;
-        start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
-                nanoseconds>(std::chrono::high_resolution_clock::
-                now().time_since_epoch()).count();
-        while (true) {
-            // true - принято
-            if(receive()) {
-                start_timeout = std::chrono::duration_cast<std::chrono::
-                nanoseconds>(std::chrono::high_resolution_clock::
-                             now().time_since_epoch()).count();
+        std::this_thread::sleep_for(std::chrono::seconds(4));
 
-            } else {
-                end_timeout = std::chrono::duration_cast<std::chrono::
-                nanoseconds>(std::chrono::high_resolution_clock::
-                             now().time_since_epoch()).count();
-                if (end_timeout - start_timeout > TIMEOUT){
-                    isTimeoutEx = true;
-                    break;
+        for(int i = 0; i < _msgCount; i++){
+            if(_isFirst)
+                publish(i, _msgSize);
+
+            start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
+            nanoseconds>(std::chrono::high_resolution_clock::
+                         now().time_since_epoch()).count();
+
+            bool notReceived = true;
+            while (notReceived) {
+                // true - принято
+                if(receive()) {
+                    notReceived = false;
+                } else {
+                    end_timeout = std::chrono::duration_cast<std::chrono::
+                    nanoseconds>(std::chrono::high_resolution_clock::
+                                 now().time_since_epoch()).count();
+                    if (end_timeout - start_timeout > TIMEOUT) {
+                        isTimeoutEx = true;
+                        break;
+                    }
                 }
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
+            if(isTimeoutEx)
+                break;
+            if(!_isFirst)
+                publish(i, _msgSize);
         }
 
-        cleanUp();
         to_json();
 
         if(isTimeoutEx)
@@ -122,10 +131,7 @@ public:
     virtual short get_id(MsgType &msg) = 0;
     virtual unsigned long get_timestamp(MsgType &msg) = 0;
 
-    virtual void cleanUp() { };
-
     void to_json() {
-
         auto json_output = nlohmann::json::array();
         nlohmann::json json_msg;
 
@@ -134,13 +140,11 @@ public:
 
             json_msg["msg"] =
                     {
-                        {"id", get_id(msg)},
-                        {"sent_time", get_timestamp(msg)},
-                        {"recieve_timestamp", _recieve_timestamps[i]},
-                        {"delay", _recieve_timestamps[i] - get_timestamp(msg)},
-                        {"read_proc_time", _read_msg_time[i]}
+                            {"id", get_id(msg)},
+                            {"sent_time", get_timestamp(msg)},
+                            {"recieve_timestamp", _recieve_timestamps[i]},
+                            {"delay", _recieve_timestamps[i] - get_timestamp(msg)},
                     };
-
             json_output.emplace_back(json_msg);
         }
 
@@ -148,14 +152,19 @@ public:
         file << json_output;
     }
 
+    virtual void publish(short id, unsigned size)=0;
+
 protected:
-    std::string _topic_name;
+    std::string _topic_name1;
+    std::string _topic_name2;
     std::vector<unsigned long> _recieve_timestamps;
     std::vector<MsgType> _msgs;
-    std::vector <unsigned long> _read_msg_time;
     int _topic_priority;
     int _msgCount;
     int _priority; //def not stated
     int _cpu_index; //def not stated
     std::string _filename;
+    bool _isFirst;
+    int _msInterval;
+    int _msgSize;
 };
