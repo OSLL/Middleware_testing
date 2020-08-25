@@ -9,7 +9,7 @@
 #include "ping_pong/ping_pong.h"
 
 int main(int argc, char **argv) {
-    argparse::ArgumentParser parser("OpenSplice node argparsing");
+    argparse::ArgumentParser parser("OpenDDS node argparsing");
     parser.add_argument("-c", "--config")
             .required()
             .help("-c --conf is required argument with config path");
