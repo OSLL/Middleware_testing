@@ -3,9 +3,12 @@
 //
 
 #include "Subscriber.h"
+#include <time.h>
+#include <stdlib.h>
 
 void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
     try {
+	srand (time(NULL));
         // Initialize DomainParticipantFactory
         _dpf = TheParticipantFactoryWithArgs(argc, argv);
 
@@ -13,7 +16,7 @@ void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
 
         // Create DomainParticipant
         _participant =
-                _dpf->create_participant(42,
+                _dpf->create_participant(rand() % 214748364 + 1,
                                         PARTICIPANT_QOS_DEFAULT,
                                         DDS::DomainParticipantListener::_nil(),
                                         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
@@ -103,24 +106,24 @@ unsigned long Subscriber::get_timestamp(Messenger::Message& msg) {
 };
 
 
-
-bool Subscriber::receive() {
+bool Subscriber::receive(Messenger::Message& msg) {
 
     auto start_timestamp = std::chrono::duration_cast<std::chrono::
-            nanoseconds>(std::chrono::high_resolution_clock::
-            now().time_since_epoch()).count();
+    nanoseconds>(std::chrono::high_resolution_clock::
+                 now().time_since_epoch()).count();
 
     DDS::ReturnCode_t error = _reader_i->take(_messages,
-                                             _info,
-                                             1,
-                                             DDS::ANY_SAMPLE_STATE,
-                                             DDS::ANY_VIEW_STATE,
-                                             DDS::ANY_INSTANCE_STATE);
+                                              _info,
+                                              1,
+                                              DDS::ANY_SAMPLE_STATE,
+                                              DDS::ANY_VIEW_STATE,
+                                              DDS::ANY_INSTANCE_STATE);
+
 
     unsigned long proc_time = std::chrono::duration_cast<std::chrono::
-            nanoseconds>(std::chrono::high_resolution_clock::
-            now().time_since_epoch()).count()
-            - start_timestamp;
+    nanoseconds>(std::chrono::high_resolution_clock::
+                 now().time_since_epoch()).count()
+                              - start_timestamp;
 
     if (error == DDS::RETCODE_OK) {
         if (_info[0].valid_data) {
@@ -128,12 +131,19 @@ bool Subscriber::receive() {
             _id++;
 
             write_received_msg(_messages[0], proc_time);
+            msg = _messages[0];
             _reader_i->return_loan(_messages, _info);
             return true;
         }
     }
     _reader_i->return_loan(_messages, _info);
     return false;
+};
+
+
+bool Subscriber::receive() {
+    Messenger::Message msg_mock;
+    return receive(msg_mock);
 };
 
 void Subscriber::cleanUp(){

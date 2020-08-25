@@ -1,5 +1,5 @@
 project(OpenDDS_DevGuide_Messenger CXX)
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.8.5)
 
 find_package(OpenDDS REQUIRED)
 
@@ -23,7 +23,12 @@ target_link_libraries(publisher ${opendds_libs} pthread)
 
 
 # Subscriber
-add_executable(subscriber src/subscriber/Subscriber.cpp src/subscriber/subscriber.cpp src/dds/DataReaderListenerImpl.cpp
-        )
+add_executable(subscriber src/subscriber/Subscriber.cpp src/subscriber/subscriber.cpp src/dds/DataReaderListenerImpl.cpp)
 OPENDDS_TARGET_SOURCES(subscriber src/dds/Messenger.idl)
 target_link_libraries(subscriber ${opendds_libs} pthread)
+
+
+add_executable(ping_pong src/ping_pong/ping_pong.cpp src/subscriber/Subscriber.cpp src/dds/DataReaderListenerImpl.cpp
+        src/publisher/Publisher.cpp src/multi_node.cpp)
+OPENDDS_TARGET_SOURCES(ping_pong src/dds/Messenger.idl)
+target_link_libraries(ping_pong ${opendds_libs} pthread)

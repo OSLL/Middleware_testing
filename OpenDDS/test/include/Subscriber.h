@@ -26,6 +26,8 @@
 
 class Subscriber: public TestMiddlewareSub<Messenger::Message>{
 
+    std::string a = "mock-string";
+
 public:
     Subscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_priority) :
             _topic_name(topic),
@@ -36,6 +38,12 @@ public:
             TestMiddlewareSub<Messenger::Message>(topic, msgCount, prior, cpu_index, filename, topic_priority)
     {};
 
+
+    Subscriber():
+            TestMiddlewareSub<Messenger::Message>(a, 0 , 0, 0, a, 0)
+    {};
+
+
     void createSubscriber(int argc, ACE_TCHAR *argv[]);
 
     short get_id(Messenger::Message& msg) override;
@@ -43,6 +51,8 @@ public:
     unsigned long get_timestamp(Messenger::Message& msg) override;
 
     bool receive() override;
+
+    bool receive(Messenger::Message& msg);
 
     void cleanUp();
 

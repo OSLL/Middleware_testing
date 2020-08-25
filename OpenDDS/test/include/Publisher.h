@@ -26,6 +26,8 @@
 
 class Publisher: public TestMiddlewarePub{
 
+    std::string a = "mock-string";
+
 public:
     Publisher(std::string &topic, int msg_count, int prior, int cpu_index, int min_msg_size, int max_msg_size,
               int step, int interval, int msgs_before_step, std::string& file_name, int topic_priority) :
@@ -43,7 +45,15 @@ public:
                     step, interval, msgs_before_step, file_name, topic_priority)
             {};
 
+    Publisher() :
+            TestMiddlewarePub(
+                    a, 0, 0, 0, 0, 0,
+                    0, 0, 0, a, 0)
+    {};
+
     void createPublisher(int argc, ACE_TCHAR *argv[]);
+
+    unsigned long publish(short id, unsigned size, char alpha);
 
     unsigned long publish(short id, unsigned size) override;
 
