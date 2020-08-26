@@ -195,6 +195,11 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
         labels = []
         if isPingPong:
             for files in filenames:
+                directory = files[0][:files[0].rfind('data/')] + 'plots/'
+                try:
+                    os.mkdir(directory)
+                except OSError:
+                    None
                 delay = []
                 if files[0].endswith('_sub.json'):
                     buf = files[0]
@@ -218,6 +223,21 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                 node_name = files[0][:filename.rfind('/data/')]
                 node_name = node_name[node_name.rfind('/')+1:]
                 labels.append(node_name)
+                
+                plot_graph(ids, [d/scale for d in  delay_time], unit, 
+                           f'{node_name}: Delay time', 
+                           f'{directory}{node_name}_{res_name}_delay.png')
+                delay = []
+                for i in range(0, 10):
+                    k = int(len(delay_time) * (i+1)/10)
+                    delay.append(delay_time[0:k])
+                plot_boxes(delay, [len(d) for d in delay],'number of messages', 
+                       unit, f'{node_name}: Delay time boxes', 
+                       f'{directory}{node_name}_{res_name}_delay_box.png')
+                mean = np.mean(delay_time)
+                plot_graph(ids, [abs(mean - d) 
+                           for d in delay_time], unit, 
+                           f'Jitter', f'{directory}{node_name}_{res_name}_jitter.png', labels)
         else:
             for filename in filenames:
                 directory = filename[:filename.rfind('data/')] + 'plots/'
@@ -263,6 +283,10 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                 plot_boxes(delay, [len(d) for d in delay],'number of messages', 
                        unit, f'{node_name}: Delay time boxes', 
                        f'{directory}{node_name}_{res_name}_delay_box.png')
+                mean = np.mean(delay_time)
+                plot_graph(ids, [abs(mean - d) 
+                           for d in delay_time], unit, 
+                           f'Jitter', f'{directory}{node_name}_{res_name}_jitter.png', labels)
         saved_delay = [[d/mscale for d in saved_delay[i]] 
                         for i in range(0, len(saved_delay))]
         plot_graph(saved_ids, saved_delay, munit, 'Delay time', 
