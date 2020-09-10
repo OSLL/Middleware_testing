@@ -1,0 +1,9 @@
+#/bin/bash
+#
+# @(#) Load this script in environment
+#
+export NDRX_APPHOME=/media/disk1/dds_testing/Endurox
+export NDRX_CCONFIG=$NDRX_APPHOME/conf
+export PATH=$PATH:$NDRX_APPHOME/bin
+export CDPATH=$CDPATH:.:$NDRX_APPHOME
+
