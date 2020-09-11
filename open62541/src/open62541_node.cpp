@@ -1,9 +1,13 @@
 #include <argparse/argparse.hpp>
 #include <nlohmann/json.hpp>
-//#include "server.cpp"
-#include "client_sub.cpp"
-#include "client_pub.cpp"
-#include "client_pingpong.cpp"
+#ifdef USE_EVENTS
+#include "ver_on_events/client_sub.cpp"
+#include "ver_on_events/client_pub.cpp"
+#include "ver_on_events/client_pingpong.cpp"
+#else
+#include "ver_pubsub/pub.cpp"
+#include "ver_pubsub/sub.cpp"
+#endif
 
 int main(int argc, char **argv) {
     argparse::ArgumentParser parser("open62541 node argparsing");

@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 LINK_DIRECTORIES(${CMAKE_BINARY_DIR}/open62541)
 
+option(WITH_EVENTS "Build publisher and subscriber using event system" ON)
+
+if (WITH_EVENTS)
+    add_definitions(-DUSE_EVENTS)
+endif()
 add_executable(server server.cpp)
 add_executable(node open62541_node.cpp)
 
