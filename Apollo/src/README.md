@@ -2,7 +2,7 @@
 
 ## Установка и сборка
 
-(Apollo)[https://github.com/ApolloAuto/apollo]
+[Apollo](https://github.com/ApolloAuto/apollo)
 
 Зависимости можно посмотреть в репозитории _apollo_
 
