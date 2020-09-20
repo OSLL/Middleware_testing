@@ -115,11 +115,10 @@ void Publisher::createPublisher(int argc, ACE_TCHAR *argv[]) {
 
 };
 
-unsigned long Publisher::publish(short id, unsigned size) {
-
+unsigned long Publisher::publish(short id, unsigned size, char alpha) {
     unsigned long cur_time = std::chrono::duration_cast<std::chrono::
-            nanoseconds>(std::chrono::high_resolution_clock::
-            now().time_since_epoch()).count();
+    nanoseconds>(std::chrono::high_resolution_clock::
+                 now().time_since_epoch()).count();
 
 
     std::cout << "message " << id << " sent" << std::endl;
@@ -128,10 +127,10 @@ unsigned long Publisher::publish(short id, unsigned size) {
     _message.id = id;
 
     _message.timestamp = std::chrono::duration_cast<std::chrono::
-            nanoseconds>(std::chrono::high_resolution_clock::
-            now().time_since_epoch()).count();
+    nanoseconds>(std::chrono::high_resolution_clock::
+                 now().time_since_epoch()).count();
 
-    std::string data(size, 'a');
+    std::string data(size, alpha);
     _message.payload = data.c_str();
 
     DDS::ReturnCode_t error = _message_writer->write(_message, DDS::HANDLE_NIL);
@@ -144,8 +143,12 @@ unsigned long Publisher::publish(short id, unsigned size) {
 
     return std::chrono::duration_cast<std::chrono::
     nanoseconds>(std::chrono::high_resolution_clock::
-    now().time_since_epoch()).count()
-    - cur_time;
+                 now().time_since_epoch()).count()
+           - cur_time;
+}
+
+unsigned long Publisher::publish(short id, unsigned size) {
+    return publish(id, size, 'a');
 };
 
 void Publisher::cleanUp(){
