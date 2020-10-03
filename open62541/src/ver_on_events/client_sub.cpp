@@ -4,7 +4,7 @@
 #include <open62541/client_subscriptions.h>
 #include <open62541/plugin/log_stdout.h>
 #include "../../../interface/sub_interface.hpp"
-#include "../DataType.hpp"
+#include "../DataType.h"
 
 static bool isRunning;
 

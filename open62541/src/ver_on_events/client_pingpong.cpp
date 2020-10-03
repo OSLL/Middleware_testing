@@ -3,7 +3,7 @@
 #include <open62541/client_highlevel.h>
 #include <open62541/client_subscriptions.h>
 #include <open62541/plugin/log_stdout.h>
-#include "../DataType.hpp"
+#include "../DataType.h"
 #include "../../../interface/ping_pong_interface.hpp"
 
 class TestPingPongNode: public TestMiddlewarePingPong<TestData>{

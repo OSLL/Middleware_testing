@@ -1,3 +1,15 @@
+/* This work is licensed under a Creative Commons CCZero 1.0 Universal License.
+ * See http://creativecommons.org/publicdomain/zero/1.0/ for more information.
+ */
+
+/**
+ * IMPORTANT ANNOUNCEMENT
+ * The PubSub subscriber API is currently not finished. This examples can be used to receive
+ * and print the values, which are published by the tutorial_pubsub_publish example.
+ * The following code uses internal API which will be later replaced by the higher-level
+ * PubSub subscriber API.
+ */
+
 #include <open62541/plugin/log_stdout.h>
 #include <open62541/plugin/pubsub.h>
 #include <open62541/plugin/pubsub_udp.h>
