@@ -1,5 +1,7 @@
 #include <open62541/plugin/log_stdout.h>
 #include <open62541/server_config_default.h>
+#include <string>
+#include <chrono>
 
 extern "C" {
     #include "../DataType.h"
@@ -13,6 +15,24 @@ UA_Boolean running = true;
 static void stopHandler(int sign) {
     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "received ctrl-c");
     running = false;
+}
+unsigned long publish(UA_Server *server, short id, unsigned size){
+    UA_Variant value;
+    TestData msg;
+    char data[size];
+    memcpy(data, std::string(size, 'a').c_str(), size);
+    auto ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::
+            high_resolution_clock::now().time_since_epoch()).count();
+    msg = {
+            .data = UA_STRING(data),
+            .id = id,
+            .timestamp = static_cast<UA_UInt64>(ts)
+            };
+
+    UA_Variant_setScalar(&value, &msg, &DataType);
+    UA_Server_run_iterate(server, true);
+    UA_Server_writeValue(server, testDataVariableTypeId, value);
+    return 0;
 }
 
 static int run(UA_String *transportProfile,
@@ -48,15 +68,25 @@ static int run(UA_String *transportProfile,
         UA_Server_delete(server);
         return retval;
     }
-
-    while (running == true){
-        UA_Server_run_iterate(server, true);
+    int i = 0;
+    while (running){
+        if (i < 100)
+            publish(server, i, 14);
         usleep(50000);
+        i++;
+        UA_Variant value;
+        UA_Server_readValue(server, testDataVariableTypeId, &value);
+
+        auto msg = (TestData *)value.data;
+        if (msg != NULL)
+            printf("%d %lu\n", msg->id, msg->timestamp);
     }
     retval = UA_Server_run_shutdown(server);
     UA_Server_delete(server);
     return retval == UA_STATUSCODE_GOOD ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
+
 
 
 int main() {

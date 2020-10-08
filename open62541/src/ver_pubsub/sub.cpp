@@ -17,7 +17,7 @@
 #include <open62541/server_config_default.h>
 
 #include "ua_pubsub_networkmessage.h"
-
+#include "../DataType.h"
 #include <signal.h>
 
 #ifdef UA_ENABLE_PUBSUB_ETH_UADP
@@ -34,7 +34,7 @@ static void stopHandler(int sign) {
 static UA_StatusCode
 subscriberListen(UA_PubSubChannel *psc) {
     UA_ByteString buffer;
-    UA_StatusCode retval = UA_ByteString_allocBuffer(&buffer, 512);
+    UA_StatusCode retval = UA_ByteString_allocBuffer(&buffer, 2048);
     if(retval != UA_STATUSCODE_GOOD) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                      "Message buffer allocation failed!");
@@ -49,7 +49,7 @@ subscriberListen(UA_PubSubChannel *psc) {
          * assumed.
          * TODO: Return an error code in 'receive' instead of setting the buf
          * length to zero. */
-        buffer.length = 512;
+        buffer.length = 2048;
         UA_ByteString_clear(&buffer);
         return UA_STATUSCODE_GOOD;
     }
@@ -97,6 +97,12 @@ subscriberListen(UA_PubSubChannel *psc) {
                             "Received date: %02i-%02i-%02i Received time: %02i:%02i:%02i",
                             receivedTime.year, receivedTime.month, receivedTime.day,
                             receivedTime.hour, receivedTime.min, receivedTime.sec);
+            } else{
+                auto extObj = *(UA_ExtensionObject *)(dsm->data.keyFrameData.dataSetFields[i].value.data);
+                if(extObj.encoding != UA_EXTENSIONOBJECT_DECODED) {
+                    auto msg = extObj.content.encoded.body.length;
+                    printf("%d\n", msg);
+                }
             }
         }
     }
