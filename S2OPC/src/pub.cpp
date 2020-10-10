@@ -5,7 +5,6 @@ extern "C"{
 #include <stdlib.h>
 #include <unistd.h>
 
-//#include"sopc_pubsub_helpers.h"
 #include "sopc_pub_scheduler.h"
 
 #include "sopc_helper_uri.h"
@@ -15,6 +14,7 @@ extern "C"{
 #include "sopc_xml_loader.h"
 #include "string.h"
 #include "errno.h"
+#include "sopc_builtintypes.h"
 
 #include "config.h"
 #include "pubsub.h"
@@ -29,17 +29,38 @@ const char* pub_config_xml = "<PubSub publisherId=\"41\">\n\
         <!-- one to many -->\n\
         <message id=\"14\" version=\"1\" publishingInterval=\"%d\">\n\
           <!-- one to many -->\n\
-            <variable nodeId=\"ns=1;s=PubBool\" displayName=\"varBool\" dataType=\"Boolean\"/>\n\
+            <variable nodeId=\"ns=1;s=PubInt32\" displayName=\"varInt\" dataType=\"Int32\"/>\n\
             <variable nodeId=\"ns=1;s=PubString\" displayName=\"varString\" dataType=\"String\"/>\n\
             <!-- the nodeId is used to retrieve the variable in the adresse space -->\n\
         </message>\n\
-        <message id=\"15\" version=\"1\" publishingInterval=\"%d\">\n\
-            <!-- one to many -->\n\
-            <variable nodeId=\"ns=1;s=PubInt\" displayName=\"varInt\" dataType=\"Int64\"/>\n\
-            <variable nodeId=\"ns=1;s=PubUInt\" displayName=\"varUInt\" dataType=\"UInt64\"/>\n\
-        </message>\n\
     </connection>\n\
 </PubSub>\0";
+
+static int id = 0;
+static std::string data;
+
+void setData(int new_id, size_t len){
+    id = new_id;
+    data = std::string('a',len);
+}
+
+extern "C" SOPC_DataValue* GetValues(OpcUa_ReadValueId* lrv, int32_t nbValues)
+{
+    SOPC_DataValue* ldv = Server_GetSourceVariables(lrv, nbValues);
+    for(int i=0;i<nbValues;i++){
+        switch(ldv[i].Value.BuiltInTypeId){
+        SOPC_Int32_Id:
+            ldv[i].Value.Value.Int32 = id;
+            break;
+        SOPC_String_Id:
+            ldv[i].Value.Value.String.Length = data.length();
+            ldv[i].Value.Value.String.Data = data.c_str();
+            break;
+        }
+    }
+    return ldv;
+}
+
 
 SOPC_S2OPC_Config s2opcConfig;
 
@@ -72,7 +93,7 @@ extern "C" void configure_server(std::string& topic, long int delay_ms){
     /* Configuration of the PubSub module is done upon PubSub start through the local service */
 
     /* Start the Server */
-    s2opcConfig.serverConfig.endpoints[0].endpointURL = "opc.udp://232.1.2.100:2200";
+    //s2opcConfig.serverConfig.endpoints[0].endpointURL = "opc.udp://232.1.2.100:4841/topic1";
     if (SOPC_STATUS_OK == status)
     {
         status = Server_ConfigureStartServer(&s2opcConfig.serverConfig.endpoints[0]);
@@ -101,6 +122,7 @@ extern "C" void configure_server(std::string& topic, long int delay_ms){
         return;
     }
     sprintf(configBuffer, pub_config_xml, topic.c_str(), delay_ms, delay_ms);
+    printf("%s\n",configBuffer);
     //printf("config: %s\n", configBuffer);
     FILE* fd = SOPC_FileSystem_fmemopen((void*) configBuffer, strlen(configBuffer), "r");
     SOPC_PubSubConfiguration* pPubSubConfig = NULL;
@@ -133,7 +155,7 @@ extern "C" void configure_server(std::string& topic, long int delay_ms){
     SOPC_PubSourceVariableConfig* pSourceConfig = NULL;
     if (SOPC_STATUS_OK == status)
     {
-        pSourceConfig = SOPC_PubSourceVariableConfig_Create(Server_GetSourceVariables);
+        pSourceConfig = SOPC_PubSourceVariableConfig_Create(GetValues);
         if (NULL == pSourceConfig)
         {
             printf("# Error: Cannot create Pub configuration.\n");

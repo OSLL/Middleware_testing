@@ -36,10 +36,13 @@ public:
 	}
 
 	unsigned long publish(short id, unsigned size) override{
-		std::string str(size,'a');
 		unsigned long time=std::chrono::duration_cast<std::chrono::
                 	nanoseconds>(std::chrono::high_resolution_clock::
                 	now().time_since_epoch()).count();
+                setData(id, size);
+		time=std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count()-time;
                 return time;
         }
 };
