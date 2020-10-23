@@ -18,18 +18,38 @@ public:
             _subscriber(_dp),
             _dr(_subscriber, _topic2, _provider.datareader_qos())
             {
-            if (!_isFirst){
-                _dw = dds::pub::DataWriter<TestDataType>(_publisher, _topic2, _provider.datawriter_qos());
-                _dr = dds::sub::DataReader<TestDataType>(_subscriber, _topic1, _provider.datareader_qos());
+                if (!_isFirst){
+                    _dw = dds::pub::DataWriter<TestDataType>(_publisher, _topic2, _provider.datawriter_qos());
+                    _dr = dds::sub::DataReader<TestDataType>(_subscriber, _topic1, _provider.datareader_qos());
+                }
             }
-            }
+
+    TestPingPongNode(std::string &topic1, std::string topic2, int msgCount, int prior,
+                     int cpu_index, std::string &filename, int topic_priority, int msInterval,
+                     int msgSizeMin, int msgSizeMax, int step, int before_step, bool isFirst):
+            TestMiddlewarePingPong<TestDataType>(topic1, topic2, msgCount, prior, cpu_index, filename, topic_priority,
+                                                 msInterval, msgSizeMin, msgSizeMax, step, before_step, isFirst),
+            _dp(org::opensplice::domain::default_id()),
+            _provider("file://QoS.xml", "TestProfile"),
+            _topic1(_dp, _topic_name1, _provider.topic_qos()),
+            _topic2(_dp, _topic_name2, _provider.topic_qos()),
+            _publisher(_dp),
+            _dw(_publisher, _topic1, _provider.datawriter_qos()),
+            _subscriber(_dp),
+            _dr(_subscriber, _topic2, _provider.datareader_qos())
+                    {
+                        if (!_isFirst){
+                            _dw = dds::pub::DataWriter<TestDataType>(_publisher, _topic2, _provider.datawriter_qos());
+                            _dr = dds::sub::DataReader<TestDataType>(_subscriber, _topic1, _provider.datareader_qos());
+                        }
+                    }
 
     bool receive() override {
         auto samples = _dr.select().max_samples(1).state(dds::sub::status::DataState::new_data()).take();
         if(samples.length() > 0){
             auto msg = samples.begin()->data();
             write_received_msg(msg);
-            std::cout<< msg.id()<<std::endl;
+            // std::cout<< msg.id()<<std::endl;
             return true;
         }
         return false;
