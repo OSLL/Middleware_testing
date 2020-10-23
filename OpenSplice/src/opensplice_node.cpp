@@ -63,11 +63,11 @@ int main(int argc, char **argv) {
                                      msgs_before_step, filename_pub, topic_prior);
             publisher.StartTest();
         }
-        if (type_name == "subscriber") {
+        else if (type_name == "subscriber") {
             TestSubscriber subscriber(topic1, m_count, priority_sub, cpu_index_sub, filename_sub, topic_prior);
             subscriber.StartTest();
         }
-        if (type_name == "ping_pong"){
+        else if (type_name == "ping_pong"){
             std::string filename;
             if(isFirst)
                 filename = filename_pub;
