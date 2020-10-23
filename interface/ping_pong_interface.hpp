@@ -23,17 +23,17 @@ public:
             int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSize, bool isFirst) :
             _topic_name1(topic1),
             _topic_name2(topic2),
+            _filename(filename),
             _recieve_timestamps(msgCount),
             _msgs(msgCount),
+            _isFirst(isFirst),
+            _isNew(false),
             _topic_priority(topic_priority),
             _msgCount(msgCount),
             _priority(prior),
             _cpu_index(cpu_index),
-            _filename(filename),
-            _isFirst(isFirst),
             _msInterval(msInterval),
-            _msgSize(msgSize),
-            _isNew(false)
+            _msgSize(msgSize)
             {
                 set_cpu_index_and_prior();
             }
@@ -43,20 +43,21 @@ public:
             int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSizeMin, int msgSizeMax, int step, int before_step, bool isFirst) :
             _topic_name1(topic1),
             _topic_name2(topic2),
+            _filename(filename),
             _recieve_timestamps(msgCount),
             _msgs(msgCount),
+            _isFirst(isFirst),
+            _isNew(true),
             _topic_priority(topic_priority),
             _msgCount(msgCount),
             _priority(prior),
             _cpu_index(cpu_index),
-            _filename(filename),
-            _isFirst(isFirst),
             _msInterval(msInterval),
             _msgSizeMin(msgSizeMin),
             _msgSizeMax(msgSizeMax),
             _step(step),
             _msgs_before_step(before_step),
-            _isNew(true)
+            _msgSize(msgSizeMin)
             {
                 set_cpu_index_and_prior();
             }
@@ -129,32 +130,36 @@ public:
         return 0;
     }
 
-    bool wait_for_msg(){        //func waits for TIMEOUT to receive msg
+    bool wait_for_msg(){        //func waits for TIMEOUT to receive msgs
         unsigned long start_timeout, end_timeout;
         start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
         nanoseconds>(std::chrono::high_resolution_clock::
                      now().time_since_epoch()).count();
 
         bool notReceived = true;
-        int count = 0;
         while (notReceived) {
+
             mu.lock();      // mute thread to write msg and update _last_rec_msg_id
+
             if(receive()) { // true - принято
-                notReceived = false;
+                if(!_isNew || !_isFirst)
+                    notReceived = false;
                 _last_rec_msg_id+=1;
             } else {
                 end_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                              now().time_since_epoch()).count();
                 if (end_timeout - start_timeout > TIMEOUT) {
-                    std::cout << "Timeout!" <<std::endl;
+                    mu.unlock();
                     return true;
                 }
+
             }
             mu.unlock();
 
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        return false;
     }
 
     int StartTestNew(){
@@ -174,6 +179,7 @@ public:
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
             }
+            future.wait();
         } else{
             while (!wait_for_msg()){
                 if (_last_rec_msg_id % (_msgs_before_step - 1) == 0 && cur_size <= _msgSizeMax)
@@ -183,7 +189,7 @@ public:
 
             }
         }
-        future.wait();
+
         to_json();
         return 0;
     }
@@ -245,6 +251,6 @@ protected:
     int _step;
     int _msgs_before_step;
     int _msgSize;
-    int _last_rec_msg_id = 0;
+    int _last_rec_msg_id = -1;
     std::mutex mu;
 };
