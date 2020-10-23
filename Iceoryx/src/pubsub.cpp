@@ -164,12 +164,40 @@ public:
             	  std::string &filename, 
 		  int topic_priority,
 		  int interval, 
+		  int msgSizeMin,
+                  int msgSizeMax,
+                  int step,
+                  int before_step, 
+		  bool isFirst
+			): TestMiddlewarePingPong<MsgType>(topic1, topic2, msgCount, prior, cpu_index, filename,
+				topic_priority, interval, msgSizeMin, msgSizeMax, step, before_step, isFirst),
+                        _name(name)
+	{
+            create();
+	}
+	
+        PingPong(std::string& name,
+		  std::string& topic1,
+		  std::string& topic2,	
+		  int msgCount, 
+		  int prior, 
+		  int cpu_index,
+            	  std::string &filename, 
+		  int topic_priority,
+		  int interval, 
 		  int msg_size, 
 		  bool isFirst
 			): TestMiddlewarePingPong<MsgType>(topic1, topic2, msgCount, prior, cpu_index, filename,
-				topic_priority, interval, msg_size, isFirst)
-	{
-		iox::runtime::PoshRuntime::getInstance(name);
+				topic_priority, interval, msg_size, isFirst),
+                        _name(name)
+        {
+            create();
+        }
+
+        void create(){
+		iox::runtime::PoshRuntime::getInstance(_name);
+                std::string topic1 = TestMiddlewarePingPong<Message>::_topic_name1;
+                std::string topic2 = TestMiddlewarePingPong<Message>::_topic_name2;
 		char param1[100];
 		char param2[100];
 		if(topic1.length()<100) memcpy(param1,topic1.c_str(),topic1.length()+1);
@@ -182,13 +210,13 @@ public:
 			memcpy(param2,topic2.c_str(),99);
 			param2[99]='\0';
 		}
-		if(isFirst) pub=new iox::popo::Publisher({"Iceoryx",param1});
+		if(TestMiddlewarePingPong<Message>::_isFirst) pub=new iox::popo::Publisher({"Iceoryx",param1});
 		else pub=new iox::popo::Publisher({"Iceoryx",param2});
 		pub->offer();
-		if(isFirst) sub=new iox::popo::Subscriber({"Iceoryx",param2});
+		if(TestMiddlewarePingPong<Message>::_isFirst) sub=new iox::popo::Subscriber({"Iceoryx",param2});
 		else sub=new iox::popo::Subscriber({"Iceoryx",param1});
 		sub->subscribe(QUEUE_SIZE);
-	}
+        }
 
 	~PingPong(){
 		pub->stopOffer();
@@ -238,6 +266,8 @@ public:
 			time=std::chrono::duration_cast<std::chrono::
 				nanoseconds>(std::chrono::high_resolution_clock::
 				now().time_since_epoch()).count()-time;
+			//free(msg.str);
+			//std::cout<<"Received: id - "<<msg.id<<" time - "<<msg.timestamp<<std::endl;
 			TestMiddlewarePingPong<MsgType>::write_received_msg(msg);
 		}
 		return get;
@@ -325,12 +355,19 @@ int main(int argc, char** argv){
 
 		std::cout<<"PingPong"<<std::endl;
 		if(isFirst){
-			PingPong<Message> ping_pong(name, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
-						interval, min_size, isFirst);
+			PingPong<Message> ping_pong = (interval == 0)? 
+                            PingPong<Message>(name, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+						interval, min_size, isFirst):
+                            PingPong<Message>(name, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+                                                interval, min_size, max_size, step, before_step, isFirst);
+
 			ping_pong.StartTest();
 		}else{
-			PingPong<Message> ping_pong(name, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
-						interval, min_size, isFirst);
+			PingPong<Message> ping_pong = (interval == 0)? 
+                            PingPong<Message>(name, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+						interval, min_size, isFirst):
+                            PingPong<Message>(name, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+                                                interval, min_size, max_size, step, before_step, isFirst);
 			ping_pong.StartTest();	
 		}
 		std::cout<<"End PingPong"<<std::endl;
