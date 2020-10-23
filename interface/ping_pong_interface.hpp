@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <thread>
+#include <future>
 #include <nlohmann/json.hpp>
 #include <sys/stat.h>
 #include <errno.h>
@@ -107,34 +108,14 @@ public:
 
     int StartTestOld(){
         bool isTimeoutEx = false;
-        unsigned long start_timeout, end_timeout;
+
         std::this_thread::sleep_for(std::chrono::seconds(4));
 
         for(int i = 0; i < _msgCount; i++){
             if(_isFirst)
                 publish(i, _msgSize);
 
-            start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
-            nanoseconds>(std::chrono::high_resolution_clock::
-                         now().time_since_epoch()).count();
-
-            bool notReceived = true;
-            while (notReceived) {
-                // true - принято
-                if(receive()) {
-                    notReceived = false;
-                } else {
-                    end_timeout = std::chrono::duration_cast<std::chrono::
-                    nanoseconds>(std::chrono::high_resolution_clock::
-                                 now().time_since_epoch()).count();
-                    if (end_timeout - start_timeout > TIMEOUT) {
-                        isTimeoutEx = true;
-                        break;
-                    }
-                }
-
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            }
+            isTimeoutEx = wait_for_msg();
             if(isTimeoutEx)
                 break;
             if(!_isFirst)
@@ -148,23 +129,61 @@ public:
         return 0;
     }
 
-    int StartTestNew(){
+    bool wait_for_msg(){        //func waits for TIMEOUT to receive msg
+        unsigned long start_timeout, end_timeout;
+        start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
+        nanoseconds>(std::chrono::high_resolution_clock::
+                     now().time_since_epoch()).count();
 
-        unsigned long proc_time = 0;
-        std::this_thread::sleep_for(std::chrono::seconds(4));
+        bool notReceived = true;
+        int count = 0;
+        while (notReceived) {
+            mu.lock();      // mute thread to write msg and update _last_rec_msg_id
+            if(receive()) { // true - принято
+                notReceived = false;
+                _last_rec_msg_id+=1;
+            } else {
+                end_timeout = std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                             now().time_since_epoch()).count();
+                if (end_timeout - start_timeout > TIMEOUT) {
+                    std::cout << "Timeout!" <<std::endl;
+                    return true;
+                }
+            }
+            mu.unlock();
 
-        int cur_size = _msgSizeMin;
-
-        for (auto i = 0; i < _msgCount; ++i) {
-
-            if(i % (_msgs_before_step-1) == 0 && cur_size <= _msgSizeMax)
-                cur_size += _step;
-
-            publish(i, cur_size);
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+    }
 
+    int StartTestNew(){
+        std::future<bool> future;
+        if (_isFirst)   //run receiving msgs in another thread
+            future = std::async(std::launch::async, &TestMiddlewarePingPong<MsgType>::wait_for_msg, this);
+        std::this_thread::sleep_for(std::chrono::seconds(4));
+        int cur_size = _msgSizeMin;
+        if (_isFirst) {
+
+            for (auto i = 0; i < _msgCount; ++i) {
+
+                if (i % (_msgs_before_step - 1) == 0 && cur_size <= _msgSizeMax)
+                    cur_size += _step;
+
+                publish(i, cur_size);
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
+            }
+        } else{
+            while (!wait_for_msg()){
+                if (_last_rec_msg_id % (_msgs_before_step - 1) == 0 && cur_size <= _msgSizeMax)
+                    cur_size += _step;
+
+                publish(_last_rec_msg_id, cur_size);
+
+            }
+        }
+        future.wait();
         to_json();
         return 0;
     }
@@ -211,19 +230,21 @@ public:
 protected:
     std::string _topic_name1;
     std::string _topic_name2;
+    std::string _filename;
     std::vector<unsigned long> _recieve_timestamps;
     std::vector<MsgType> _msgs;
+    bool _isFirst;
+    bool _isNew;
     int _topic_priority;
     int _msgCount;
     int _priority; //def not stated
     int _cpu_index; //def not stated
-    std::string _filename;
-    bool _isFirst;
-    bool _isNew;
     int _msInterval;
     int _msgSizeMin;
     int _msgSizeMax;
     int _step;
     int _msgs_before_step;
     int _msgSize;
+    int _last_rec_msg_id = 0;
+    std::mutex mu;
 };
