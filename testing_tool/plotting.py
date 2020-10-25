@@ -358,18 +358,18 @@ def plot_results(filenames, multisub=False, isPingPong=False):
 
 
 if __name__ == '__main__':
-    for i in range(0, 9):
+    for i in range(1, 8):
         try:
-            resfiles = get_resfiles(i, i == 3)
-            if i == 3:
+            resfiles = get_resfiles(i, i == 2)
+            if i == 2:
                 for filenames in resfiles:
-                    plot_results([filenames], i == 3, i == 8)
-            elif i != 8:
+                    plot_results([filenames], i == 2, i > 5)
+            elif i < 6:
                 resfiles = get_grouped_filenames(resfiles)
                 for files in resfiles:
-                    plot_results(files, i == 3, i == 8)
+                    plot_results(files, i == 2, i > 5)
             else:
-                plot_results(resfiles, i == 3, i == 8)
+                plot_results(resfiles, i == 2, i > 5)
 
         except OSError:
             continue
