@@ -13,6 +13,15 @@ struct Message{
 	std::string str;
 };
 
+//This function need for "publish_confirm"
+//if not using send_one_way
+void callback(yami::outgoing_message& om){
+	yami::message_state state=om.get_state();
+	if(state==yami::rejected){
+		std::cout<<"Rejected"<<std::endl;
+	}
+}
+
 
 class Publisher: public TestMiddlewarePub{
 private:
@@ -185,6 +194,53 @@ public:
 		std::cout<<"Subscribed"<<std::endl;
 	}
 	
+        PingPong(std::string& address,
+		std::string &topic1, 
+		std::string &topic2, 
+		int msgCount, 
+		int prior,
+		int cpu_index, 
+		std::string &filename, 
+		int topic_priority, 
+		int msInterval, 
+		int msgSizeMin, 
+		int msgSizeMax, 
+                int step,
+                int before_step,
+		bool isFirst) :
+		TestMiddlewarePingPong<MsgType>(topic1, topic2, msgCount, prior, 
+				cpu_index,filename, topic_priority, msInterval, 
+				msgSizeMin, msgSizeMax, step, before_step, isFirst),
+		rec(false),
+                _address1(address + '1'),
+                _address2(address + '2')
+	{
+                if(isFirst) agent.add_listener(_address1);
+                else agent.add_listener(_address2);
+                unsigned long long int start, end;
+                start = end = std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count();
+                try{
+		        agent.register_raw_object("handler",update_ping_pong<MsgType>,this);
+		        yami::parameters param;
+		        param.set_string("destination_object","handler");
+	                if(isFirst){
+                                agent.register_value_publisher(topic1, val);
+                                agent.send_one_way(_address2,topic2,"subscribe",param);
+                        }else{
+                                agent.register_value_publisher(topic2, val);
+                                agent.send_one_way(_address1,topic1,"subscribe",param);
+                        }
+                }catch(yami::yami_runtime_error e){
+                        end = std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count();
+                        if(end - start > TIMEOUT) throw e;
+                }
+		std::cout<<"Subscribed"<<std::endl;
+	}
+	
 	~PingPong(){
                 yami::parameters param;
 	        param.set_string("destination_object","handler");
@@ -324,13 +380,19 @@ int main(int argc, char** argv){
 		if(type=="ping_pong"){
 			bool isFirst=program.get<bool>("--first");
 			if(isFirst){
-				PingPong<Message> ping_pong(address, topic1, topic2, m_count, prior1, cpu1, 
-					filename1, topic_prior, interval, max_msg_size, isFirst);
-				ping_pong.StartTest();
+                                PingPong<Message> ping_pong = (interval == 0)? 
+                                        PingPong<Message>(address, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+                                                        interval, min_msg_size, isFirst):
+                                        PingPong<Message>(address, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+                                                        interval, min_msg_size, max_msg_size, step, before_step, isFirst);
+                                ping_pong.StartTest();
 			}else{
-				PingPong<Message> ping_pong(address, topic1, topic2, m_count, prior2, cpu2, 
-					filename2, topic_prior, interval, max_msg_size, isFirst);
-				ping_pong.StartTest();
+                                PingPong<Message> ping_pong = (interval == 0)? 
+                                    PingPong<Message>(address, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+                                                        interval, min_msg_size, isFirst):
+                                    PingPong<Message>(address, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+                                                        interval, min_msg_size, max_msg_size, step, before_step, isFirst);
+                                ping_pong.StartTest();
 			}
 		}
 	}catch(test_exception& e){
