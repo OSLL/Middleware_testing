@@ -51,6 +51,6 @@ target_link_libraries (
 
 target_link_libraries (${NODE_EXE}
  ${OpenSplice_LIBRARIES}
- ${DATAMODEL} 
+ ${DATAMODEL} pthread
 )
 

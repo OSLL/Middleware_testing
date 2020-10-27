@@ -63,19 +63,28 @@ int main(int argc, char **argv) {
                                      msgs_before_step, filename_pub, topic_prior);
             publisher.StartTest();
         }
-        if (type_name == "subscriber") {
+        else if (type_name == "subscriber") {
             TestSubscriber subscriber(topic1, m_count, priority_sub, cpu_index_sub, filename_sub, topic_prior);
             subscriber.StartTest();
         }
-        if (type_name == "ping_pong"){
+        else if (type_name == "ping_pong"){
             std::string filename;
             if(isFirst)
                 filename = filename_pub;
             else
                 filename = filename_sub;
-            TestPingPongNode ping_pong(topic1, topic2, m_count, priority_pub, cpu_index_pub, filename, topic_prior, interval,
-                                    min_msg_size, isFirst);
-            ping_pong.StartTest();
+
+            if(interval == 0){
+                TestPingPongNode ping_pong(topic1, topic2, m_count, priority_pub, cpu_index_pub, filename,
+                                           topic_prior, interval, min_msg_size, isFirst);
+                ping_pong.StartTest();
+            }
+            else{
+                TestPingPongNode ping_pong(topic1, topic2, m_count, priority_pub,
+                                           cpu_index_pub, filename, topic_prior, interval, min_msg_size,
+                                           max_msg_size, step, msgs_before_step, isFirst);
+                ping_pong.StartTest();
+            }
         }
         else{
             std::cout << "Wrong node type specified!" << std::endl;

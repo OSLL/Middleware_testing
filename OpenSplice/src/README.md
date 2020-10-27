@@ -16,7 +16,9 @@
     * ```make install```
 4. Before building project or running the program it's necessary to config environment:
     ```source /opensplice/install/HDE/x86_64.linux/release.com```
-    
+5. Copy opensplice config from OpenSplice/ospl.xml to $OSPL_HOME/install/HDE/x86_64.linux/etc/ospl.xml
+    ```cp ospl.xml $OSPL_HOME/install/HDE/x86_64.linux/etc/ospl.xml
+ 
 ## Building project
 
 1. ```cd dds_testing/OpenSplice/src/```
