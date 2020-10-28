@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
 from plotting import get_resfiles, get_grouped_filenames, plot_results
+from get_sys_info import system
 
 class MiddlewareTesting(unittest.TestCase):
     pubs = ["../Endurox/src/build/Endurox "]
@@ -13,6 +14,8 @@ class MiddlewareTesting(unittest.TestCase):
     
     stype = 'subscriber'
     ptype = 'publisher'
+
+    sys = system()
 
     @classmethod
     def setUpClass(self):
@@ -33,6 +36,7 @@ class MiddlewareTesting(unittest.TestCase):
         prefix = '../../../../'
         for i in range(0, len(self.pubs)):
             print(datetime.now(), " >>> testing " + self.nodes[i], file=log_file)
+            self.sys.start(self.nodes[i])
             cwd = mk_nodedir(test_dir, self.nodes[i])
             for subtest_n, subtest in enumerate(configs):
                 if len(configs) != 1:
@@ -61,6 +65,7 @@ class MiddlewareTesting(unittest.TestCase):
                 else:
                     wait_and_end_process(p)
                 print(datetime.now(), "publisher finished", file=log_file, flush=True)
+            self.sys.end(self.test_n)
 
     def test1(self):
         print(datetime.now(), ">>> running test1", file=log_file)

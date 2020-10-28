@@ -127,7 +127,7 @@ public:
         nlohmann::json json_msg;
 
         for (unsigned i = 0; i < _msgs.size(); i++) {
-            auto msg = _msgs[i];
+            auto &msg = _msgs[i];
 
             json_msg["msg"] =
                     {
