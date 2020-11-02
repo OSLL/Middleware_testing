@@ -42,6 +42,7 @@ class MiddlewareTesting(unittest.TestCase):
                 if len(configs) != 1:
                     print(datetime.now(), f" >>> subtest - {subtest_n+1}/{len(configs)}", file=log_file)
                 subs = []
+                pubs = []
                 try:
                     if subtest[0].find('/') != -1:
                         os.mkdir(cwd + '/' + subtest[0][:subtest[0].find('/')])
@@ -71,36 +72,42 @@ class MiddlewareTesting(unittest.TestCase):
         print(datetime.now(), ">>> running test1", file=log_file)
         self.test_n = 1
         self.subtests = False
+        self.pairs = False
         self.startTest()
 
     def test2(self):
         print(datetime.now(), ">>> running test2", file=log_file)
         self.test_n = 2
         self.subtests = True
+        self.pairs = False
         self.startTest()
 
     def test3(self):
         print(datetime.now(), ">>> running test3", file=log_file)
         self.test_n = 3
         self.subtests = False
+        self.pairs = False
         self.startTest()
 
     def test4(self):
         print(datetime.now(), ">>> running test4", file=log_file)
         self.test_n = 4
         self.subtests = False
+        self.pairs = False
         self.startTest()
 
     def test5(self):
         print(datetime.now(), ">>> running test5", file=log_file)
         self.test_n = 5
         self.subtests = False
+        self.pairs = False
         self.startTest()
     
     def test6(self):
         print(datetime.now(), ">>> running test6", file=log_file)
         self.test_n = 6
         self.subtests = False
+        self.pairs = False
         self.ptype = 'ping_pong'
         self.stype = 'ping_pong'
         self.startTest()
