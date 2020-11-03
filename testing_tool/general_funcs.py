@@ -17,14 +17,19 @@ def get_configs(test_n, subtests=False):
             if isfile(join(directory, f)) and f.endswith('.json')]
 
 
-def create_process(name, config, cwd):
-    command = f'{name} "{config}"'
+def create_process(name, config, ntype, cwd, isFirst=False):
+    command = f'{name} -c "{config}" -t {ntype}'
+    print(command)
+    if isFirst:
+        command += ' --first'
     return subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, cwd=cwd)
 
 
 def wait_and_end_process(process):
-    end = str.encode("end")
+    end = str.encode("end\n")
     out, err = process.communicate(end)
+    if out is not None:
+        print(datetime.now(), out, file=log_file)
     if err is not None:
         print(datetime.now(), err, file=log_file)
     if process.poll() is None:

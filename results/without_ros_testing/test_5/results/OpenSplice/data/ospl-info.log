@@ -1,0 +1,3552 @@
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:44+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 2054174399 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : spliced 7fc007fe2700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691344.726429241/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:44+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : spliced 7fc007fe2700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691344.726809585/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:44+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : spliced 7fc007fe2700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691344.727240263/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:44+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : ddsi2 7fc0053bf700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691344.733183969/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:44+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1208239056 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : spliced 7f7b13d19700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691344.749997059/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:44+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : spliced 7f7b13d19700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691344.750322707/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:44+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : spliced 7f7b13d19700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691344.750844001/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:44+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : ddsi2 7f7b110f6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691344.759063207/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:45+0300
+Description : The durability service can be identified by ID: 1208239056
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : durability 7f7b11497700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691345.065526737/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:15:45+0300
+Description : The durability service can be identified by ID: 2054174399
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : durability 7fc005760700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691345.140255859/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:28+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : conflictResolver 7fc005039700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691388.503818293/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:31+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : conflictResolver 7f7b10d70700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691391.140549091/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:45+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : main thread 7fc007fbc740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691405.758933505/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:45+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : ddsi2 7fc0053bf700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691405.765471431/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:46+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : durability 7fc005760700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691406.907502550/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:46+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : spliced 7fc007fe2700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691406.959677722/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:47+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29413>
+Thread      : main thread 7fc007fbc740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691407.061371291/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:47+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : main thread 7f7b13cf3740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691407.112159982/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:47+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : ddsi2 7f7b110f6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691407.117488745/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:48+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : durability 7f7b11497700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691408.944234512/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : spliced 7f7b13d19700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691409.013497178/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : Removed 11169 objects
+Node        : intelBox
+Process     : opensplice_node <29415>
+Thread      : main thread 7f7b13cf3740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691409.115306944/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 489494431 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : spliced 7f94c2d84700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691409.155565438/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : spliced 7f94c2d84700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691409.155911338/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : spliced 7f94c2d84700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691409.156399716/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : ddsi2 7f94c0161700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691409.162626227/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 332448781 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : spliced 7f4bc26c7700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691409.166919945/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : spliced 7f4bc26c7700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691409.167235814/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : spliced 7f4bc26c7700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691409.167715423/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : ddsi2 7f4b939cb700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691409.174387176/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : The durability service can be identified by ID: 332448781
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : durability 7f4b93d6c700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691409.480957497/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:49+0300
+Description : The durability service can be identified by ID: 489494431
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : durability 7f94c0502700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691409.569407568/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:16:59+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : conflictResolver 7f9473de0700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691419.531470171/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:02+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : conflictResolver 7f4b9370e700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691422.150629984/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:47+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : main thread 7f94c2d5e740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691467.020183337/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:47+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : ddsi2 7f94c0161700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691467.030147219/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:48+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : durability 7f94c0502700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691468.341005704/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:48+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : spliced 7f94c2d84700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691468.421415696/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:48+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29529>
+Thread      : main thread 7f94c2d5e740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691468.523175592/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:48+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : main thread 7f4bc26a1740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691468.574918018/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:48+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : ddsi2 7f4b939cb700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691468.583545357/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : durability 7f4b93d6c700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691470.459063978/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : spliced 7f4bc26c7700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691470.476531200/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : Removed 11172 objects
+Node        : intelBox
+Process     : opensplice_node <29531>
+Thread      : main thread 7f4bc26a1740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691470.578316132/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1329269100 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : spliced 7f11dfd48700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691470.633359673/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : spliced 7f11dfd48700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691470.633800764/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : spliced 7f11dfd48700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691470.634240569/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : ddsi2 7f11dd125700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691470.641720706/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 78974934 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : spliced 7fd80daa9700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691470.664949997/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : spliced 7fd80daa9700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691470.665351797/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : spliced 7fd80daa9700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691470.665825766/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:50+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : ddsi2 7fd80b097700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691470.675148698/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:51+0300
+Description : The durability service can be identified by ID: 1329269100
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : durability 7f11dd4c6700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691471.148559098/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:17:51+0300
+Description : The durability service can be identified by ID: 78974934
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : durability 7fd80b438700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691471.181691524/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:01+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : conflictResolver 7f11dcd9f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691481.193310764/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:03+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : conflictResolver 7fd80ad11700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691483.842315052/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:42+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : main thread 7f11dfd22740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691522.898049475/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:42+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : ddsi2 7f11dd125700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691522.903374484/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:44+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : durability 7f11dd4c6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691524.901609269/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:44+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : spliced 7f11dfd48700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691524.999428458/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:45+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29646>
+Thread      : main thread 7f11dfd22740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691525.101245016/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:45+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : main thread 7fd80da83740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691525.153015258/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:45+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : ddsi2 7fd80b097700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691525.158695982/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:46+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : durability 7fd80b438700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691526.949436242/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:46+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : spliced 7fd80daa9700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691526.954463546/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29648>
+Thread      : main thread 7fd80da83740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691527.056215549/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 483169362 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : spliced 7f2e12b45700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691527.096549329/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : spliced 7f2e12b45700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691527.096878659/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : spliced 7f2e12b45700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691527.097290711/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : ddsi2 7f2e101c2700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691527.105664413/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1797873459 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : spliced 7fa66ea33700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691527.138005941/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : spliced 7fa66ea33700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691527.138539098/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : spliced 7fa66ea33700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691527.139000884/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : ddsi2 7fa667fff700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691527.148397885/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : The durability service can be identified by ID: 1797873459
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : durability 7fa66c3c2700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691527.454812164/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:18:47+0300
+Description : The durability service can be identified by ID: 483169362
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : durability 7f2e102c3700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691527.512382082/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:33+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : conflictResolver 7fa667c9b700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691573.510437715/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:35+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : conflictResolver 7f2de3b92700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691575.979884774/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:50+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : main thread 7f2e12b1f740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691590.847646418/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:50+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : ddsi2 7f2e101c2700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691590.853742120/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:52+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : durability 7f2e102c3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691592.283476868/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:52+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : spliced 7f2e12b45700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691592.348769799/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:52+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29758>
+Thread      : main thread 7f2e12b1f740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691592.450557187/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:52+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : main thread 7fa66ea0d740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691592.501267911/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:52+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : ddsi2 7fa667fff700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691592.509803192/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : durability 7fa66c3c2700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691594.314707731/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : spliced 7fa66ea33700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691594.402741796/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29760>
+Thread      : main thread 7fa66ea0d740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691594.504587614/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 2070924656 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : spliced 7fb3bf506700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691594.561604837/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : spliced 7fb3bf506700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691594.562045178/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : spliced 7fb3bf506700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691594.562461499/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : ddsi2 7fb3bc8e3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691594.572254986/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 132006055 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : spliced 7f4ae33de700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691594.606520968/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : spliced 7f4ae33de700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691594.607022571/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : spliced 7f4ae33de700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691594.607548617/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : ddsi2 7f4ae09cc700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691594.617655865/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : The durability service can be identified by ID: 2070924656
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : durability 7fb3bcc84700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691594.878628824/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:19:54+0300
+Description : The durability service can be identified by ID: 132006055
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : durability 7f4ae0d6d700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691594.924345280/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:04+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : conflictResolver 7fb3bc55d700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691604.921945767/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:07+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : conflictResolver 7f4ae0646700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691607.569638948/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:40+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : main thread 7fb3bf4e0740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691640.393258798/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:40+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : ddsi2 7fb3bc8e3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691640.399497518/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:41+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : durability 7fb3bcc84700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691641.828421924/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:41+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : spliced 7fb3bf506700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691641.894343158/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:41+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29874>
+Thread      : main thread 7fb3bf4e0740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691641.996150213/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:42+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : main thread 7f4ae33b8740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691642.048505166/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:42+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : ddsi2 7f4ae09cc700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691642.057657496/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:43+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : durability 7f4ae0d6d700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691643.876744017/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:43+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : spliced 7f4ae33de700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592691643.950014254/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29876>
+Thread      : main thread 7f4ae33b8740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592691644.051850263/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1661829048 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : spliced 7ff2fd366700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691644.091637826/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : spliced 7ff2fd366700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691644.091998352/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : spliced 7ff2fd366700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691644.092426316/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : ddsi2 7ff2fa743700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691644.098614783/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1482268037 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : spliced 7fa28f62f700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592691644.105932722/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : spliced 7fa28f62f700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592691644.106363779/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : spliced 7fa28f62f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691644.106905446/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : ddsi2 7fa28cc1d700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691644.114475810/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : The durability service can be identified by ID: 1661829048
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : durability 7ff2faae4700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691644.404840131/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:44+0300
+Description : The durability service can be identified by ID: 1482268037
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : durability 7fa28cfbe700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592691644.420946547/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:54+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : conflictResolver 7ff2fa3bd700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691654.468407451/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:20:57+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : conflictResolver 7fa28c897700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592691657.087479872/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:28+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : main thread 7ff2fd340740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692468.959523271/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:28+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : ddsi2 7ff2fa743700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692468.965655030/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:30+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : durability 7ff2faae4700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692470.334864088/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:30+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : spliced 7ff2fd366700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692470.360516866/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:30+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29987>
+Thread      : main thread 7ff2fd340740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692470.462275157/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:30+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : main thread 7fa28f609740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692470.514033523/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:30+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : ddsi2 7fa28cc1d700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692470.521464430/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : durability 7fa28cfbe700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692472.349312932/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : spliced 7fa28f62f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692472.415503952/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <29989>
+Thread      : main thread 7fa28f609740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692472.517363359/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1432987237 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : spliced 7ff06f0a6700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692472.562135363/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : spliced 7ff06f0a6700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692472.562488041/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : spliced 7ff06f0a6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692472.562913012/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : ddsi2 7ff06c483700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692472.569886212/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 282016165 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : spliced 7fd99fb87700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692472.597264707/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : spliced 7fd99fb87700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692472.597761879/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : spliced 7fd99fb87700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692472.598343993/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : ddsi2 7fd99cf64700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692472.609210602/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : The durability service can be identified by ID: 282016165
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : durability 7fd99d305700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692472.915399097/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:34:32+0300
+Description : The durability service can be identified by ID: 1432987237
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : durability 7ff06c824700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692472.976826417/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:16+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : conflictResolver 7ff06c0fd700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692516.139639730/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:18+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : conflictResolver 7fd99cbde700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692518.775071437/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:36+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : main thread 7ff06f080740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692536.079640895/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:36+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : ddsi2 7ff06c483700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692536.088614357/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:37+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : durability 7ff06c824700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692537.844359797/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:37+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : spliced 7ff06f0a6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692537.880712015/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:37+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <30255>
+Thread      : main thread 7ff06f080740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692537.982273049/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:38+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : main thread 7fd99fb61740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692538.023199708/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:38+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : ddsi2 7fd99cf64700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692538.030358142/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:39+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : durability 7fd99d305700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692539.880785829/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:39+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : spliced 7fd99fb87700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692539.924547125/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <30257>
+Thread      : main thread 7fd99fb61740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692540.026364175/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1637421423 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : spliced 7f796d992700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692540.065261887/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : spliced 7f796d992700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692540.065619080/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : spliced 7f796d992700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692540.066112589/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : ddsi2 7f796ad6f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692540.072974189/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1231082180 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : spliced 7f55baf9a700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692540.087468973/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : spliced 7f55baf9a700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692540.087973745/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : spliced 7f55baf9a700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692540.088598104/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : ddsi2 7f55b8377700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692540.097318705/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : The durability service can be identified by ID: 1637421423
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : durability 7f796b110700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692540.380225177/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:40+0300
+Description : The durability service can be identified by ID: 1231082180
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : durability 7f55b8718700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692540.403866197/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:50+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : conflictResolver 7f796a9e9700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692550.447400813/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:35:53+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : conflictResolver 7f557bfee700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692553.062423556/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:45+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : main thread 7f796d96c740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692605.927618028/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:45+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : ddsi2 7f796ad6f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692605.937415844/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:47+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : durability 7f796b110700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692607.359023212/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:47+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : spliced 7f796d992700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692607.428890015/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:47+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <30370>
+Thread      : main thread 7f796d96c740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692607.530713639/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:47+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : main thread 7f55baf74740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692607.582915565/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:47+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : ddsi2 7f55b8377700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692607.591512634/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : durability 7f55b8718700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692609.374229618/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : spliced 7f55baf9a700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692609.384277322/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : Removed 11172 objects
+Node        : intelBox
+Process     : opensplice_node <30372>
+Thread      : main thread 7f55baf74740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692609.486001113/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 624893517 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : spliced 7fa0f2370700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692609.531892890/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : spliced 7fa0f2370700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692609.532278092/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : spliced 7fa0f2370700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692609.532707100/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : ddsi2 7fa0eb739700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692609.539614489/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 763689331 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : spliced 7faa6007f700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692609.569957519/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : spliced 7faa6007f700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692609.570418027/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : spliced 7faa6007f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692609.571052101/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : ddsi2 7faa5d45c700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692609.579119636/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:49+0300
+Description : The durability service can be identified by ID: 763689331
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : durability 7faa5d7fd700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692609.985331589/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:36:50+0300
+Description : The durability service can be identified by ID: 624893517
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : durability 7fa0ebada700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692610.046160287/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:34+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : conflictResolver 7faa5d0d6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692654.345818001/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:36+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : conflictResolver 7fa0eb3c4700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692656.909783083/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:51+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : main thread 7fa0f234a740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692671.756670780/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:51+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : ddsi2 7fa0eb739700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692671.762352902/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:53+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : durability 7fa0ebada700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692673.813310668/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:53+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : spliced 7fa0f2370700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692673.858008556/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:53+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <30486>
+Thread      : main thread 7fa0f234a740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692673.959825243/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:54+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : main thread 7faa60059740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692674.002746702/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:54+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : ddsi2 7faa5d45c700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692674.010914981/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:55+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : durability 7faa5d7fd700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692675.850691741/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:55+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : spliced 7faa6007f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692675.904045906/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : Removed 11172 objects
+Node        : intelBox
+Process     : opensplice_node <30488>
+Thread      : main thread 7faa60059740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692676.005859777/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 351994223 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : spliced 7fe3484b7700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692676.044927556/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : spliced 7fe3484b7700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692676.045235946/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : spliced 7fe3484b7700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692676.045717652/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 342625287 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : spliced 7f40944d6700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692676.046310986/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : spliced 7f40944d6700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692676.046611693/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : spliced 7f40944d6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692676.046985017/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : ddsi2 7fe345894700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692676.051710565/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : ddsi2 7f40918b3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692676.052794259/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : The durability service can be identified by ID: 351994223
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : durability 7fe345c35700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692676.458859675/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:37:56+0300
+Description : The durability service can be identified by ID: 342625287
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : durability 7f4091c54700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692676.559741610/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:38:06+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : conflictResolver 7fe34550e700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692686.424037765/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:38:09+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : conflictResolver 7f409152d700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692689.028325856/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:14+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : main thread 7fe348491740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692754.681444322/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:14+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : ddsi2 7fe345894700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692754.691045722/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:16+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : durability 7fe345c35700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692756.238459128/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:16+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : spliced 7fe3484b7700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692756.282720464/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:16+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <30602>
+Thread      : main thread 7fe348491740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692756.384542657/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:16+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : main thread 7f40944b0740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692756.436023533/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:16+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : ddsi2 7f40918b3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692756.444762829/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : durability 7f4091c54700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692758.342756187/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : spliced 7f40944d6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692758.437625739/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : Removed 11169 objects
+Node        : intelBox
+Process     : opensplice_node <30604>
+Thread      : main thread 7f40944b0740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692758.539399691/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1172530866 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : spliced 7f32a4506700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692758.573269220/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : spliced 7f32a4506700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692758.573603265/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : spliced 7f32a4506700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692758.574017341/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 707586429 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : spliced 7f69d6bad700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692758.574544773/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : spliced 7f69d6bad700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692758.574837183/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : spliced 7f69d6bad700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692758.575193444/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : ddsi2 7f32a18e3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692758.579864709/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : ddsi2 7f69d422a700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692758.581021124/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:18+0300
+Description : The durability service can be identified by ID: 707586429
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : durability 7f69d432b700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692758.988067759/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:19+0300
+Description : The durability service can be identified by ID: 1172530866
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : durability 7f32a1c84700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692759.187063596/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:29+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : conflictResolver 7f32a155d700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692769.154762657/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:39:31+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : conflictResolver 7f69a7bf8700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692771.761175366/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:24+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : main thread 7f32a44e0740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692944.270354712/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:24+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : ddsi2 7f32a18e3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692944.279863637/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:25+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : durability 7f32a1c84700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692945.887483172/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:25+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : spliced 7f32a4506700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692945.971748366/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:26+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <30720>
+Thread      : main thread 7f32a44e0740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692946.073572811/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:26+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : main thread 7f69d6b87740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692946.125312620/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:26+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : ddsi2 7f69d422a700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692946.130416388/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : durability 7f69d432b700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692947.795966893/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : spliced 7f69d6bad700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592692947.826640960/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : Removed 11169 objects
+Node        : intelBox
+Process     : opensplice_node <30722>
+Thread      : main thread 7f69d6b87740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592692947.928400426/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 447069826 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : spliced 7f62c10d3700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692947.961563001/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : spliced 7f62c10d3700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692947.961896766/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : spliced 7f62c10d3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692947.962368944/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 497789380 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : spliced 7f1d5264c700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592692947.962868478/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : spliced 7f1d5264c700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592692947.963119245/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : spliced 7f1d5264c700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692947.963486746/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : ddsi2 7f62be4b0700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692947.968253376/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:27+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : ddsi2 7f1d239cb700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692947.969410263/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:28+0300
+Description : The durability service can be identified by ID: 447069826
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : durability 7f62be851700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692948.474826892/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:28+0300
+Description : The durability service can be identified by ID: 497789380
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : durability 7f1d23d6c700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592692948.576412700/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:38+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : conflictResolver 7f1d2369a700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692958.547540440/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:42:41+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : conflictResolver 7f62be12a700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592692961.144717824/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:21+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : main thread 7f62c10ad740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693001.147281144/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:21+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : ddsi2 7f62be4b0700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693001.157058076/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:23+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : durability 7f62be851700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693003.152333569/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:23+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : spliced 7f62c10d3700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693003.248621429/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:23+0300
+Description : Removed 11178 objects
+Node        : intelBox
+Process     : opensplice_node <30861>
+Thread      : main thread 7f62c10ad740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693003.350345790/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:23+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : main thread 7f1d52626740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693003.402324656/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:23+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : ddsi2 7f1d239cb700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693003.410645956/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : durability 7f1d23d6c700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693005.256379871/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : spliced 7f1d5264c700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693005.303850620/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : Removed 11172 objects
+Node        : intelBox
+Process     : opensplice_node <30863>
+Thread      : main thread 7f1d52626740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693005.405638809/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1164363546 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : spliced 7f5e1c641700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592693005.457285171/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : spliced 7f5e1c641700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592693005.457760365/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : spliced 7f5e1c641700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693005.458260326/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1129189784 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : spliced 7f0dbf22e700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592693005.458983570/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : spliced 7f0dbf22e700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592693005.459262608/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : spliced 7f0dbf22e700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693005.459667433/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : ddsi2 7f5e19a1e700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693005.464234908/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : ddsi2 7f0dbc60b700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693005.465391577/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:25+0300
+Description : The durability service can be identified by ID: 1164363546
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : durability 7f5e19dbf700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592693005.871466373/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:26+0300
+Description : The durability service can be identified by ID: 1129189784
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : durability 7f0dbc9ac700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592693006.072190851/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:35+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : conflictResolver 7f5e19698700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693015.822040056/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:43:38+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : conflictResolver 7f0dbc285700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693018.426033910/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:20+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : main thread 7f5e1c61b740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693060.278183400/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:20+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : ddsi2 7f5e19a1e700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693060.284375199/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:21+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : durability 7f5e19dbf700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693061.630846317/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:21+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : spliced 7f5e1c641700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693061.679164272/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:21+0300
+Description : Removed 11178 objects
+Node        : intelBox
+Process     : opensplice_node <30975>
+Thread      : main thread 7f5e1c61b740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693061.780943290/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:21+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : main thread 7f0dbf208740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693061.833256881/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:21+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : ddsi2 7f0dbc60b700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693061.841928708/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : durability 7f0dbc9ac700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693063.634639406/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : spliced 7f0dbf22e700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693063.734573934/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : Removed 11169 objects
+Node        : intelBox
+Process     : opensplice_node <30977>
+Thread      : main thread 7f0dbf208740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693063.836057426/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1697406993 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : spliced 7f0b6ca11700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592693063.870468683/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : spliced 7f0b6ca11700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592693063.870805336/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : spliced 7f0b6ca11700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693063.871282298/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 691755606 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : spliced 7fcaa3ed4700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592693063.871739227/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : spliced 7fcaa3ed4700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592693063.871984954/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : spliced 7fcaa3ed4700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693063.872351866/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : ddsi2 7f0b69dee700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693063.877142295/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:23+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : ddsi2 7fcaa12b1700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693063.878226147/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:24+0300
+Description : The durability service can be identified by ID: 691755606
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : durability 7fcaa1652700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592693064.185153717/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:24+0300
+Description : The durability service can be identified by ID: 1697406993
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : durability 7f0b6a18f700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592693064.283843353/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:44:39+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : conflictResolver 7f0b69a68700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693079.854119404/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:04+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : conflictResolver 7fcaa0f2b700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693104.461839346/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:24+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : main thread 7f0b6c9eb740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693124.287744888/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:24+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : ddsi2 7f0b69dee700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693124.294080265/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:26+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : durability 7f0b6a18f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693126.162438000/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:26+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : spliced 7f0b6ca11700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693126.189151270/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:26+0300
+Description : Removed 11178 objects
+Node        : intelBox
+Process     : opensplice_node <31087>
+Thread      : main thread 7f0b6c9eb740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693126.290888973/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:26+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : main thread 7fcaa3eae740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693126.342274387/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:26+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : ddsi2 7fcaa12b1700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693126.350863985/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : durability 7fcaa1652700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693128.167551050/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : spliced 7fcaa3ed4700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693128.243882935/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : Removed 11172 objects
+Node        : intelBox
+Process     : opensplice_node <31089>
+Thread      : main thread 7fcaa3eae740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693128.345680695/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1494754803 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : spliced 7fd0ca9b0700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592693128.384370184/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : spliced 7fd0ca9b0700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592693128.384746818/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : spliced 7fd0ca9b0700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693128.385181677/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 1798441333 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : spliced 7fcbc8fa4700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592693128.385782192/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : spliced 7fcbc8fa4700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592693128.386031058/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : spliced 7fcbc8fa4700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693128.386487179/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : ddsi2 7fd09bd5f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693128.391179175/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : ddsi2 7fcbc6381700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693128.392116822/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : The durability service can be identified by ID: 1494754803
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : durability 7fd0c812e700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592693128.897849025/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:28+0300
+Description : The durability service can be identified by ID: 1798441333
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : durability 7fcbc6722700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592693128.899232297/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:38+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : conflictResolver 7fcbc5ffb700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693138.968848234/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:45:41+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : conflictResolver 7fd09b9fb700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693141.565831050/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:14+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : main thread 7fd0ca98a740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693234.180112645/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:14+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : ddsi2 7fd09bd5f700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693234.189737892/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:15+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : durability 7fd0c812e700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693235.682638889/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:15+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : spliced 7fd0ca9b0700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693235.781214694/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:15+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <31203>
+Thread      : main thread 7fd0ca98a740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693235.883100982/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:15+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : main thread 7fcbc8f7e740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693235.931750534/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:15+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : ddsi2 7fcbc6381700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693235.939373690/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : durability 7fcbc6722700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693237.688850434/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : spliced 7fcbc8fa4700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693237.733011522/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <31205>
+Thread      : main thread 7fcbc8f7e740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693237.834822674/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 187094581 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : spliced 7fed7b35a700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592693237.870025197/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : spliced 7fed7b35a700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592693237.870356349/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : spliced 7fed7b35a700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693237.870836285/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : ---------------------------------------------------------------
+              -- The service is using the following configuration settings --
+              ---------------------------------------------------------------
+              Domain (id)          : ospl_sp_ddsi (0)
+              Storage              : 0 Kbytes
+              Storage threshold    : 1024 Kbytes
+              Storage address      : Not available
+              Locking              : default
+              Memory mode          : Heap memory
+              Builtin topics       : true
+              Priority inheritance : false
+              SystemId             : 4675403 from [1,2147483647]
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : spliced 7fc1485c9700
+Internals   : 6.9.190925OSS///The OpenSplice domain service/u_domain.c/785/0/1592693237.871284893/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : Service cmsoap disabled
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : spliced 7fc1485c9700
+Internals   : 6.9.190925OSS///OpenSplice domain service/sr_componentInfo.c/446/0/1592693237.871577075/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'splicedaemon' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : spliced 7fc1485c9700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693237.871980270/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : ddsi2 7fed78737700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693237.876743532/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:17+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'ddsi2' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : ddsi2 7fc1459a6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693237.877877197/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:18+0300
+Description : The durability service can be identified by ID: 187094581
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : durability 7fed78ad8700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592693238.483909989/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:47:18+0300
+Description : The durability service can be identified by ID: 4675403
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : durability 7fc145d47700
+Internals   : 6.9.190925OSS///DurabilityService/d_durability.c/554/0/1592693238.584621929/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:03+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : conflictResolver 7fed783b1700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693283.157581192/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:05+0300
+Description : ++++++++++++++++++++++++++++++++++++++++++++++++
+              ++ The service 'durability' is now operational. 
+              ++++++++++++++++++++++++++++++++++++++++++++++++
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : conflictResolver 7fc145620700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/266/0/1592693285.761564570/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:20+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : main thread 7fed7b334740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693300.464521728/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:20+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : ddsi2 7fed78737700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693300.474673343/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:22+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : durability 7fed78ad8700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693302.061765739/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:22+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : spliced 7fed7b35a700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693302.065626342/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:22+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <31327>
+Thread      : main thread 7fed7b334740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693302.167294052/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:22+0300
+Description : Removed 1228 objects
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : main thread 7fc1485a3740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693302.218563901/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:22+0300
+Description : ================================================
+              == The service 'ddsi2' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : ddsi2 7fc1459a6700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693302.227066014/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:24+0300
+Description : ================================================
+              == The service 'durability' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : durability 7fc145d47700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693304.066001677/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:24+0300
+Description : ================================================
+              == The service 'splicedaemon' has now terminated. 
+              ================================================
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : spliced 7fc1485c9700
+Internals   : 6.9.190925OSS///v_serviceChangeState/v_service.c/273/0/1592693304.120161981/0
+========================================================================================
+Report      : INFO
+Date        : 2020-06-21T01:48:24+0300
+Description : Removed 11175 objects
+Node        : intelBox
+Process     : opensplice_node <31329>
+Thread      : main thread 7fc1485a3740
+Internals   : 6.9.190925OSS///Database close/c_base.c/3272/0/1592693304.221940229/0

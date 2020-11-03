@@ -27,3 +27,9 @@ add_executable(subscriber src/subscriber/Subscriber.cpp src/subscriber/subscribe
         )
 OPENDDS_TARGET_SOURCES(subscriber src/dds/Messenger.idl)
 target_link_libraries(subscriber ${opendds_libs} pthread)
+
+
+add_executable(ping_pong src/ping_pong/ping_pong.cpp src/subscriber/Subscriber.cpp src/dds/DataReaderListenerImpl.cpp
+        src/publisher/Publisher.cpp src/multi_node.cpp)
+OPENDDS_TARGET_SOURCES(ping_pong src/dds/Messenger.idl)
+target_link_libraries(ping_pong ${opendds_libs} pthread)
