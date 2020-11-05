@@ -8,6 +8,9 @@
 #include "gen/TestData_DCPS.hpp"
 #include "../../interface/pub_interface.hpp"
 
+
+#define QOS_PATH "file:///home/andrew/work/middleware_project/dds_testing/OpenSplice/src/QoS.xml"
+
 class TestPublisher: public TestMiddlewarePub{
 public:
     TestPublisher(std::string topic,  int msgCount, int prior, int cpu_index,
@@ -16,7 +19,7 @@ public:
             TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval,
                     msgs_before_step, filename, topic_priority),
             _dp(org::opensplice::domain::default_id()),
-            _provider("file://QoS.xml", "TestProfile"),
+            _provider(QOS_PATH, "TestProfile"),
             _topic(_dp, _topic_name, _provider.topic_qos()),
             _publisher(_dp),
             _dw(_publisher, _topic, _provider.datawriter_qos())

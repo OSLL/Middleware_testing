@@ -14,6 +14,7 @@
 
 #define CPUSET_MODE_T (S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH)
 #define TIMEOUT 2 * pow(10, 10)
+#define WATERMARK 10
 
 template <class MsgType>
 class TestMiddlewarePingPong {
@@ -171,6 +172,15 @@ public:
         if (_isFirst) {
 
             for (auto i = 0; i < _msgCount; ++i) {
+                if (_msgSize == 0){
+                    mu.lock();
+                    if (i - _last_rec_msg_id > WATERMARK) {
+                        --i;
+                        mu.unlock();
+                        continue;
+                    }
+                    mu.unlock();
+                }
 
                 if (i % (_msgs_before_step - 1) == 0 && cur_size <= _msgSizeMax)
                     cur_size += _step;
