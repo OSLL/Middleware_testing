@@ -123,7 +123,7 @@ class MiddlewareTesting(unittest.TestCase):
 
     def tearDown(self):
         resfiles = get_resfiles(self.test_n, self.subtests)
-        self.sys.packet_loss(resfiles, self.test_n, self.test_n < 6)
+        self.sys.packet_loss(resfiles, self.test_n, self.test_n > 5)
         with open('system_info.json','w') as out:
             out.write(self.sys.get_info())
         if self.subtests:

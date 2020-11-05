@@ -85,17 +85,28 @@ class system:
     def packet_loss(self, resfiles, test_n, isPingPong=False):
         packets = {}
         for filenames in resfiles:
-            node_name = filenames[0][:filenames[0].rfind('/data/')]
+            if isPingPong:
+                node_name = filenames[0][0][:filenames[0][0].rfind('/data/')]
+            else:
+                node_name = filenames[0][:filenames[0].rfind('/data/')]
             node_name = node_name[node_name.rfind('/')+1:]
             packets[node_name] = [0, 0]
             for filename in filenames:
                 if not isPingPong and filename.find('sub') == -1:
                     continue
-                with open(filename, 'r') as f:
-                    data = json.load(f)
-                send_time = [msg["msg"]["sent_time"] for msg in data]
-                packets[node_name][0] += send_time.count(0)
-                packets[node_name][1] += len(send_time)
+                if isPingPong:
+                    for f in filename:
+                        with open(f, 'r') as f:
+                            data = json.load(f)
+                        send_time = [msg["msg"]["sent_time"] for msg in data]
+                        packets[node_name][0] += send_time.count(0)
+                        packets[node_name][1] += len(send_time)
+                else:
+                    with open(filename, 'r') as f:
+                        data = json.load(f)
+                    send_time = [msg["msg"]["sent_time"] for msg in data]
+                    packets[node_name][0] += send_time.count(0)
+                    packets[node_name][1] += len(send_time)
         for framework, loss in packets.items():
             self.losses[framework + ' packet loss test_' + str(test_n)] = str(loss[0] / loss[1] * 100) + '%'
 
