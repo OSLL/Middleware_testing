@@ -1,6 +1,8 @@
 #include "../../interface/ping_pong_interface.hpp"
 #include "gen/TestData_DCPS.hpp"
 
+#define QOS_PATH "file:///home/andrew/work/middleware_project/dds_testing/OpenSplice/src/QoS.xml"
+
 class TestPingPongNode: public TestMiddlewarePingPong<TestDataType>{
 public:
     TestPingPongNode(
@@ -10,7 +12,7 @@ public:
             TestMiddlewarePingPong<TestDataType>(topic1, topic2, msgCount, prior, cpu_index, filename, topic_priority,
                     msInterval, msgSize, isFirst),
             _dp(org::opensplice::domain::default_id()),
-            _provider("file://QoS.xml", "TestProfile"),
+            _provider(QOS_PATH, "TestProfile"),
             _topic1(_dp, _topic_name1, _provider.topic_qos()),
             _topic2(_dp, _topic_name2, _provider.topic_qos()),
             _publisher(_dp),
@@ -30,7 +32,7 @@ public:
             TestMiddlewarePingPong<TestDataType>(topic1, topic2, msgCount, prior, cpu_index, filename, topic_priority,
                                                  msInterval, msgSizeMin, msgSizeMax, step, before_step, isFirst),
             _dp(org::opensplice::domain::default_id()),
-            _provider("file://QoS.xml", "TestProfile"),
+            _provider(QOS_PATH, "TestProfile"),
             _topic1(_dp, _topic_name1, _provider.topic_qos()),
             _topic2(_dp, _topic_name2, _provider.topic_qos()),
             _publisher(_dp),
@@ -64,6 +66,7 @@ public:
     }
 
     void publish(short id, unsigned size) override {
+        //std::cout << id;
         if (_isFirst){
             std::string data(size, 'b');
             unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
