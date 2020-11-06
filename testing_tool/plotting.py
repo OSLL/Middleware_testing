@@ -221,6 +221,14 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                 for i, filename in enumerate(files):
                     (send_time, receive_time,
                      _, delay_time, ids) = sub_from_json(filename, isPingPong)
+                
+                    node_name = filename[:filename.rfind('/data/')]
+                    node_name = node_name[node_name.rfind('/')+1:]
+                    node = filename[filename.rfind('/'):filename.rfind('.json')]
+                
+                    list_counts = queue_size(send_time, receive_time)
+                    plot_message_queue(list_counts, 
+                        f'{directory}{node_name}_{res_name}_{node}_queue.png')
 
                     if i == 0:
                         delay = delay_time.copy()
@@ -321,21 +329,30 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
             delay.append(from_several_jsons(files))
         (delay, unit, _) = scale_values(delay)
         plot_boxes(delay, [i for i in range(1, len(delay)+1)], 
-                   'count of subscribers', unit, 
-                   'Delay time with multiple subscribers',
-                   f'{direct}{res_name}_delay_box.png')
+                    'count of subscribers', unit, 
+                    'Delay time with multiple subscribers',
+                    f'{direct}{res_name}_delay_box.png')
+
+
 
 
 def plot_results(filenames, multisub=False, isPingPong=False):
     if multisub:
         filenames = filenames[0]
         directory = filenames[0][0][:filenames[0][0].rfind('data/')] + 'plots/'
-        res_name = 'multisub'
+        
         try:
             os.makedirs(directory)
         except OSError:
             None
-        plot_sub_results(filenames, directory, res_name, True)
+
+        if not isPingPong:
+            res_name = 'multisub'
+            plot_sub_results(filenames, directory, res_name, True)
+        else:
+            for f in filenames:
+                res_name = f[f.rfind('/'):f.rfind('.json')]
+                plot_sub_results(f, directory, res_name)
         return
 
     if not isPingPong:
