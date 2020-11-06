@@ -17,6 +17,11 @@ public:
             std::string &topic1, std::string topic2, int msgCount, int prior,
             int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSize, bool isFirst);
 
+    TestPingPongNode(
+            std::string &topic1, std::string topic2, int msgCount, int prior,
+            int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSizeMin, int msgSizeMax,
+            int step, int before_step, bool isFirst);
+
     virtual bool receive();
     virtual short get_id(eprosima::fastrtps::types::DynamicData* &msg);
     virtual unsigned long get_timestamp(eprosima::fastrtps::types::DynamicData* &msg);
@@ -25,6 +30,9 @@ public:
     ~TestPingPongNode();
 
 private:
+
+    void init();
+
     eprosima::fastrtps::Participant* mp_pparticipant;
     
     eprosima::fastrtps::Participant* mp_sparticipant;

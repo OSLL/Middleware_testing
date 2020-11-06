@@ -25,12 +25,30 @@ TestPingPongNode::TestPingPongNode(
             , m_DynType(DynamicType_ptr(nullptr))
 	    , m_slistener(this)
 {
-    if(!isFirst)
+    init();
+}
+
+TestPingPongNode::TestPingPongNode(std::string &topic1, std::string topic2, int msgCount, int prior, int cpu_index,
+                                   std::string &filename, int topic_priority, int msInterval, int msgSizeMin,
+                                   int msgSizeMax, int step, int before_step, bool isFirst) :
+            TestMiddlewarePingPong(topic1, topic2, msgCount, prior, cpu_index, filename, topic_priority,
+                                   msInterval, msgSizeMin, msgSizeMax, step, before_step, isFirst)
+            , mp_pparticipant(nullptr)
+            , mp_sparticipant(nullptr)
+            , mp_publisher(nullptr)
+            , m_DynType(DynamicType_ptr(nullptr))
+            , m_slistener(this)
+{
+    init();
+}
+
+void TestPingPongNode::init() {
+    if(!_isFirst)
         std::swap(_topic_name1, _topic_name2);
     DynamicTypeBuilder_ptr builder = DynamicTypeBuilderFactory::get_instance()->create_struct_builder();
     builder->add_member(0, "id", DynamicTypeBuilderFactory::get_instance()->create_int16_type());
     builder->add_member(1, "sent_time", DynamicTypeBuilderFactory::get_instance()->create_uint64_type());
-    builder->add_member(2, "data", DynamicTypeBuilderFactory::get_instance()->create_string_type(msgSize));
+    builder->add_member(2, "data", DynamicTypeBuilderFactory::get_instance()->create_string_type(_msgSize));
 
     DynamicType_ptr dynType(builder->build());
     m_DynType.SetDynamicType(dynType);
