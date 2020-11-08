@@ -39,6 +39,7 @@ TestPingPongNode::TestPingPongNode(std::string &topic1, std::string topic2, int 
             , m_DynType(DynamicType_ptr(nullptr))
             , m_slistener(this)
 {
+    _msgSize = msgSizeMax;
     init();
 }
 
@@ -48,7 +49,7 @@ void TestPingPongNode::init() {
     DynamicTypeBuilder_ptr builder = DynamicTypeBuilderFactory::get_instance()->create_struct_builder();
     builder->add_member(0, "id", DynamicTypeBuilderFactory::get_instance()->create_int16_type());
     builder->add_member(1, "sent_time", DynamicTypeBuilderFactory::get_instance()->create_uint64_type());
-    builder->add_member(2, "data", DynamicTypeBuilderFactory::get_instance()->create_string_type(_msgSize));
+    builder->add_member(2, "data", DynamicTypeBuilderFactory::get_instance()->create_string_type(_msgSize+2));
 
     DynamicType_ptr dynType(builder->build());
     m_DynType.SetDynamicType(dynType);
@@ -95,7 +96,8 @@ void TestPingPongNode::init() {
 
 bool TestPingPongNode::receive(){
     int rec_count = m_slistener.n_msgs - m_slistener.rec_before;
-    m_slistener.rec_before = m_slistener.n_msgs;
+    if(rec_count > 0)
+        m_slistener.rec_before++;
     return rec_count;
 }
 
