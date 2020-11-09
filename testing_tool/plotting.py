@@ -242,10 +242,10 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                         f'{directory}{subdir}{node_name}_{node}_queue.png')
 
                     if not grouping:
-                        (_, unit, scale) = scale_values(delay_time)
-                        plot_graph(ids, [d/scale for d in delay_time], unit, 
-                                 f'{node_name}: Delay time', 
-                                 f'{directory}{subdir}{node_name}_{node}_delay.png')
+                        (delay_time, unit, scale) = scale_values(delay_time)
+                        plot_graph(ids, delay_time, unit, 
+                             f'{node_name}: Delay time', 
+                             f'{directory}{subdir}{node_name}_{node}_delay.png')
                         delay = []
                         for i in range(0, 10):
                             k = int(len(delay_time) * (i+1)/10)
@@ -404,7 +404,7 @@ def plot_results(filenames, multisub=False, isPingPong=False, grouping=True):
 
 
 if __name__ == '__main__':
-    for i in range(1, 9):
+    for i in range(7, 9):
         try:
             resfiles = get_resfiles(i, i == 2 or i == 7)
             if i == 2:
