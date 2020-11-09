@@ -204,7 +204,6 @@ def plot_pub_results(filenames, directory, res_name):
 
 
 def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=False, grouping=True):
-    print(filenames, direct, res_name, isMultisub, isPingPong)
     if not isMultisub:
         saved = []
         if isPingPong:
@@ -381,7 +380,6 @@ def plot_results(filenames, multisub=False, isPingPong=False, grouping=True):
             res_name = 'multisub'
             plot_sub_results(filenames, directory, res_name, True)
         else:
-            print(filenames)
             res_name = ''
             plot_sub_results(filenames, directory, res_name, isPingPong=True, grouping=False)
         return
