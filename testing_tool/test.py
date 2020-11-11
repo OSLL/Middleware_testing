@@ -15,6 +15,8 @@ class MiddlewareTesting(unittest.TestCase):
     stype = 'subscriber'
     ptype = 'publisher'
 
+    perf = ''
+
     sys = system()
 
     @classmethod
@@ -38,6 +40,11 @@ class MiddlewareTesting(unittest.TestCase):
             print(datetime.now(), " >>> testing " + self.nodes[i], file=log_file)
             self.sys.start(self.nodes[i])
             cwd = mk_nodedir(test_dir, self.nodes[i])
+            if self.perf:
+                k_number = 0
+                perf_cmd = self.perf + f' -o {self.nodes[i]}_test{self.test_n}_{k_number}.perf_data '
+            else:
+                perf_cmd = ''
             for subtest_n, subtest in enumerate(configs):
                 if len(configs) != 1:
                     print(datetime.now(), f" >>> subtest - {subtest_n+1}/{len(configs)}", file=log_file)
@@ -50,12 +57,18 @@ class MiddlewareTesting(unittest.TestCase):
                     None
                 for config in subtest:
                     print(datetime.now(), f"  >>> using config - {config}", file=log_file)
-                    subs.append(create_process(prefix + self.subs[i], '../../../config/' + config, self.stype, cwd))
+                    subs.append(create_process(perf_cmd + prefix + self.subs[i], '../../../config/' + config, self.stype, cwd))
+                    if perf_cmd:
+                        k_number += 1
+                        perf_cmd = self.perf + f' -o {self.nodes[i]}_test{self.test_n}_{k_number}.perf_data '
                 if self.pairs:
                     for config in subtest:
-                        pubs.append(create_process(prefix + self.pubs[i], '../../../config/' + config, self.ptype, cwd, True))
+                        pubs.append(create_process(perf_cmd + prefix + self.pubs[i], '../../../config/' + config, self.ptype, cwd, True))
+                        if perf_cmd:
+                            k_number += 1
+                            perf_cmd = self.perf + f' -o {self.nodes[i]}_test{self.test_n}_{k_number}.perf_data '
                 else:
-                    p = create_process(prefix + self.pubs[i], '../../../config/' + subtest[0], self.ptype, cwd, True)
+                    p = create_process(perf_cmd + prefix + self.pubs[i], '../../../config/' + subtest[0], self.ptype, cwd, True)
                 for sub_n, s in enumerate(subs):
                     wait_and_end_process(s)
                     print(datetime.now(), f"subscriber №{sub_n+1} finished", file=log_file)
@@ -73,6 +86,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 1
         self.subtests = False
         self.pairs = False
+        self.perf = ''
         self.startTest()
 
     def test2(self):
@@ -80,6 +94,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 2
         self.subtests = True
         self.pairs = False
+        self.perf = ''
         self.startTest()
 
     def test3(self):
@@ -87,6 +102,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 3
         self.subtests = False
         self.pairs = False
+        self.perf = ''
         self.startTest()
 
     def test4(self):
@@ -94,6 +110,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 4
         self.subtests = False
         self.pairs = False
+        self.perf = ''
         self.startTest()
 
     def test5(self):
@@ -101,6 +118,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 5
         self.subtests = False
         self.pairs = False
+        self.perf = ''
         self.startTest()
     
     def test6(self):
@@ -110,6 +128,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.ptype = 'ping_pong'
         self.stype = 'ping_pong'
+        self.perf = 'perf record'
         self.startTest()
     
     def test7(self):
@@ -119,6 +138,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = True
         self.ptype = 'ping_pong'
         self.stype = 'ping_pong'
+        self.perf = ''
         self.startTest()
 
     def test8(self):
@@ -128,6 +148,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.ptype = 'ping_pong'
         self.stype = 'ping_pong'
+        self.perf = ''
         self.startTest()
 
     def tearDown(self):
