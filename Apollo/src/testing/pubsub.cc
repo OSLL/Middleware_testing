@@ -143,6 +143,34 @@ public:
     }
     rec = false;
     }
+    
+    PingPong(std::string& name,
+          std::string& topic1,
+          std::string& topic2,    
+          int msgCount, 
+          int prior, 
+          int cpu_index,
+                  std::string &filename, 
+          int topic_priority,
+          int interval, 
+          int msgSizeMin,
+          int msgSizeMax,
+          int step,
+          int before_step, 
+          bool isFirst
+            ): TestMiddlewarePingPong<Message>(topic1, topic2, msgCount, prior, cpu_index, filename,
+                topic_priority, interval, msgSizeMin, msgSizeMax, step, before_step, isFirst)
+    {
+    std::unique_ptr<Node> node = apollo::cyber::CreateNode(name);
+    if(isFirst){
+        writer = node->CreateWriter<Message>(topic1);
+        reader = node->CreateReader<Message>(topic2, MessageCallbackPingPong);
+    }else{
+        writer = node->CreateWriter<Message>(topic2);
+        reader = node->CreateReader<Message>(topic1, MessageCallbackPingPong);
+    }
+    rec = false;
+    }
 
     ~PingPong(){
     }
@@ -294,13 +322,19 @@ int main(int argc, char** argv){
 
         std::cout<<"PingPong"<<std::endl;
         if(isFirst){
-            PingPong ping_pong(name, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
-                        interval, min_size, isFirst);
+            PingPong ping_pong = (interval == 0)?
+                PingPong(name, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+                            interval, min_size, isFirst):
+                PingPong(name, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+                            interval, min_size, max_size, step, before_step, isFirst);
             p_ping_pong = &ping_pong;
             ping_pong.StartTest();
         }else{
-            PingPong ping_pong(name, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
-                        interval, min_size, isFirst);
+            PingPong ping_pong = (interval == 0)?
+                PingPong(name, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+                            interval, min_size, isFirst):
+                PingPong(name, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+                            interval, min_size, max_size, step, before_step, isFirst);
             p_ping_pong = &ping_pong;
             ping_pong.StartTest();    
         }
