@@ -121,6 +121,15 @@ class MiddlewareTesting(unittest.TestCase):
         self.stype = 'ping_pong'
         self.startTest()
 
+    def test8(self):
+        print(datetime.now(), ">>> running test8", file=log_file)
+        self.test_n = 8
+        self.subtests = False
+        self.pairs = False
+        self.ptype = 'ping_pong'
+        self.stype = 'ping_pong'
+        self.startTest()
+
     def tearDown(self):
         resfiles = get_resfiles(self.test_n, self.subtests)
         self.sys.packet_loss(resfiles, self.test_n, self.test_n > 5)

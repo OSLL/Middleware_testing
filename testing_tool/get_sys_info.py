@@ -85,7 +85,7 @@ class system:
     def packet_loss(self, resfiles, test_n, isPingPong=False):
         packets = {}
         for filenames in resfiles:
-            if isPingPong:
+            if isPingPong and test_n == 7:
                 node_name = filenames[0][0][:filenames[0][0].rfind('/data/')]
             else:
                 node_name = filenames[0][:filenames[0].rfind('/data/')]
@@ -94,7 +94,7 @@ class system:
             for filename in filenames:
                 if not isPingPong and filename.find('sub') == -1:
                     continue
-                if isPingPong:
+                if isPingPong and test_n == 7:
                     for f in filename:
                         with open(f, 'r') as f:
                             data = json.load(f)
