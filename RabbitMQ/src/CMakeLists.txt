@@ -14,4 +14,7 @@ find_package(SimpleAmqpClient REQUIRED)
 
 target_sources(PubSub PUBLIC msg.cpp)
 
-target_link_libraries(PubSub SimpleAmqpClient)
+target_link_libraries(PubSub
+    SimpleAmqpClient
+    pthread
+    )
