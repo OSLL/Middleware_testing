@@ -6,6 +6,7 @@ from datetime import datetime
 from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
 from plotting import get_resfiles, get_grouped_filenames, plot_results
 from get_sys_info import system
+from check_sleep import calc_sleep
 
 class MiddlewareTesting(unittest.TestCase):
     pubs = ["../Endurox/src/build/Endurox "]
@@ -15,7 +16,7 @@ class MiddlewareTesting(unittest.TestCase):
     stype = 'subscriber'
     ptype = 'publisher'
 
-    perf = ''
+    perf = '';
 
     sys = system()
 
@@ -40,12 +41,12 @@ class MiddlewareTesting(unittest.TestCase):
             print(datetime.now(), " >>> testing " + self.nodes[i], file=log_file)
             self.sys.start(self.nodes[i])
             cwd = mk_nodedir(test_dir, self.nodes[i])
-            if self.perf:
-                k_number = 0
-                perf_cmd = self.perf + f' -o {self.nodes[i]}_test{self.test_n}_{k_number}.perf_data '
-            else:
-                perf_cmd = ''
             for subtest_n, subtest in enumerate(configs):
+                if self.perf:
+                    k_number = 0
+                    perf_cmd = self.perf + f' -o {prefix}{test_dir}/{self.nodes[i]}_test{self.test_n}_subtest_{subtest_n}_{k_number}.data '
+                else:
+                    perf_cmd = ''
                 if len(configs) != 1:
                     print(datetime.now(), f" >>> subtest - {subtest_n+1}/{len(configs)}", file=log_file)
                 subs = []
@@ -60,13 +61,13 @@ class MiddlewareTesting(unittest.TestCase):
                     subs.append(create_process(perf_cmd + prefix + self.subs[i], '../../../config/' + config, self.stype, cwd))
                     if perf_cmd:
                         k_number += 1
-                        perf_cmd = self.perf + f' -o {self.nodes[i]}_test{self.test_n}_{k_number}.perf_data '
+                        perf_cmd = self.perf + f' -o {prefix}{test_dir}/{self.nodes[i]}_test{self.test_n}_subtest_{subtest_n}_{k_number}.data '
                 if self.pairs:
                     for config in subtest:
                         pubs.append(create_process(perf_cmd + prefix + self.pubs[i], '../../../config/' + config, self.ptype, cwd, True))
                         if perf_cmd:
                             k_number += 1
-                            perf_cmd = self.perf + f' -o {self.nodes[i]}_test{self.test_n}_{k_number}.perf_data '
+                            perf_cmd = self.perf + f' -o {prefix}{test_dir}/{self.nodes[i]}_test{self.test_n}_subtest_{subtest_n}_{k_number}.data '
                 else:
                     p = create_process(perf_cmd + prefix + self.pubs[i], '../../../config/' + subtest[0], self.ptype, cwd, True)
                 for sub_n, s in enumerate(subs):
@@ -80,7 +81,7 @@ class MiddlewareTesting(unittest.TestCase):
                     wait_and_end_process(p)
                 print(datetime.now(), "publisher finished", file=log_file, flush=True)
             self.sys.end(self.test_n)
-
+            
     def test1(self):
         print(datetime.now(), ">>> running test1", file=log_file)
         self.test_n = 1
@@ -102,7 +103,7 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 3
         self.subtests = False
         self.pairs = False
-        self.perf = ''
+        self.perf = 'strace -ttt -T -k -e trace=futex,nanosleep'
         self.startTest()
 
     def test4(self):
@@ -141,22 +142,15 @@ class MiddlewareTesting(unittest.TestCase):
         self.perf = ''
         self.startTest()
 
-    def test8(self):
-        print(datetime.now(), ">>> running test8", file=log_file)
-        self.test_n = 8
-        self.subtests = False
-        self.pairs = False
-        self.ptype = 'ping_pong'
-        self.stype = 'ping_pong'
-        self.perf = ''
-        self.startTest()
-
     def tearDown(self):
+        calc_sleep(self.test_n)
         resfiles = get_resfiles(self.test_n, self.subtests)
+        print(resfiles)
         self.sys.packet_loss(resfiles, self.test_n, self.test_n > 5)
         with open('system_info.json','w') as out:
             out.write(self.sys.get_info())
-        if self.test_n == 2:
+        return;
+        if self.subtests:
             for filenames in resfiles:
                 plot_results([filenames], self.subtests)
         elif self.test_n < 6:
@@ -164,9 +158,8 @@ class MiddlewareTesting(unittest.TestCase):
             for files in resfiles:
                 plot_results(files)
         else:
-            for filenames in resfiles:
-                plot_results([filenames], self.test_n == 7, self.test_n > 5, 
-                             grouping=(self.test_n<7))
+            plot_results(resfiles, False, True)
+
 
 if __name__ == "__main__":
     unittest.main()
