@@ -191,6 +191,9 @@ namespace RabbitmqTest{
 				nanoseconds>(std::chrono::high_resolution_clock::
 				now().time_since_epoch()).count();
 			message.get_bytes(msg);
+                        unsigned long int time=std::chrono::duration_cast<std::chrono::
+                                nanoseconds>(std::chrono::high_resolution_clock::
+                                now().time_since_epoch()).count() - message.timestamp;
 
 			if(TestMiddlewarePingPong<MsgType>::_isFirst) connection->BasicPublish(_exchange,
 					TestMiddlewarePingPong<MsgType>::_topic_name1,
@@ -198,6 +201,7 @@ namespace RabbitmqTest{
 			else connection->BasicPublish(_exchange,
 					TestMiddlewarePingPong<MsgType>::_topic_name2,
 					AmqpClient::BasicMessage::Create(msg));
+                        TestMiddlewarePingPong<MsgType>::_write_msg_time[id] = time;
 		}
 		short get_id(MsgType &msg) override{
 			return msg.id;
@@ -210,10 +214,17 @@ namespace RabbitmqTest{
 			AmqpClient::Envelope::ptr_t enve;
 			bool get=connection->BasicGet(enve,"");
 			if(get){
+                        unsigned long int time=std::chrono::duration_cast<std::chrono::
+                                nanoseconds>(std::chrono::high_resolution_clock::
+                                now().time_since_epoch()).count();
 			std::string str=enve->Message()->Body();
 			Message msg;
 			msg.set_from_bytes(str);
-			TestMiddlewarePingPong<MsgType>::write_received_msg(msg);}
+                        time=std::chrono::duration_cast<std::chrono::
+                                nanoseconds>(std::chrono::high_resolution_clock::
+                                now().time_since_epoch()).count() - time;
+			TestMiddlewarePingPong<MsgType>::write_received_msg(msg);
+			TestMiddlewarePingPong<MsgType>::_read_msg_time[msg.id] = time;}
 			return get;
 		}
 	};
@@ -312,20 +323,20 @@ int main(int argc, char** argv){
 		if(isFirst){
                     RabbitmqTest::PingPong<Message> ping_pong = (interval == 0)? 
                             RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
-						interval, min_size, max_size, step, before_step, isFirst,
-						host, port, username, password, vhost, max_frame, exchange):
-                            RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
 						interval, min_size, isFirst,
+						host, port, username, password, vhost, max_frame, exchange):
+                            RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+						interval, min_size, max_size, step, before_step, isFirst,
 						host, port, username, password, vhost, max_frame, exchange);
 
 			ping_pong.StartTest();
 		}else{
                     RabbitmqTest::PingPong<Message> ping_pong = (interval == 0)? 
-                            RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
-						interval, min_size, max_size, step, before_step, isFirst,
-						host, port, username, password, vhost, max_frame, exchange):
                             RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
 						interval, min_size, isFirst,
+						host, port, username, password, vhost, max_frame, exchange):
+                            RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+						interval, min_size, max_size, step, before_step, isFirst,
 						host, port, username, password, vhost, max_frame, exchange);
 			ping_pong.StartTest();	
 		}
