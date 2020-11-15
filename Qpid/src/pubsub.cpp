@@ -218,13 +218,20 @@ public:
         
         qpid::messaging::Message message;
         qpid::types::Variant::Map content;
+        unsigned long time=std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                now().time_since_epoch()).count();
         content["id"] = id;
         content["time"] = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                 now().time_since_epoch()).count();
         content["data"] = str;
         message.setContentObject(content);
+        time=std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                now().time_since_epoch()).count() - time;
         pub.send(message, true);
+        TestMiddlewarePingPong<MsgType>::_write_msg_time[id] = time;
     }
 
         
@@ -239,12 +246,19 @@ public:
     bool receive() override{
         qpid::messaging::Message message;
         bool get=sub.fetch(message, qpid::messaging::Duration::IMMEDIATE);
-	if(get){
+	if(get){ 
+            unsigned long time=std::chrono::duration_cast<std::chrono::
+                    nanoseconds>(std::chrono::high_resolution_clock::
+                    now().time_since_epoch()).count();
             qpid::types::Variant::Map content = message.getContentObject().asMap();
             Message msg = {content["time"], content["id"]};
             std::string str(((std::string)content["data"]).c_str());
             session.acknowledge();
+            time=std::chrono::duration_cast<std::chrono::
+                    nanoseconds>(std::chrono::high_resolution_clock::
+                    now().time_since_epoch()).count() - time;
             TestMiddlewarePingPong<MsgType>::write_received_msg(msg);
+            TestMiddlewarePingPong<MsgType>::_read_msg_time[msg.id] = time;
         }
         return get;
     }
