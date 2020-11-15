@@ -275,8 +275,16 @@ public:
 		cont.set_integer("id",id);
 		cont.set_long_long("timestamp",time);
 		cont.set_binary_shallow("str",str.c_str(),str.length());
+		time=std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count() - time;
                 val.publish(cont);
+                TestMiddlewarePingPong<MsgType>::_write_msg_time[id] = time;
 	} 
+
+        void write_read_proc_time(int id, unsigned long time){
+            TestMiddlewarePingPong<MsgType>::_read_msg_time[id] = time;
+        }
 	
 };
 
@@ -302,6 +310,9 @@ void update_sub(yami::incoming_message& message, void* sub){
 
 template<class MsgType>
 void update_ping_pong(yami::incoming_message& message, void* ping_pong){
+	unsigned long int time=std::chrono::duration_cast<std::chrono::
+               	nanoseconds>(std::chrono::high_resolution_clock::
+               	now().time_since_epoch()).count();
 	yami::parameters param=message.get_parameters();
 	MsgType msg;
 	msg.id=param.get_integer("id");
@@ -309,7 +320,11 @@ void update_ping_pong(yami::incoming_message& message, void* ping_pong){
         size_t len;
         const char* bin=(const char*)param.get_binary("str",len);
         std::string str(bin,len);
+	time=std::chrono::duration_cast<std::chrono::
+               	nanoseconds>(std::chrono::high_resolution_clock::
+               	now().time_since_epoch()).count()-time;
 	((PingPong<MsgType>*)ping_pong)->write_received_msg(msg);
+	((PingPong<MsgType>*)ping_pong)->write_read_proc_time(msg.id, time);
 	((PingPong<MsgType>*)ping_pong)->set_rec();
 }
 
