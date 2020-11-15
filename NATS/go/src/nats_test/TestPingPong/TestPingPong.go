@@ -113,7 +113,6 @@ func New(topic1 string, topic2 string, msgCount int, prior int, cpu_index int, m
 	if isNew {
 		msgSize = msgSizeMax
 	}
-	//isNew := false //
 
 	pingpong := TestPingPong{topic1, topic2, msgCount, prior, cpu_index, msgSize, interval, filename, topic_priority, isFirst, isNew, new(int), msgSizeMin, msgSizeMax, step, msgs_before_step, nc, make([]int64, msgCount, msgCount), make([]int64, msgCount, msgCount), make([][]byte, msgCount, msgCount), make([]int64, msgCount, msgCount), new(int), new(int), sync.Mutex{}}
 	*pingpong.last_rec_msg_id = -1
@@ -130,7 +129,6 @@ func New(topic1 string, topic2 string, msgCount int, prior int, cpu_index int, m
 func (pingpong TestPingPong) StartTestOld() int{
 	isTimeoutEx := false
 
-	//std::this_thread::sleep_for(std::chrono::seconds(4));
 	time.Sleep(4*time.Second)
 
 	for i := 0; i < pingpong.msgCount; i++ {
@@ -188,13 +186,11 @@ func (pingpong TestPingPong) wait_for_msg() bool{        //func waits for TIMEOU
 func (pingpong TestPingPong) StartTestNew() int{
 	future := make(chan bool)
 	if pingpong.isFirst {   //run receiving msgs in another thread
-		//future = std::async(std::launch::async, &TestMiddlewarePingPong<MsgType>::wait_for_msg, this);
 		go func(pingpong TestPingPong, result chan bool) {
 			result <- pingpong.wait_for_msg()
 		}(pingpong, future)
 	}
 	time.Sleep(4*time.Second)
-	//std::this_thread::sleep_for(std::chrono::seconds(4));
 	cur_size := pingpong.msgSizeMin
 	if pingpong.isFirst {
 		for i := 0; i < pingpong.msgCount; i+=1 {
@@ -215,9 +211,8 @@ func (pingpong TestPingPong) StartTestNew() int{
 			pingpong.publish(i, cur_size)
 
 			time.Sleep(time.Duration(pingpong.interval) * time.Millisecond)
-			//std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
 		}
-		//_ = <-future
+		_ = <-future
 	} else{
 		for !pingpong.wait_for_msg() {
 			if *pingpong.last_rec_msg_id % (pingpong.msgs_before_step - 1) == 0 && cur_size <= pingpong.msgSizeMax {
@@ -236,37 +231,6 @@ func (pingpong TestPingPong) StartTestNew() int{
 
 
 func (pingpong TestPingPong) StartTest() int {
-	/*var start_timeout, end_timeout int64
-	isTimeoutEx := false
-	time.Sleep(4*time.Second)
-	for i := 0; i < pingpong.msgCount; i++ {
-		if pingpong.isFirst {
-			pingpong.publish(i, pingpong.msgSize)
-		}
-		start_timeout = time.Now().UnixNano()
-		end_timeout = start_timeout
-		not_received := true
-		for not_received {
-			if pingpong.receive() {
-				not_received = false
-			} else {
-				end_timeout = time.Now().UnixNano()
-				if (end_timeout - start_timeout > int64(timeout)) {
-					isTimeoutEx = true
-					break
-				}
-			}
-			time.Sleep(time.Millisecond)
-		}
-		if isTimeoutEx {
-			break
-		}
-		if !pingpong.isFirst {
-			pingpong.publish(i, pingpong.msgSize)
-		}
-	}
-	pingpong.toJson();
-	return 0;*/
 	if pingpong.isNew {
 		return pingpong.StartTestNew()
 	}
