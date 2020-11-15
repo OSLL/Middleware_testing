@@ -228,6 +228,9 @@ public:
 	void publish(short id, unsigned size) override{
 		std::string str(size,'a');
 
+		unsigned long time=std::chrono::duration_cast<std::chrono::
+			nanoseconds>(std::chrono::high_resolution_clock::
+			now().time_since_epoch()).count();
 		auto sample=static_cast<Message*>(pub->allocateChunk(size+sizeof(Message),true));
 		sample->id=id;
 		sample->timestamp=std::chrono::duration_cast<std::chrono::
@@ -236,6 +239,10 @@ public:
 		sample->len=size;
 		memcpy(((void*)sample)+sizeof(Message),str.c_str(),sample->len);
 		pub->sendChunk(sample);
+		time=std::chrono::duration_cast<std::chrono::
+			nanoseconds>(std::chrono::high_resolution_clock::
+			now().time_since_epoch()).count() - time;
+                TestMiddlewarePingPong<MsgType>::_write_msg_time[id] = time;
 	}
 
 	
@@ -269,6 +276,7 @@ public:
 			//free(msg.str);
 			//std::cout<<"Received: id - "<<msg.id<<" time - "<<msg.timestamp<<std::endl;
 			TestMiddlewarePingPong<MsgType>::write_received_msg(msg);
+                        TestMiddlewarePingPong<MsgType>::_read_msg_time[msg.id] = time;
 		}
 		return get;
 	}
