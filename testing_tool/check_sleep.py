@@ -1,67 +1,86 @@
 import os
-from os.path import isfile, join
+from os.path import isfile, isdir, join
 import json
+import statistics as stat
 
 def calc_sleep(test_n):
-    direct = f"test_{test_n}"
-    filenames = [join(direct, f) for f in os.listdir(direct)
-            if isfile(join(direct, f)) and f.endswith('.data')]
-    if(not filenames):
+    directory = f'test_{test_n}/results'
+    dirs = [join(directory, d) + '/data' for d in os.listdir(directory)
+            if isdir(join(directory, d))]
+    res = []
+    for direct in dirs:
+        res.extend([join(direct, f) for f in os.listdir(direct)
+                if isfile(join(direct, f)) and f.endswith('.data')])
+    if(not res):
         return
-    res = [[]]
-    for f in filenames:
-        subtest = f[f.rfind('subtest'):f.rfind('_')]
-        if(res[0] == []):
-            res[0].append(f)
+    filenames = [[]]
+    for f in res:
+        subtest = f[f.rfind('/')+1:]
+        subtest = subtest[:subtest.rfind('_')]
+        subtest = subtest[subtest.rfind('_')+1:]
+        if(filenames[0] == []):
+            filenames[0].append(f)
             continue
-        for files in res:
+        for files in filenames:
             if(files[0].find(subtest) != -1):
                 files.append(f)
                 break
         else:
-            res.append([f])
-    filenames = []
-    for files in res:
-        k_lists = [[]]
-        for f in files:
-            k_number = f[f.rfind('_'):]
-            if(k_lists[0] == []):
-                k_lists[0].append(f)
-                continue
-            for name in k_lists:
-                if(name[0].endswith(k_number)):
-                    name.append(f)
-                    break
-            else:
-                k_lists.append([f])
-        filenames.append(k_lists)
+            filenames.append([f])
     print(filenames)
-    for files in filenames:
-        for names in files:
-            d = {}
-            for filename in names:
-                k = 0.0
-                with open(filename,'r') as f:
-                    s = 'nn'
-                    while s:
-                        s = f.readline()
-                        if(s.find("nanosleep") == -1):
-                            continue
-                        isStartTest = f.readline()
-                        isStartTest = f.readline()
-                        isStartTest = f.readline()
-                        if(isStartTest.find("StartTest()")!=-1):
-                            continue
+    json_pub = {}
+    json_sub = {}
+    for subtest in filenames:
+        pubs_sleeps = {}
+        subs_sleeps = {}
+        for filename in subtest:
+            node = filename[filename.rfind('/')+1:]
+            node = node[:node.find('_')]
+            if filename.endswith('_pub.data'):
+                if node not in pubs_sleeps:
+                    pubs_sleeps[node] = []
+            else:
+                if node not in subs_sleeps:
+                    subs_sleeps[node] = []
+            with open(filename,'r') as f:
+                s = 'nn'
+                sleep = ''
+                while s:
+                    s = f.readline()
+                    if(s.find("nanosleep") != -1):
+                        sleep = s
+                    if(s.find("publish(int, unsigned int)") != -1):
+                        s = sleep[sleep.rfind("="):]
+                        if filename.endswith('_pub.data'):
+                            pubs_sleeps.append(float(s[s.find("<")+1:s.rfind(">")]))
                         else:
-                            s = s[s.rfind("="):]
-                            k += float(s[s.find("<")+1:s.rfind(">")])
-                node_name = filename[filename.rfind('/')+1:]
-                d[node_name[:node_name.find('_')]] = k
-            subtest_k = filename[filename.rfind('subtest'):filename.rfind('.data')] 
-            with open(f'{direct}_{subtest_k}_sleep_times.json','w') as f:
-                f.write(json.dumps(d,indent=4, separators=(',', ': ')))
+                            subs_sleeps.append(float(s[s.find("<")+1:s.rfind(">")]))
+                    if(s.find("receive()") != -1):
+                        s = sleep[sleep.rfind("="):]
+                        if filename.endswith('_pub.data'):
+                            pubs_sleeps.append(float(s[s.find("<")+1:s.rfind(">")]))
+                        else:
+                            subs_sleeps.append(float(s[s.find("<")+1:s.rfind(">")]))
+        test_name = subtest[0][subtest[0].rfind('/')+1:]
+        test_name = test_name[test_name.find('_')+1:]
+        test_name = test_name[:test_name.find('_')]
+        pubs = {}
+        subs = {}
+        for key, val in pubs_sleeps.items():
+            if val == []:
+                val = [0]
+            pubs[key] = {'sleep time': sum(val), 'median': stat.median(val)}
+        for key, val in subs_sleeps.items():
+            if val == []:
+                val = [0]
+            subs[key] = {'sleep time': sum(val), 'median': stat.median(val)}
+        json_pub['Frequence: '+test_name] = pubs
+        json_sub['Frequence: '+test_name] = subs
+    with open(f'pubs_sleeps.json','w') as f:
+        f.write(json.dumps(json_pub,indent=4, separators=(',', ': ')))
+    with open(f'subs_sleeps.json','w') as f:
+        f.write(json.dumps(json_sub,indent=4, separators=(',', ': ')))
 
 if __name__ == "__main__":
-    for i in range(1,8):
-        calc_sleep(i)
+    calc_sleep(3)
 
