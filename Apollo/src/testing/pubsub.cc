@@ -184,7 +184,11 @@ public:
         msg->set_id(id);
         msg->set_time(time);
         msg->set_data(str);
+        time=std::chrono::duration_cast<std::chrono::
+                    nanoseconds>(std::chrono::high_resolution_clock::
+                    now().time_since_epoch()).count() - time;
         writer->Write(msg);
+        _write_msg_time[id] = time;
     }
 
     
@@ -229,11 +233,18 @@ void MessageCallbackSub(const std::shared_ptr<testing::proto::Message>& msg){
 
 void MessageCallbackPingPong(const std::shared_ptr<testing::proto::Message>& msg){
     Message m;
+    unsigned long time=std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                now().time_since_epoch()).count();
     m.set_id(msg->id());
     m.set_time(msg->time());
     m.set_data("");
     std::string str(msg->data());
+    time=std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                now().time_since_epoch()).count() - time;
     p_ping_pong->write_received_msg(m);
+    p_ping_pong->_read_msg_time[m.id()] = time;
     p_ping_pong->rec = true;
 
 }
