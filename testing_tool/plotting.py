@@ -40,7 +40,6 @@ def get_grouped_filenames(filenames):
             for f in filenames[i]:
                 if f[f.rfind('/')+1:] == filename[filename.rfind('/')+1:]:
                     res[k].append(f)
-    print(res)
     return res
 
 def from_several_jsons(filenames):
@@ -52,17 +51,14 @@ def from_several_jsons(filenames):
     return delay
 
 
-def sub_from_json(filename, isPingPong=False):
+def sub_from_json(filename):
     with open(filename, 'r') as f:
         data = json.load(f)
     ids = [msg["msg"]["id"] for msg in data]
     send_time = [msg["msg"]["sent_time"] for msg in data]
     rec_time = [msg["msg"]["recieve_timestamp"] for msg in data]
     delay = [msg["msg"]["delay"] for msg in data]
-    if not isPingPong:
-        read_proc_time = [msg["msg"]["read_proc_time"] for msg in data]
-    else:
-        read_proc_time = []
+    read_proc_time = [msg["msg"]["read_proc_time"] for msg in data]
     return (send_time, rec_time, read_proc_time, delay, ids)
 
 
@@ -231,11 +227,23 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                     files[1] = buf
                 for i, filename in enumerate(files):
                     (send_time, receive_time,
-                     _, delay_time, ids) = sub_from_json(filename, isPingPong)
+                     read_proc_time, delay_time, ids) = sub_from_json(filename)
                 
                     node_name = filename[:filename.rfind('/data/')]
                     node_name = node_name[node_name.rfind('/')+1:]
                     node = filename[filename.rfind('/')+1:filename.rfind('.json')]
+
+                    (read_proc_time, runit, _) = scale_values(read_proc_time)
+                    plot_graph(ids, read_proc_time, runit, 'Reading time',
+                               f'{directory}{node_name}_{node}_read_proc_time.png')
+                    proc_time = []
+                    for i in range(0, 10):
+                        k = int(len(read_proc_time) * (i + 1) / 10)
+                        proc_time.append(read_proc_time[0:k])
+                    plot_boxes(proc_time, [len(d) for d in proc_time],
+                               'number of messages', runit,
+                               f'{node_name}: Reading time boxes',
+                               f'{directory}{node_name}_{node}_read_proc_time_box.png')
                 
                     list_counts = queue_size(send_time, receive_time)
                     plot_message_queue(list_counts, 
@@ -298,7 +306,7 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
 
                 (send_time, receive_time,
                  read_proc_time, 
-                 delay_time, ids) = sub_from_json(filename, isPingPong)
+                 delay_time, ids) = sub_from_json(filename)
 
                 saved_delay_time = delay_time
                 (delay_time, unit, scale) = scale_values(delay_time)
@@ -397,6 +405,11 @@ def plot_results(filenames, multisub=False, isPingPong=False, grouping=True):
         None
     if isPingPong:
         plot_sub_results(filenames, directory, res_name, False, isPingPong, grouping)
+        filename = filenames[0][0]
+        node_name = filename[:filename.rfind('/data/')]
+        node_name = node_name[node_name.rfind('/') + 1:]
+        res_name = node_name + '_' + filename[filename.rfind('/') + 1:filename.rfind('.json')]
+        plot_pub_results(filenames[0], directory, res_name)
     elif filenames[0].endswith('_pub.json'):
         plot_pub_results(filenames, directory, res_name)
     else:
@@ -404,7 +417,7 @@ def plot_results(filenames, multisub=False, isPingPong=False, grouping=True):
 
 
 if __name__ == '__main__':
-    for i in range(7, 9):
+    for i in range(1, 9):
         try:
             resfiles = get_resfiles(i, i == 2 or i == 7)
             if i == 2:
