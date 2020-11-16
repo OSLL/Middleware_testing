@@ -275,10 +275,10 @@ public:
 		cont.set_integer("id",id);
 		cont.set_long_long("timestamp",time);
 		cont.set_binary_shallow("str",str.c_str(),str.length());
+                val.publish(cont);
 		time=std::chrono::duration_cast<std::chrono::
                 	nanoseconds>(std::chrono::high_resolution_clock::
                 	now().time_since_epoch()).count() - time;
-                val.publish(cont);
                 TestMiddlewarePingPong<MsgType>::_write_msg_time[id] = time;
 	} 
 
