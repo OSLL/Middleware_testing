@@ -133,8 +133,7 @@ public:
 			msg.timestamp=sample->timestamp;
 			msg.id=sample->id;
 			msg.len=sample->len;
-			msg.str=(char*)malloc(sample->len);
-			std::string str(((char*)sample)+sizeof(Message),msg.len);
+			std::string str((char*)(((void*)sample)+sizeof(Message)),msg.len);
 			sub->releaseChunk(chunk);
 
 			time=std::chrono::duration_cast<std::chrono::
@@ -266,8 +265,7 @@ public:
 			msg.timestamp=sample->timestamp;
 			msg.id=sample->id;
 			msg.len=sample->len;
-			msg.str=(char*)malloc(sample->len);
-			std::string str(((char*)sample)+sizeof(Message),msg.len);
+			std::string str((char*)(((void*)sample)+sizeof(Message)),msg.len);
 			sub->releaseChunk(chunk);
 
 			time=std::chrono::duration_cast<std::chrono::
