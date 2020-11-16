@@ -123,7 +123,11 @@ void TestPingPongNode::publish(short id, unsigned size) {
     m_DynMsg->set_int16_value(id, 0);
     m_DynMsg->set_uint64_value(cur_time, 1);
     m_DynMsg->set_string_value(std::string(size, 'a'), 2);
+    cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>
+            (std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     mp_publisher->write((void*)m_DynMsg);
+    _write_msg_time[id]=std::chrono::duration_cast<std::chrono::nanoseconds>
+            (std::chrono::high_resolution_clock::now().time_since_epoch()).count()-cur_time;
 }
 
 void TestPingPongNode::PubListener::onPublicationMatched(
@@ -151,10 +155,15 @@ void TestPingPongNode::SubListener::onSubscriptionMatched(
 void TestPingPongNode::SubListener::onNewDataMessage(
         Subscriber* sub)
 {
+    unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>
+            (std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     if (sub->takeNextData((void*)parent->_msgs[n_msgs], &m_info))
     {
         if (m_info.sampleKind == ALIVE)
         {
+            auto proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>
+                    (std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
+            parent->_read_msg_time[n_msgs] = proc_time;
             parent->write_received_msg(parent->_msgs[n_msgs]);
             this->n_msgs++;
         }
