@@ -1,4 +1,5 @@
 #include "TestPingPong.h"
+#include <iostream>
 
 TestPingPong::TestPingPong(
             std::string &topic1, std::string topic2, int msgCount, int prior,
@@ -7,16 +8,39 @@ TestPingPong::TestPingPong(
 		        filename, topic_priority, msInterval, msgSize, isFirst)
             , psock(pcontext, zmq::socket_type::pub)
             , ssock(scontext, zmq::socket_type::sub)
+	    , mcount(0)
 {
     if(!isFirst)
         std::swap(_topic_name1, _topic_name2);
 
+    _msgSizeMax = _msgSize;
+    init();
+}
+
+TestPingPong::TestPingPong(
+            std::string &topic1, std::string topic2, int msgCount, int prior,
+            int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSizeMin, int msgSizeMax, int step, int before_step, bool isFirst) :
+	    TestMiddlewarePingPong(topic1, topic2, msgCount, prior, cpu_index,
+		        filename, topic_priority, msInterval, msgSizeMin, msgSizeMax, step, before_step, isFirst)
+            , psock(pcontext, zmq::socket_type::pub)
+            , ssock(scontext, zmq::socket_type::sub)
+	    , mcount(0)
+{
+    if(!isFirst)
+        std::swap(_topic_name1, _topic_name2);
+
+    init();
+
+}
+
+void TestPingPong::init()
+{
     for(auto &msg : _msgs)
-	msg = zmq::message_t(msgSize+60);
+	msg = zmq::message_t(_msgSizeMax+60);
     std::string str("tcp://127.0.0.1:56");
     str += std::to_string(_topic_name1.length());
     psock.bind(str);
-    int max_q = msgCount + 1000;
+    int max_q = _msgCount + 1000;
     psock.setsockopt(ZMQ_SNDHWM, &max_q, sizeof(max_q));
     int dont_drop = 1;
     psock.setsockopt(ZMQ_XPUB_NODROP, &dont_drop, sizeof(dont_drop));
@@ -28,6 +52,7 @@ TestPingPong::TestPingPong(
     ssock.setsockopt(ZMQ_RCVHWM, &max_q, sizeof(max_q));
 }
 
+
 TestPingPong::~TestPingPong()
 {
 }
@@ -38,6 +63,7 @@ bool TestPingPong::receive() {
     try{
         int cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         if(ssock.recv(_msgs[mcount], zmq::recv_flags::none)){
+            _read_msg_time[mcount] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
 	    _recieve_timestamps[mcount] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 	    ++mcount;
 	    return true;
@@ -66,5 +92,7 @@ void TestPingPong::publish(short id, unsigned size) {
     jmsg["timestamp"] = cur_time;
     jmsg["msg"] = data;
     std::string jstr = jmsg.dump();
+    cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     psock.send((const void*)jstr.c_str(), (size_t)jstr.length());
+    _write_msg_time[id] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
 }

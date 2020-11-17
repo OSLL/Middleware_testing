@@ -75,9 +75,19 @@ int main(int argc, char** argv)
                 filename = filename_pub;
             else
                 filename = filename_sub;
-            TestPingPong ping_pong(topic1, topic2, m_count, priority_pub, cpu_index_pub, filename, topic_prior, interval,
+            if(interval == 0){
+	        TestPingPong ping_pong(topic1, topic2, m_count, priority_pub, 
+				cpu_index_pub, filename, topic_prior, interval,
                                     min_msg_size, isFirst);
-            ping_pong.StartTest();
+                ping_pong.StartTest();
+	    }
+	    else {
+	        TestPingPong ping_pong(topic1, topic2, m_count, 
+				priority_pub, cpu_index_pub, filename, 
+				topic_prior, interval, min_msg_size,
+                                max_msg_size, step, msgs_before_step, isFirst);
+                ping_pong.StartTest();
+	    }
         }
         else{
             std::cout << "Wrong node type specified!" << std::endl;

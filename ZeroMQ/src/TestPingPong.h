@@ -13,6 +13,14 @@ class TestPingPong : public TestMiddlewarePingPong<zmq::message_t>
             std::string &topic1, std::string topic2, int msgCount, int prior,
             int cpu_index, std::string &filename, int topic_priority, int msInterval, int msgSize, bool isFirst);
 
+        TestPingPong(
+            std::string &topic1, std::string topic2, int msgCount, int prior,
+            int cpu_index, std::string &filename, int topic_priority, 
+	    int msInterval, int msgSizeMin, int msgSizeMax, int step, 
+	    int before_step, bool isFirst);
+	
+	void init();
+
         virtual ~TestPingPong();
 
         bool receive();
