@@ -11,7 +11,7 @@ def test7_config():
             "step":512*1024, "msgs_before_step":100,
             "priority":[-1, -1], "cpu_index":[-1, -1], 
             "interval":50, "topic_priority":100}
-    pair_count = [1, 5, 20, 25]
+    pair_count = [1, 2, 3]
     for p in pair_count:
         try:
             os.mkdir('test_7/config/' + str(p))
