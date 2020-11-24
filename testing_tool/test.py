@@ -4,7 +4,7 @@ import subprocess
 import json
 from datetime import datetime
 from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
-from plotting import get_resfiles, get_grouped_filenames, plot_results
+from plotting import get_resfiles, get_grouped_filenames, plot_results, round_trip_grouped
 from get_sys_info import system
 
 class MiddlewareTesting(unittest.TestCase):
@@ -143,6 +143,8 @@ class MiddlewareTesting(unittest.TestCase):
             for files in resfiles:
                 plot_results(files)
         else:
+            if self.test_n == 6:
+                round_trip_grouped(resfiles)
             for filenames in resfiles:
                 plot_results([filenames], self.test_n == 7, self.test_n > 5, 
                              grouping=(self.test_n<7))
