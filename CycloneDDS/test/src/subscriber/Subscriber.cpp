@@ -67,7 +67,7 @@ bool Subscriber<MsgType>::receive(){
 
         this->write_received_msg(*_msg, proc_time);
 
-        //std::cout << _msg->id << std::endl;
+        std::cout << _msg->id << std::endl;
         return true;
     }
 

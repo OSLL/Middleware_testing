@@ -70,7 +70,7 @@ unsigned long Publisher<MsgType>::publish(short id, unsigned size){
         return 0;
     }
 
-    //std::cout << "sent: " << id << std::endl;
+    std::cout << "sent: " << id << std::endl;
 
     return std::chrono::duration_cast<std::chrono::
     nanoseconds>(std::chrono::high_resolution_clock::
