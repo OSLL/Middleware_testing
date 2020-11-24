@@ -2,6 +2,12 @@
 
 template <class MsgType>
 void PingPong<MsgType>::create(dds_topic_descriptor topic_descriptor) {
+    std::string pub_topic = PingPong<MsgType>::_topic_name1;
+    std::string sub_topic = PingPong<MsgType>::_topic_name2;
+    if(PingPong<MsgType>::_isFirst){
+        pub_topic = PingPong<MsgType>::_topic_name2;
+        sub_topic = PingPong<MsgType>::_topic_name1;
+    }
 
     /* Create a Participant. */
     _participant = dds_create_participant (DDS_DOMAIN_DEFAULT, NULL, NULL);
@@ -10,8 +16,13 @@ void PingPong<MsgType>::create(dds_topic_descriptor topic_descriptor) {
 
     /* Create a Topic. */
     _topic_entity1 = dds_create_topic (
-            _participant, &topic_descriptor, "test_topic", NULL, NULL);
+            _participant, &topic_descriptor, pub_topic.c_str(), NULL, NULL);
     if (_topic_entity1 < 0)
+        DDS_FATAL("dds_create_topic: %s\n", dds_strretcode(-_topic_entity1));
+
+    _topic_entity2 = dds_create_topic (
+            _participant, &topic_descriptor, sub_topic.c_str(), NULL, NULL);
+    if (_topic_entity2 < 0)
         DDS_FATAL("dds_create_topic: %s\n", dds_strretcode(-_topic_entity1));
 
     /* Create a reliable Reader. */
@@ -23,7 +34,11 @@ void PingPong<MsgType>::create(dds_topic_descriptor topic_descriptor) {
     if (_writer_entity < 0)
         DDS_FATAL("dds_create_writer: %s\n", dds_strretcode(-_writer_entity));
 
-    std::cout << "=== [Publisher]  Waiting for a reader to be discovered ..." << std::endl;
+    _reader_entity = dds_create_reader (_participant, _topic_entity2, _qos, NULL);
+    if (_reader_entity < 0)
+        DDS_FATAL("dds_create_reader: %s\n", dds_strretcode(-_reader_entity));
+
+    std::cout << "=== [PingPongNode]  Waiting for a reader to be discovered ..." << std::endl;
 
     auto rc = dds_set_status_mask(_writer_entity, DDS_PUBLICATION_MATCHED_STATUS);
     if (rc != DDS_RETCODE_OK)
@@ -44,36 +59,15 @@ void PingPong<MsgType>::create(dds_topic_descriptor topic_descriptor) {
 }
 
 template <class MsgType>
-unsigned long PingPong<MsgType>::publish(short id, unsigned size){
-
-    unsigned long cur_time = std::chrono::duration_cast<std::chrono::
-    nanoseconds>(std::chrono::high_resolution_clock::
-                 now().time_since_epoch()).count();
-
-    _msg.timestamp = std::chrono::duration_cast<std::chrono::
-    nanoseconds>(std::chrono::high_resolution_clock::
-                 now().time_since_epoch()).count();
-
-    _msg.id = id;
-
-
-    std::string data(size, 'a');
-    _msg.payload = const_cast<char*>(data.c_str());
-
-    _res_code =  dds_write(_writer_entity, &_msg);
-
-    if (_res_code != DDS_RETCODE_OK) {
-        std::cout <<  dds_strretcode(-_res_code) << std::endl;
-        return 0;
+void PingPong<MsgType>::publish(short id, unsigned size){
+    if (PingPong<MsgType>::_isFirst){
+        std::string data(size, 'b');
+        write_to_topic(id, data);
     }
-
-    //std::cout << "sent: " << id << std::endl;
-
-    return std::chrono::duration_cast<std::chrono::
-    nanoseconds>(std::chrono::high_resolution_clock::
-                 now().time_since_epoch()).count()
-           - cur_time;
-
+    else{
+        std::string data(size, 'a');
+        write_to_topic(id, data);
+    }
 };
 
 template <class MsgType>
@@ -105,34 +99,42 @@ bool PingPong<MsgType>::receive(){
                      now().time_since_epoch()).count()
                                   - start_timestamp;
 
-        _msg = (MsgType*) _samples[0];
+        _rec_msg = (MsgType*) _samples[0];
 
-        this->write_received_msg(*_msg, proc_time);
-
-        std::cout << _msg->id << std::endl;
+        this->write_received_msg(*_rec_msg);
+        TestMiddlewarePingPong<MsgType>::_read_msg_time[get_id(*_rec_msg)] = proc_time;
+        //std::cout << _sent_msg.id << std::endl;
         return true;
     }
 
     return false;
 }
 
+template<class MsgType>
+void PingPong<MsgType>::write_to_topic(short id, std::string &data) {
+    unsigned long cur_time = std::chrono::duration_cast<std::chrono::
+    nanoseconds>(std::chrono::high_resolution_clock::
+                 now().time_since_epoch()).count();
 
-template <class MsgType>
-void PingPong<MsgType>::cleanUp() {
-    _res_code = dds_delete (_participant);
-    if (_res_code != DDS_RETCODE_OK)
-        DDS_FATAL("dds_delete: %s\n", dds_strretcode(-_res_code));
+    _sent_msg.timestamp = std::chrono::duration_cast<std::chrono::
+    nanoseconds>(std::chrono::high_resolution_clock::
+                 now().time_since_epoch()).count();
 
-    //std::cout << "Participant.close(): " << dds_strretcode(-_res_code) << std::endl;
+    _sent_msg.id = id;
+
+    _sent_msg.payload = const_cast<char*>(data.c_str());
+
+    _res_code =  dds_write(_writer_entity, &_sent_msg);
+
+    if (_res_code != DDS_RETCODE_OK) {
+        std::cout <<  dds_strretcode(-_res_code) << std::endl;
+    }
+
+    //std::cout << "sent: " << id << std::endl;
+
+    PingPong<MsgType>::_write_msg_time[id] = std::chrono::duration_cast<std::chrono::
+    nanoseconds>(std::chrono::high_resolution_clock::
+                 now().time_since_epoch()).count() - cur_time;
 }
-
-
-
-
-template <class MsgType>
-void PingPong<MsgType>::cleanUp() {
-}
-
 
 template class PingPong<Messenger_Message>;
-

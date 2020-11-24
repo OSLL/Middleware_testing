@@ -23,6 +23,7 @@ include_directories(include
 
 SET(INC
         include/Publisher.h
+        include/PingPong.h
         include/Subscriber.h
         include/Partisipant.h
         include/Topic.h
@@ -33,10 +34,13 @@ SET(INC
 
 set(SRC
         ${CMAKE_CURRENT_BINARY_DIR}/TypeData.c
+        src/publisher/Publisher.cpp
+        src/subscriber/Subscriber.cpp
+        src/ping_pong/PingPong.cpp
         )
 
 idlc_generate(${PROJECT_NAME}_lib "src/dds/TypeData.idl")
 
-add_executable(cyclonedd_node ${SRC} ${INC} src/cyclonedds_node.cpp src/publisher/Publisher.cpp src/subscriber/Subscriber.cpp)
+add_executable(cyclonedd_node ${SRC} ${INC} src/cyclonedds_node.cpp)
 
-target_link_libraries(cyclonedd_node ${PROJECT_NAME}_lib CycloneDDS::ddsc )
+target_link_libraries(cyclonedd_node ${PROJECT_NAME}_lib CycloneDDS::ddsc pthread)
