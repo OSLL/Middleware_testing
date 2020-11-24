@@ -1,7 +1,3 @@
-//
-// Created by egor on 20.03.20.
-//
-
 #ifndef CYCLONE_TEST_PUBLISHER_H
 #define CYCLONE_TEST_PUBLISHER_H
 
@@ -30,6 +26,13 @@ public:
     void create(dds_topic_descriptor topic_descriptor);
 
     unsigned long publish(short id, unsigned size) override;
+
+    ~Publisher()
+    {
+        _res_code = dds_delete (_participant);
+        if (_res_code != DDS_RETCODE_OK)
+            DDS_FATAL("dds_delete: %s\n", dds_strretcode(-_res_code));
+    };
 
 private:
     MsgType _msg;
