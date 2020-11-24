@@ -21,11 +21,6 @@ class Subscriber: public TestMiddlewareSub<MsgType>{
 
 public:
     Subscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_priority) :
-            _topic(topic),
-            _msgCount(msgCount),
-            _priority(prior),
-            _cpu_index(cpu_index),
-            _filename(filename),
             TestMiddlewareSub<MsgType>(topic, msgCount, prior, cpu_index, filename, topic_priority)
     {};
 
@@ -41,23 +36,13 @@ public:
 
 
 private:
-
-    std::string _topic;
-    int _msgCount;
-    int _priority; //def not stated
-    int _cpu_index; //def not stated
-    std::string _filename;
-
     MsgType* _msg;
     int32_t _res_code;
-    dds_entity_t _writer_entity ;
     dds_entity_t _topic_entity;
     dds_entity_t _reader_entity;
     dds_entity_t _participant;
     void *_samples[MAX_SAMPLES];
     dds_sample_info_t _infos[MAX_SAMPLES];
-
-
 };
 
 
