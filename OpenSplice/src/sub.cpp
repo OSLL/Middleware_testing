@@ -5,13 +5,14 @@
 #include "gen/TestData_DCPS.hpp"
 #include "../../interface/sub_interface.hpp"
 
+#define QOS_PATH "file:///home/andrew/work/middleware_project/dds_testing/OpenSplice/src/QoS.xml"
 
 class TestSubscriber: public TestMiddlewareSub<TestDataType>{
 public:
     TestSubscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_priority):
             TestMiddlewareSub<TestDataType>(topic, msgCount, prior, cpu_index, filename, topic_priority),
             _dp(org::opensplice::domain::default_id()),
-            _provider("file://QoS.xml", "TestProfile"),
+            _provider(QOS_PATH, "TestProfile"),
             _topic(_dp, topic, _provider.topic_qos()),
             _subscriber(_dp),
             _dr(_subscriber, _topic, _provider.datareader_qos())

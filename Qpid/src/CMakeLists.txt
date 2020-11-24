@@ -40,5 +40,6 @@ find_library(QPIDTYPES qpidtypes REQUIRED NO_DEFAULT_PATH)
 target_link_libraries(QpidPubSub
        	qpidmessaging
         qpidtypes
+        pthread
 )
 

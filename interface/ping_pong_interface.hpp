@@ -14,6 +14,7 @@
 
 #define CPUSET_MODE_T (S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH)
 #define TIMEOUT 2 * pow(10, 10)
+#define WATERMARK 10
 
 template <class MsgType>
 class TestMiddlewarePingPong {
@@ -25,6 +26,8 @@ public:
             _topic_name2(topic2),
             _filename(filename),
             _recieve_timestamps(msgCount),
+            _read_msg_time(msgCount),
+            _write_msg_time(msgCount),
             _msgs(msgCount),
             _isFirst(isFirst),
             _isNew(false),
@@ -45,6 +48,8 @@ public:
             _topic_name2(topic2),
             _filename(filename),
             _recieve_timestamps(msgCount),
+            _read_msg_time(msgCount),
+            _write_msg_time(msgCount),
             _msgs(msgCount),
             _isFirst(isFirst),
             _isNew(true),
@@ -140,7 +145,6 @@ public:
         while (notReceived) {
 
             mu.lock();      // mute thread to write msg and update _last_rec_msg_id
-
             if(receive()) { // true - принято
                 if(!_isNew || !_isFirst)
                     notReceived = false;
@@ -171,6 +175,15 @@ public:
         if (_isFirst) {
 
             for (auto i = 0; i < _msgCount; ++i) {
+                if (_msgSize == 0){
+                    mu.lock();
+                    if (i - _last_rec_msg_id > WATERMARK) {
+                        --i;
+                        mu.unlock();
+                        continue;
+                    }
+                    mu.unlock();
+                }
 
                 if (i % (_msgs_before_step - 1) == 0 && cur_size <= _msgSizeMax)
                     cur_size += _step;
@@ -202,7 +215,6 @@ public:
     };
 
     virtual bool receive() = 0;
-
     int StartTest(){
         if(_isNew) return StartTestNew();
         else return StartTestOld();
@@ -223,6 +235,8 @@ public:
                             {"sent_time", get_timestamp(msg)},
                             {"recieve_timestamp", _recieve_timestamps[i]},
                             {"delay", _recieve_timestamps[i] - get_timestamp(msg)},
+                            {"read_proc_time", _read_msg_time[i]},
+                            {"proc_time", _write_msg_time[i]}
                     };
             json_output.emplace_back(json_msg);
         }
@@ -238,6 +252,8 @@ protected:
     std::string _topic_name2;
     std::string _filename;
     std::vector<unsigned long> _recieve_timestamps;
+    std::vector <unsigned long> _read_msg_time;
+    std::vector <unsigned long> _write_msg_time;
     std::vector<MsgType> _msgs;
     bool _isFirst;
     bool _isNew;

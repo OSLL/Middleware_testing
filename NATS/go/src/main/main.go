@@ -1,27 +1,11 @@
-// Copyright 2012-2019 The NATS Authors
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package main
 
 import (
-	//"fmt"
 	"flag"
 	"log"
 	"os"
 	"io/ioutil"
 	"encoding/json"
-
-//	"github.com/nats-io/nats.go"
 
 	"nats_test/TestPublisher"
 	"nats_test/TestSubscriber"
@@ -41,10 +25,6 @@ type Args struct{
 	Topic_priority int `json:"topic_priority"`
 	Interval int `json:"interval"`
 }
-
-// NOTE: Can test with demo servers.
-// nats-pub -s demo.nats.io <subject> <msg>
-// nats-pub -s demo.nats.io:4443 <subject> <msg> (TLS version)
 
 func main() {
 	var config_file = flag.String("c", "", "is required argument with config path")
@@ -96,7 +76,7 @@ func main() {
 			prior = config.Priority[1]
 			cpu_index = config.Cpu_index[1]
 		}
-		var pingpong = TestPingPong.New(topic1, topic2, config.M_count, prior, cpu_index, config.Min_msg_size, config.Interval, filename, config.Topic_priority, *isFirst)
+		var pingpong = TestPingPong.New(topic1, topic2, config.M_count, prior, cpu_index, config.Min_msg_size, config.Interval, filename, config.Topic_priority, *isFirst, config.Min_msg_size, config.Max_msg_size, config.Step, config.Msgs_before_step)
 
 		defer pingpong.Close()
 

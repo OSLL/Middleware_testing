@@ -148,6 +148,35 @@ namespace RabbitmqTest{
 			if(isFirst) connection->BindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name2);
 			else connection->BindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name1);
 		}
+
+		PingPong(std::string& topic1,
+		  	std::string& topic2,	
+		  	int msgCount, 
+		  	int prior, 
+		  	int cpu_index,
+            	  	std::string &filename, 
+		  	int topic_priority,
+		  	int interval, 
+                        int msgSizeMin,
+                        int msgSizeMax,
+                        int step,
+                        int before_step, 
+		  	bool isFirst,
+			const std::string& host="localhost", 
+			int port=5672, const std::string& username="guest", 
+			const std::string& password="guest", 
+			const std::string& vhost="/", 
+			int max_frame=131072,
+			const std::string& exchange="amq.direct"): 
+			 TestMiddlewarePingPong<MsgType>(topic1, topic2, msgCount, prior, cpu_index, filename,
+					topic_priority, interval, msgSizeMin, msgSizeMax, step, before_step, isFirst),
+			_exchange(exchange)
+		{
+			connection=AmqpClient::Channel::Create(host,port,username,password,vhost,max_frame);
+			connection->DeclareQueue("");
+			if(isFirst) connection->BindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name2);
+			else connection->BindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name1);
+		}
 		
 		~PingPong(){
 			if(TestMiddlewarePingPong<MsgType>::_isFirst) connection->UnbindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name2);
@@ -162,6 +191,9 @@ namespace RabbitmqTest{
 				nanoseconds>(std::chrono::high_resolution_clock::
 				now().time_since_epoch()).count();
 			message.get_bytes(msg);
+                        unsigned long int time=std::chrono::duration_cast<std::chrono::
+                                nanoseconds>(std::chrono::high_resolution_clock::
+                                now().time_since_epoch()).count() - message.timestamp;
 
 			if(TestMiddlewarePingPong<MsgType>::_isFirst) connection->BasicPublish(_exchange,
 					TestMiddlewarePingPong<MsgType>::_topic_name1,
@@ -169,6 +201,7 @@ namespace RabbitmqTest{
 			else connection->BasicPublish(_exchange,
 					TestMiddlewarePingPong<MsgType>::_topic_name2,
 					AmqpClient::BasicMessage::Create(msg));
+                        TestMiddlewarePingPong<MsgType>::_write_msg_time[id] = time;
 		}
 		short get_id(MsgType &msg) override{
 			return msg.id;
@@ -181,10 +214,17 @@ namespace RabbitmqTest{
 			AmqpClient::Envelope::ptr_t enve;
 			bool get=connection->BasicGet(enve,"");
 			if(get){
+                        unsigned long int time=std::chrono::duration_cast<std::chrono::
+                                nanoseconds>(std::chrono::high_resolution_clock::
+                                now().time_since_epoch()).count();
 			std::string str=enve->Message()->Body();
 			Message msg;
 			msg.set_from_bytes(str);
-			TestMiddlewarePingPong<MsgType>::write_received_msg(msg);}
+                        time=std::chrono::duration_cast<std::chrono::
+                                nanoseconds>(std::chrono::high_resolution_clock::
+                                now().time_since_epoch()).count() - time;
+			TestMiddlewarePingPong<MsgType>::write_received_msg(msg);
+			TestMiddlewarePingPong<MsgType>::_read_msg_time[msg.id] = time;}
 			return get;
 		}
 	};
@@ -200,6 +240,8 @@ int main(int argc, char** argv){
 			.required()
 			.help("-t/--type is a type of the node: publisher, subscriber or ping_pong");
 	program.add_argument("--first")
+			.implicit_value(true)
+			.default_value(false)
 			.help("--first is a config for ping_pong test");
 	program.add_argument("--connection")
 			.required()
@@ -213,7 +255,10 @@ int main(int argc, char** argv){
 		std::cout << program<<std::endl;
 		return 1;
 	}
-	auto conf_conn=program.get<std::string>("--connection");
+	auto type=program.get<std::string>("-t");
+	auto conf_path=program.get<std::string>("-c");
+	
+        auto conf_conn=program.get<std::string>("--connection");
 	nlohmann::json json;
 	std::ifstream file(conf_conn);
 	if(!file){
@@ -229,97 +274,77 @@ int main(int argc, char** argv){
 	int max_frame=json["max_frame"];
 	std::string exchange=json["exchange"];
 	file.close();
-	auto type=program.get<std::string>("-t");
-	if(!type.compare("publisher")){
-		auto conf_path=program.get<std::string>("-c");
-		file=std::ifstream(conf_path);
-		if(!file){
-			std::cout<<"Can't open file "<<conf_path<<std::endl;
-			return 2;
-		}
-		file>>json;
-		file.close();
-
-		std::string topic=json["topic"];
-		std::string filename=json["res_filenames"][0];
-		int m_count=json["m_count"];
-		int min_size=json["min_msg_size"];
-		int max_size=json["max_msg_size"];
-		int step=json["step"];
-		int before_step=json["msgs_before_step"];
-		int prior=json["priority"][0];
-		int cpu=json["cpu_index"][0];
-		int interval=json["interval"];
-		int topic_prior=json["topic_priority"];
-
-		std::string name=std::string("/pub");
+	
+	file.open(conf_path);
+	if(!file){
+		std::cout<<"Can't open file "<<conf_path<<std::endl;
+		return 2;
+	}
+	file>>json;
+	file.close();
+	
+	std::string topic1=json["topic"][0];
+	std::string topic2=json["topic"][1];
+	std::string filename1=json["res_filenames"][0];
+	std::string filename2=json["res_filenames"][1];
+	int m_count=json["m_count"];
+	int prior1=json["priority"][0];
+	int prior2=json["priority"][1];
+	int cpu1=json["cpu_index"][0];
+	int cpu2=json["cpu_index"][1];
+	int min_size=json["min_msg_size"];
+	int max_size=json["max_msg_size"];
+	int step=json["step"];
+	int before_step=json["msgs_before_step"];
+	int interval=json["interval"];
+	int topic_prior=json["topic_priority"];
+	
+	
+	if(type == "publisher"){
 		std::cout<<"Publisher"<<std::endl;
-		RabbitmqTest::Publisher pub(topic, m_count, prior, cpu,  min_size, max_size, step,
-				interval, before_step, filename, topic_prior,
+		RabbitmqTest::Publisher pub(topic1, m_count, prior1, cpu1,  min_size, max_size, step,
+				interval, before_step, filename1, topic_prior,
 				host, port, username, password, vhost, max_frame, exchange);
 		pub.StartTest();
 		std::cout<<"End Publisher"<<std::endl;
 	}
-	if(!type.compare("subscriber")){
-		auto conf_path=program.get<std::string>("-c");
-		file=std::ifstream(conf_path);
-		if(!file){
-			std::cout<<"Can't open file "<<conf_path<<std::endl;
-			return 2;
-		}
-		file>>json;
-		file.close();
-
-		std::string topic=json["topic"];
-		std::string filename=json["res_filenames"][1];
-		int m_count=json["m_count"];
-		int prior=json["priority"][1];
-		int cpu=json["cpu_index"][1];
-		int topic_prior=json["topic_priority"];
-
-		std::string name=std::string("/sub");
+	else if(type == "subscriber"){
 		std::cout<<"Subscriber"<<std::endl;
-		RabbitmqTest::Subscriber<Message> sub(topic, m_count, prior, cpu, filename, topic_prior,
+		RabbitmqTest::Subscriber<Message> sub(topic1, m_count, prior2, cpu2, filename2, topic_prior,
 						host, port, username, password, vhost, max_frame, exchange);
 		sub.StartTest();
 		std::cout<<"End Subscriber"<<std::endl;
 	}
-	if(!type.compare("ping_pong")){
-		nlohmann::json json_pp;
-		if(auto conf_pp=program.present("--first")){
-			file=std::ifstream(*conf_pp);
-			if(!file){
-				std::cout<<"Can't open file "<<argv[4]<<std::endl;
-				return 2;
-			}
-			file>>json_pp;
-			file.close();
-		}else{
-			std::cout<<"No config for ping_pong test"<<std::endl;
-			std::cout<<program<<std::endl;
-			return 3;
-		}
-		bool isFirst=json_pp["isPingPong"];
-		int i;
-		if(isFirst) i=0;
-		else i=1;
-		std::string topic1=json_pp["topic"][i];
-		std::string topic2=json_pp["topic"][i];
-		std::string filename=json_pp["res_filenames"][i];
-		int m_count=json_pp["m_count"];
-		int min_size=json_pp["min_msg_size"];
-		int prior=json_pp["priority"][i];
-		int cpu=json_pp["cpu_index"][i];
-		int interval=json_pp["interval"];
-		int topic_prior=json_pp["topic_priority"];
+	else if(type == "ping_pong"){
+		bool isFirst=program.get<bool>("--first");
+		
 
 		std::cout<<"PingPong"<<std::endl;
-		RabbitmqTest::PingPong<Message> ping_pong(topic1, topic2, m_count, prior, cpu, filename, topic_prior,
+		if(isFirst){
+                    RabbitmqTest::PingPong<Message> ping_pong = (interval == 0)? 
+                            RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
 						interval, min_size, isFirst,
+						host, port, username, password, vhost, max_frame, exchange):
+                            RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+						interval, min_size, max_size, step, before_step, isFirst,
 						host, port, username, password, vhost, max_frame, exchange);
-		ping_pong.StartTest();
-		std::cout<<"End PingPong"<<std::endl;
-	}
 
-	return 0;
+			ping_pong.StartTest();
+		}else{
+                    RabbitmqTest::PingPong<Message> ping_pong = (interval == 0)? 
+                            RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+						interval, min_size, isFirst,
+						host, port, username, password, vhost, max_frame, exchange):
+                            RabbitmqTest::PingPong<Message>(topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+						interval, min_size, max_size, step, before_step, isFirst,
+						host, port, username, password, vhost, max_frame, exchange);
+			ping_pong.StartTest();	
+		}
+		std::cout<<"End PingPong"<<std::endl;
+	}else{
+		std::cout<<"Wrong node type"<<std::endl;
+		return 3;
+        }
+
+        return 0;
 }
