@@ -11,7 +11,7 @@ void Subscriber<MsgType>::create(dds_topic_descriptor topic_descriptor) {
 
     /* Create a Topic. */
     _topic_entity = dds_create_topic (
-            _participant, &topic_descriptor, "test_topic", NULL, NULL);
+            _participant, &topic_descriptor, TestMiddlewareSub<MsgType>::_topic_name.c_str(), NULL, NULL);
     if (_topic_entity < 0)
         DDS_FATAL("dds_create_topic: %s\n", dds_strretcode(-_topic_entity));
 
