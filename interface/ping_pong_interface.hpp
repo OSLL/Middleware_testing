@@ -149,6 +149,9 @@ public:
                 if(!_isNew || !_isFirst)
                     notReceived = false;
                 _last_rec_msg_id+=1;
+                start_timeout = std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                             now().time_since_epoch()).count();
             } else {
                 end_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
@@ -172,6 +175,10 @@ public:
             future = std::async(std::launch::async, &TestMiddlewarePingPong<MsgType>::wait_for_msg, this);
         std::this_thread::sleep_for(std::chrono::seconds(4));
         int cur_size = _msgSizeMin;
+        unsigned long start_timeout, end_timeout;
+        start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
+        nanoseconds>(std::chrono::high_resolution_clock::
+                     now().time_since_epoch()).count();
         if (_isFirst) {
 
             for (auto i = 0; i < _msgCount; ++i) {
@@ -180,10 +187,18 @@ public:
                     if (i - _last_rec_msg_id > WATERMARK) {
                         --i;
                         mu.unlock();
+                        end_timeout = std::chrono::duration_cast<std::chrono::
+                        nanoseconds>(std::chrono::high_resolution_clock::
+                                     now().time_since_epoch()).count();
+                        if (end_timeout - start_timeout > TIMEOUT)
+                            break;
                         continue;
                     }
                     mu.unlock();
                 }
+                start_timeout = std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                             now().time_since_epoch()).count();
 
                 if (i % (_msgs_before_step - 1) == 0 && cur_size <= _msgSizeMax)
                     cur_size += _step;
