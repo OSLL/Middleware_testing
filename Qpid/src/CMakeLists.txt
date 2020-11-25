@@ -33,9 +33,9 @@ add_executable(QpidPubSub pubsub.cpp)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 
-find_library(QPIDMSG qpidmessaging REQUIRED NO_DEFAULT_PATH)
+find_library(QPIDMSG qpidmessaging libqpidmessaging.so libqpidmessaging REQUIRED /usr/local/lib /usr/lib)
 
-find_library(QPIDTYPES qpidtypes REQUIRED NO_DEFAULT_PATH)
+find_library(QPIDMSG qpidtypes libqpidtypes.so libqpidtypes REQUIRED /usr/local/lib /usr/lib)
 
 target_link_libraries(QpidPubSub
        	qpidmessaging
