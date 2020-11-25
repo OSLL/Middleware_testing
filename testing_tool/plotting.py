@@ -498,7 +498,6 @@ def round_trip_grouped(filenames):
     count = 0
     direct = filenames[0][0][filenames[0][0].find('test_'):]
     direct = direct[:direct.find('/')+1] + 'plots/'
-    direct += 'RTT'
     try:
         os.makedirs(direct)
     except OSError:
@@ -520,8 +519,8 @@ def round_trip_grouped(filenames):
                 munit = unit
         for times in round_trips[i:i+3]:
             times = [t/mscale for t in times]
-        resfile = '_'.join(labels[i:i+3])
-        plot_graph(ids[i:i+3], round_trips[i:i+3], munit, f'round_trip_time', f'{direct}/{resfile}_round_trip_time.png', labels[i:i+3])
+        node_name = '_'.join(labels[i:i+3])
+        plot_graph(ids[i:i+3], round_trips[i:i+3], munit, f'round_trip_time', f'{direct}{node_name}/RTT/round_trip_time.png', labels[i:i+3])
 
 
 if __name__ == '__main__':
