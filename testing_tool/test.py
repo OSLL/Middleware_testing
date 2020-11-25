@@ -156,9 +156,11 @@ class MiddlewareTesting(unittest.TestCase):
                 for filenames in files:
                     plot_results([[filenames]], self.test_n, self.test_n == 7, self.test_n > 5, grouping=(self.test_n<7))
             else:
+                files = []
                 for filenames in resfiles:
-                    plot_results([filenames], self.test_n == 7, self.test_n > 5, grouping=(self.test_n<7))
-            for filenames in resfiles:
+                    for filename in filenames:
+                        files.append(filename)
+                plot_results([files], self.test_n, self.test_n == 7, self.test_n > 5, grouping=(self.test_n<7))
 
 if __name__ == "__main__":
     unittest.main()
