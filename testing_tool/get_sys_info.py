@@ -8,11 +8,13 @@ import time
 from multiprocessing import Process, Value
 import shlex
 
+
 def get_commands():
     # for files use absolute path
     cmd = {}
     cmd['Qpid'] = 'qpidd -p 25565 --tcp-nodelay --max-connections 0 --ha-flow-messages 0 --session-max-unacked 10000 --default-queue-limit 0'
     return cmd
+
 
 def get_ram_info():
     p = subprocess.Popen(args=['dmidecode', '-t', '17'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -30,13 +32,15 @@ def get_ram_info():
         res['RAM'+str(number)+' '+lst[0][1:]]=lst[1]
     return res
 
+
 def scale_ram(ram):
     scales = ['B', 'KB', 'MB', 'GB']
     index = 0
     while index < (len(scales) - 1) and ram/1024 >= 1:
-        ram/=1024
-        index+=1
-    return str(ram) + scales[index];
+        ram /= 1024
+        index += 1
+    return str(ram) + scales[index]
+
 
 def max_ram(val):
     max_ram = start_ram = psutil.virtual_memory().used
@@ -46,6 +50,26 @@ def max_ram(val):
             max_ram = ram
             val.value = max_ram - start_ram
         time.sleep(1/1000)
+
+
+def get_cpy_info_from_perf(filename):       # returns a list of stack traces with cpy functions calls
+    fst_line = ''
+    res = []
+    cur_strace = ''
+    with open(filename, 'r') as file:
+        for line in file:
+            if 'cycles:' in line:
+                fst_line = line
+                cur_strace += line
+            elif line is '\n':
+                fst_line = ''
+                if 'cpy' in cur_strace:
+                    res.append(cur_strace)
+                cur_strace = ''
+            elif fst_line != '':
+                cur_strace += line
+    return res
+
 
 class system:
     sys_platform = platform.platform()
@@ -85,18 +109,27 @@ class system:
     def packet_loss(self, resfiles, test_n, isPingPong=False):
         packets = {}
         for filenames in resfiles:
-            node_name = filenames[0][:filenames[0].rfind('/data/')]
+            if isPingPong and test_n == 7:
+                node_name = filenames[0][0][:filenames[0][0].rfind('/data/')]
+            else:
+                node_name = filenames[0][:filenames[0].rfind('/data/')]
             node_name = node_name[node_name.rfind('/')+1:]
             packets[node_name] = [0, 0]
             for filename in filenames:
                 if not isPingPong and filename.find('sub') == -1:
                     continue
-                with open(filename, 'r') as f:
-                    data = json.load(f)
-                send_time = [msg["msg"]["sent_time"] for msg in data]
-                packets[node_name][0] += send_time.count(0)
-                packets[node_name][1] += len(send_time)
+                if isPingPong and test_n == 7:
+                    for f in filename:
+                        with open(f, 'r') as f:
+                            data = json.load(f)
+                        send_time = [msg["msg"]["sent_time"] for msg in data]
+                        packets[node_name][0] += send_time.count(0)
+                        packets[node_name][1] += len(send_time)
+                else:
+                    with open(filename, 'r') as f:
+                        data = json.load(f)
+                    send_time = [msg["msg"]["sent_time"] for msg in data]
+                    packets[node_name][0] += send_time.count(0)
+                    packets[node_name][1] += len(send_time)
         for framework, loss in packets.items():
             self.losses[framework + ' packet loss test_' + str(test_n)] = str(loss[0] / loss[1] * 100) + '%'
-
-
