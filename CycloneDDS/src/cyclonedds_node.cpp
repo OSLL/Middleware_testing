@@ -4,7 +4,7 @@
 #include <PingPong.h>
 
 int main(int argc, char **argv) {
-    argparse::ArgumentParser parser("OpenSplice node argparsing");
+    argparse::ArgumentParser parser("CycloneDDS node argparsing");
     parser.add_argument("-c", "--config")
             .required()
             .help("-c --conf is required argument with config path");
