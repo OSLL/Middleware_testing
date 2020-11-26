@@ -226,6 +226,7 @@ def plot_sub_results(test_n, filenames, isMultisub=False, isPingPong=False, grou
         saved = []
         directories = []
         if isPingPong:
+            delays = {}
             for files in filenames:
                 if len(files) == 0:
                     continue
@@ -292,33 +293,39 @@ def plot_sub_results(test_n, filenames, isMultisub=False, isPingPong=False, grou
                                 f'{directory}{node_name}{subdir}/delay/{node}_jitter.png')
                         saved[-1].append((ids, _delay_time, node_name, scale, unit, node))
                     else:
-                        if i == 0:
-                            delay = delay_time.copy()
+                        if node_name not in delays:
+                            delays[node_name] = delay.copy()
                         else:
-                            for j, d in enumerate(delay_time):
-                                delay.insert(2*j+1, d)
+                            if filename.endswith('_sub.json'):
+                                for j, d in enumerate(delay_time):
+                                    delays[node_name].insert(2*j+1, d)
+                            else:
+                                for j, d in enumerate(delay_time):
+                                    delays[node_name].insert(2*j, d)
                 if grouping:
-                    (_, unit, scale) = scale_values(delay)
-                    node_name = files[0][:files[0].rfind('/data/')]
-                    node_name = node_name[node_name.rfind('/')+1:]
+                    for node_name in delays:
+                        delay = delays[node_name]
+                        (_, unit, scale) = scale_values(delay)
+                        #node_name = files[0][:files[0].rfind('/data/')]
+                        #node_name = node_name[node_name.rfind('/')+1:]
 
-                    ids = list(range(0, len(delay)))
-                    plot_graph(ids, [d/scale for d in delay], unit, 
-                               f'{node_name}: Delay time', 
-                               f'{directory}{node_name}{subdir}/delay/{node}_delay.png')
-                    delay_time = []
-                    for i in range(0, 10):
-                        k = int(len(delay) * (i+1)/10)
-                        delay_time.append(delay[0:k])
-                    plot_boxes(delay_time, [len(d) for d in delay_time],
-                           'number of messages', 
-                           unit, f'{node_name}: Delay time boxes', 
-                           f'{directory}{node_name}{subdir}/delay/{node}_delay_box.png')
-                    mean = np.mean(delay)
-                    plot_graph(ids, [abs(mean - d) for d in delay], 
-                               unit, f'Jitter', 
-                               f'{directory}{node_name}{subdir}/delay/{node}_jitter.png')
-                    saved[-1].append((ids, delay, node_name, scale, unit))
+                        ids = list(range(0, len(delay)))
+                        plot_graph(ids, [d/scale for d in delay], unit, 
+                                   f'{node_name}: Delay time', 
+                                   f'{directory}{node_name}{subdir}/delay/{node}_delay.png')
+                        delay_time = []
+                        for i in range(0, 10):
+                            k = int(len(delay) * (i+1)/10)
+                            delay_time.append(delay[0:k])
+                        plot_boxes(delay_time, [len(d) for d in delay_time],
+                               'number of messages', 
+                               unit, f'{node_name}: Delay time boxes', 
+                               f'{directory}{node_name}{subdir}/delay/{node}_delay_box.png')
+                        mean = np.mean(delay)
+                        plot_graph(ids, [abs(mean - d) for d in delay], 
+                                   unit, f'Jitter', 
+                                   f'{directory}{node_name}{subdir}/delay/{node}_jitter.png')
+                        saved[-1].append((ids, delay, node_name, scale, unit))
         else:
             saved.append([])
             for filename in filenames:
