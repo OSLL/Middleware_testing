@@ -299,7 +299,7 @@ def plot_sub_results(test_n, filenames, isMultisub=False, isPingPong=False, grou
                                 delay.insert(2*j+1, d)
                 if grouping:
                     (_, unit, scale) = scale_values(delay)
-                    node_name = files[0][:filename.rfind('/data/')]
+                    node_name = files[0][:files[0].rfind('/data/')]
                     node_name = node_name[node_name.rfind('/')+1:]
 
                     ids = list(range(0, len(delay)))
