@@ -312,19 +312,19 @@ def plot_sub_results(test_n, filenames, isMultisub=False, isPingPong=False, grou
                         ids = list(range(0, len(delay)))
                         plot_graph(ids, [d/scale for d in delay], unit, 
                                    f'{node_name}: Delay time', 
-                                   f'{directory}{node_name}{subdir}/delay/{node}_delay.png')
+                                   f'{directory}{node_name}{subdir}/delay/delay.png')
                         delay_time = []
                         for i in range(0, 10):
                             k = int(len(delay) * (i+1)/10)
-                            delay_time.append(delay[0:k])
+                            delay_time.append([d/scale for d in delay[0:k]])
                         plot_boxes(delay_time, [len(d) for d in delay_time],
                                'number of messages', 
                                unit, f'{node_name}: Delay time boxes', 
-                               f'{directory}{node_name}{subdir}/delay/{node}_delay_box.png')
+                               f'{directory}{node_name}{subdir}/delay/delay_box.png')
                         mean = np.mean(delay)
-                        plot_graph(ids, [abs(mean - d) for d in delay], 
+                        plot_graph(ids, [abs(mean - d)/scale for d in delay], 
                                    unit, f'Jitter', 
-                                   f'{directory}{node_name}{subdir}/delay/{node}_jitter.png')
+                                   f'{directory}{node_name}{subdir}/delay/jitter.png')
                         saved[-1].append((ids, delay, node_name, scale, unit))
         else:
             saved.append([])
@@ -471,7 +471,7 @@ def plot_results(filenames, test_n, multisub=False, isPingPong=False, grouping=T
 
 
 
-def plot_round_trip_time(filenames, need_plot = False):
+def plot_round_trip_time(filenames, plot_direct=''):
     with open(filenames[0], 'r') as f:
         data1 = json.load(f)
     with open(filenames[1], 'r') as f:
@@ -480,7 +480,7 @@ def plot_round_trip_time(filenames, need_plot = False):
     sent_time2 = [msg["msg"]["sent_time"] for msg in data2]
     rec_time1 = [msg["msg"]["recieve_timestamp"] for msg in data1]
     rec_time2 = [msg["msg"]["recieve_timestamp"] for msg in data2]
-    ids = [[msg["msg"]["id"] for msg in data1]]
+    ids = [msg["msg"]["id"] for msg in data1]
     round_trip = []
     if sent_time1[0] < sent_time2[0] and rec_time1[0] < rec_time2[0]:
         for i in range(len(sent_time1)):
@@ -490,19 +490,16 @@ def plot_round_trip_time(filenames, need_plot = False):
             round_trip.append(rec_time1[i] - sent_time2[i])
     node_name = filenames[0][:filenames[0].rfind('/data')]
     node_name = node_name[node_name.rfind('/')+1:]
-    if need_plot == True:
+    if plot_direct != '':
         (round_trip, unit,_) = scale_values(round_trip)
-        round_trip = [round_trip]
-        plot_graph(ids, round_trip, unit, f'round_trip_time', f'round_trip_time.png', [f'{node_name}']) 
-    else:
-        return ids[0], round_trip, node_name
+        plot_graph(ids, round_trip, unit, f'{node_name}: Round Trip Time', f'{plot_direct}/{node_name}/RTT/round_trip_time.png') 
+    return ids, round_trip, node_name
 
 
 def round_trip_grouped(filenames):
     ids = []
     round_trips = []
     labels = []
-    count = 0
     direct = filenames[0][0][filenames[0][0].find('test_'):]
     direct = direct[:direct.find('/')+1] + 'plots/'
     try:
@@ -512,7 +509,7 @@ def round_trip_grouped(filenames):
     for files in filenames:
         if len(files) == 0:
             continue
-        (_id, _time, _name) = plot_round_trip_time(files)
+        (_id, _time, _name) = plot_round_trip_time(files, direct)
         ids.append(_id)
         round_trips.append(_time)
         labels.append(_name)
@@ -526,8 +523,8 @@ def round_trip_grouped(filenames):
                 munit = unit
         for times in round_trips[i:i+3]:
             times = [t/mscale for t in times]
-        node_name = '_'.join(labels[i:i+3])
-        plot_graph(ids[i:i+3], round_trips[i:i+3], munit, f'round_trip_time', f'{direct}{node_name}/RTT/round_trip_time.png', labels[i:i+3])
+        node_names = '_'.join(labels[i:i+3])
+        plot_graph(ids[i:i+3], round_trips[i:i+3], munit, f'round_trip_time', f'{direct}/{node_names}_round_trip_time.png', labels[i:i+3])
 
 
 if __name__ == '__main__':
