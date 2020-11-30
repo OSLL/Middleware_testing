@@ -50,7 +50,8 @@ class MiddlewareTesting(unittest.TestCase):
                         os.mkdir(cwd + '/' + subtest[0][:subtest[0].find('/')])
                 except OSError:
                     None
-                tracer = CopyingTracer()
+                if self.test_n == 6:
+                    tracer = CopyingTracer()
                 for config in subtest:
                     print(datetime.now(), f"  >>> using config - {config}", file=log_file)
                     subs.append((create_process('exec ' + prefix + self.subs[i], '../../../config/' + config, self.stype, cwd), config))
@@ -69,11 +70,12 @@ class MiddlewareTesting(unittest.TestCase):
                 else:
                     wait_and_end_process(p[0])
                 
-                tracer.close()
-                if self.pairs:
-                    tracer.write_results(subs, pubs, test_dir + '/trace/')
-                else:
-                    tracer.write_results(subs, [p], test_dir + '/trace/')
+                if self.test_n == 6:
+                    tracer.close()
+                    if self.pairs:
+                        tracer.write_results(subs, pubs, test_dir + '/trace/')
+                    else:
+                        tracer.write_results(subs, [p], test_dir + '/trace/')
                 
                 print(datetime.now(), "publisher finished", file=log_file, flush=True)
             self.sys.end(self.test_n)
@@ -85,7 +87,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.startTest()
 
-    @unittest.skip('')
     def test2(self):
         print(datetime.now(), ">>> running test2", file=log_file)
         self.test_n = 2
@@ -93,7 +94,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.startTest()
 
-    @unittest.skip('')
     def test3(self):
         print(datetime.now(), ">>> running test3", file=log_file)
         self.test_n = 3
@@ -101,7 +101,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.startTest()
 
-    @unittest.skip('')
     def test4(self):
         print(datetime.now(), ">>> running test4", file=log_file)
         self.test_n = 4
@@ -109,7 +108,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.startTest()
 
-    @unittest.skip('')
     def test5(self):
         print(datetime.now(), ">>> running test5", file=log_file)
         self.test_n = 5
@@ -117,7 +115,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.startTest()
     
-    @unittest.skip('')
     def test6(self):
         print(datetime.now(), ">>> running test6", file=log_file)
         self.test_n = 6
@@ -127,7 +124,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.stype = 'ping_pong'
         self.startTest()
     
-    @unittest.skip('')
     def test7(self):
         print(datetime.now(), ">>> running test7", file=log_file)
         self.test_n = 7
@@ -137,7 +133,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.stype = 'ping_pong'
         self.startTest()
 
-    @unittest.skip('')
     def test8(self):
         print(datetime.now(), ">>> running test8", file=log_file)
         self.test_n = 8
