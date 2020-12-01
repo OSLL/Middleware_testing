@@ -24,8 +24,28 @@ public:
     void publish(short id, unsigned size) override;
 
 private:
-    Subscriber sub;
-    Publisher pub;
+    DDS::DomainParticipant_var _participant;
+    DDS::DomainParticipantFactory_var _dpf;
+
+    Messenger::MessageDataWriter_var _message_writer;
+    DDS::DataWriter_var _writer;
+    DDS::WaitSet_var _ws;
+    DDS::Duration_t _timeout{};
+    Messenger::Message _message;
+
+    Messenger::MessageSeq _messages;
+    DDS::SampleInfoSeq _info;
+    DDS::Subscriber_var _subscriber;
+
+    DDS::StatusCondition_var _condition;
+    DDS::DataReader_var _reader;
+    Messenger::MessageDataReader_var _reader_i;
+    DDS::DataReaderListener_var _listener;
+    Messenger::MessageTypeSupport_var _ts;
+
+    int _id = 0;
+
+
 };
 
 #endif //OPENDDS_DEVGUIDE_MESSENGER_PING_PONG_H

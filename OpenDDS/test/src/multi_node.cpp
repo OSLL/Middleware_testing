@@ -1,18 +1,15 @@
-//
-// Created by egor on 14.08.2020.
-//
-
 #include <argparse/argparse.hpp>
 #include <nlohmann/json.hpp>
 #include <Publisher.h>
 #include <Subscriber.h>
-#include "ping_pong/ping_pong.h"
+#include <PingPong.h>
+
 
 int main(int argc, char **argv) {
     argparse::ArgumentParser parser("OpenDDS node argparsing");
     parser.add_argument("-c", "--config")
             .required()
-            .help("-c --conf is required argument with config path");
+            .help("-c --config is required argument with config path");
 
     parser.add_argument("-t", "--type")
             .required()
@@ -23,6 +20,8 @@ int main(int argc, char **argv) {
             .default_value(false)
             .help("--first is required argument if ping_pong type is specified with type of node");
 
+    parser.add_argument("-DCPSConfigFile");
+
     try {
         parser.parse_args(argc, argv);
     } catch (const std::runtime_error& err) {
@@ -31,8 +30,8 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    auto config_filename = parser.get<std::string>("-c");
-    auto type_name = parser.get<std::string>("-t");
+    std::string config_filename = parser.get<std::string>("-c");
+    std::string type_name = parser.get<std::string>("-t");
 
     bool isFirst = parser.get<bool>("--first");
 
@@ -64,24 +63,29 @@ int main(int argc, char **argv) {
     try {
         if (type_name == "publisher"){
             Publisher publisher(topic1, m_count, priority_pub, cpu_index_pub, min_msg_size, max_msg_size, step, interval,
-                                    msgs_before_step, filename_pub, topic_prior);
+                                msgs_before_step, filename_pub, topic_prior);
             publisher.createPublisher(argc, argv);
-            publisher.StartTest();
         }
-        if (type_name == "subscriber") {
+        else if (type_name == "subscriber") {
             Subscriber subscriber(topic1, m_count, priority_sub, cpu_index_sub, filename_sub, topic_prior);
             subscriber.createSubscriber(argc, argv);
-            subscriber.StartTest();
         }
-        if (type_name == "ping_pong"){
+        else if (type_name == "ping_pong"){
             std::string filename;
             if(isFirst)
                 filename = filename_pub;
             else
                 filename = filename_sub;
-            TestPingPongNode ping_pong(argc, argv, topic1, topic2, m_count, priority_pub, cpu_index_pub, filename, topic_prior, interval,
-                                       min_msg_size, isFirst);
-            ping_pong.StartTest();
+            if(interval == 0){
+                TestPingPongNode ping_pong(argc, argv, topic1, topic2, m_count, priority_pub, cpu_index_pub, filename, topic_prior, interval,
+                                           min_msg_size, isFirst);
+                ping_pong.StartTest();
+            }
+            else{
+                TestPingPongNode ping_pong(argc, argv, topic1, topic2, m_count, priority_pub, cpu_index_pub, filename, topic_prior, interval,
+                                           min_msg_size, isFirst);
+                ping_pong.StartTest();
+            }
         }
         else{
             std::cout << "Wrong node type specified!" << std::endl;

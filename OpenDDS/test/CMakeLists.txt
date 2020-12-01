@@ -1,6 +1,8 @@
 project(OpenDDS_DevGuide_Messenger CXX)
 cmake_minimum_required(VERSION 3.8.5)
 
+set(CMAKE_PREFIX_PATH /home/andrew/work/middleware_project/dependences/OpenDDS/cmake)
+
 find_package(OpenDDS REQUIRED)
 
 set(CMAKE_CXX_COMPILER ${OPENDDS_COMPILER})
@@ -16,20 +18,7 @@ include_directories(../../interface
                     include
         )
 
-# Publisher
-add_executable(publisher src/publisher/Publisher.cpp src/publisher/publisher.cpp include/Publisher.h)
-OPENDDS_TARGET_SOURCES(publisher src/dds/Messenger.idl)
-target_link_libraries(publisher ${opendds_libs} pthread)
-
-
-# Subscriber
-add_executable(subscriber src/subscriber/Subscriber.cpp src/subscriber/subscriber.cpp src/dds/DataReaderListenerImpl.cpp
-        )
-OPENDDS_TARGET_SOURCES(subscriber src/dds/Messenger.idl)
-target_link_libraries(subscriber ${opendds_libs} pthread)
-
-
-add_executable(ping_pong src/ping_pong/ping_pong.cpp src/subscriber/Subscriber.cpp src/dds/DataReaderListenerImpl.cpp
+add_executable(ping_pong src/PingPong/PingPong.cpp src/subscriber/Subscriber.cpp src/dds/DataReaderListenerImpl.cpp
         src/publisher/Publisher.cpp src/multi_node.cpp)
 OPENDDS_TARGET_SOURCES(ping_pong src/dds/Messenger.idl)
 target_link_libraries(ping_pong ${opendds_libs} pthread)

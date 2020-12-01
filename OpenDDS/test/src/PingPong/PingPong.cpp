@@ -1,4 +1,4 @@
-#include "ping_pong.h"
+#include "../../include/PingPong.h"
 
 
 TestPingPongNode::TestPingPongNode( int argc, ACE_TCHAR *argv[],
@@ -8,41 +8,24 @@ TestPingPongNode::TestPingPongNode( int argc, ACE_TCHAR *argv[],
                 topic1, topic2, msgCount, prior, cpu_index,filename,
                 topic_priority, msInterval, msgSize, isFirst )
     {
-    if (!_isFirst)
-        topic1.swap(topic2);
 
-    pub = Publisher(topic1, msgCount, prior, cpu_index, 1, 100,
-                    1, msInterval, 1, filename, topic_priority);
-    pub.createPublisher(argc, argv);
-
-    sub = Subscriber(topic2, msgCount, prior, cpu_index, filename, topic_priority);
-    sub.createSubscriber(argc, argv);
 
 
 }
 
 bool TestPingPongNode::receive() {
-    Messenger::Message msg;
-    bool result =  sub.receive(msg);
 
-    if (result)
-        write_received_msg(msg);
-
-    return result;
+    return true;
 
 }
 
 short TestPingPongNode::get_id(Messenger::Message &msg) {
-    return sub.get_id(msg);
+    return 0;
 }
 
 unsigned long TestPingPongNode::get_timestamp(Messenger::Message &msg) {
-    return sub.get_timestamp(msg);
+    return 0;
 }
 
 void TestPingPongNode::publish(short id, unsigned size) {
-    if (_isFirst)
-        pub.publish(id, size, 'b');
-    else
-        pub.publish(id, size, 'a');
 }

@@ -30,17 +30,7 @@ class Subscriber: public TestMiddlewareSub<Messenger::Message>{
 
 public:
     Subscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_priority) :
-            _topic_name(topic),
-            _msgCount(msgCount),
-            _priority(prior),
-            _cpu_index(cpu_index),
-            _filename(filename),
             TestMiddlewareSub<Messenger::Message>(topic, msgCount, prior, cpu_index, filename, topic_priority)
-    {};
-
-
-    Subscriber():
-            TestMiddlewareSub<Messenger::Message>(a, 0 , 0, 0, a, 0)
     {};
 
 
@@ -50,18 +40,13 @@ public:
 
     unsigned long get_timestamp(Messenger::Message& msg) override;
 
-    bool receive() override;
+    bool receive(Messenger::Message &msg);
 
-    bool receive(Messenger::Message& msg);
+    bool receive() override;
 
     void cleanUp();
 
 protected:
-    std::string _topic_name;
-    int _msgCount;
-    int _priority; //def not stated
-    int _cpu_index; //def not stated
-    std::string _filename;
 
     Messenger::MessageSeq _messages;
     DDS::SampleInfoSeq _info;

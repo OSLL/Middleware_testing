@@ -35,7 +35,7 @@ void Publisher::createPublisher(int argc, ACE_TCHAR *argv[]) {
 
         // Create Topic (Movie Discussion List)
         CORBA::String_var type_name = ts->get_type_name();
-        DDS::Topic_var topic = _participant->create_topic(_topic.c_str(),
+        DDS::Topic_var topic = _participant->create_topic(TestMiddlewarePub::_topic_name.c_str(),
                                           type_name.in(),
                                           TOPIC_QOS_DEFAULT,
                                           DDS::TopicListener::_nil(),
