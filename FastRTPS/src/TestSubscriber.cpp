@@ -70,7 +70,7 @@ void TestSubscriber::SubListener::onSubscriptionMatched(
 void TestSubscriber::SubListener::onNewDataMessage(
         Subscriber* sub)
 {
-    unsigned proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    unsigned long proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     if (sub->takeNextData((void*)parent->_msgs[n_msgs], &m_info))
     {
         if (m_info.sampleKind == ALIVE)

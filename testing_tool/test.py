@@ -4,7 +4,7 @@ import subprocess
 import json
 from datetime import datetime
 from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
-from plotting import get_resfiles, get_grouped_filenames, plot_results
+from plotting import get_resfiles, get_grouped_filenames, plot_results, round_trip_grouped
 from get_sys_info import system
 
 class MiddlewareTesting(unittest.TestCase):
@@ -132,7 +132,7 @@ class MiddlewareTesting(unittest.TestCase):
 
     def tearDown(self):
         resfiles = get_resfiles(self.test_n, self.subtests)
-        self.sys.packet_loss(resfiles, self.test_n, self.test_n > 5)
+        self.sys.packet_loss(resfiles, self.test_n, self.subtests, self.test_n > 5)
         with open('system_info.json','w') as out:
             out.write(self.sys.get_info())
         if self.test_n == 2:
@@ -141,11 +141,26 @@ class MiddlewareTesting(unittest.TestCase):
         elif self.test_n < 6:
             resfiles = get_grouped_filenames(resfiles)
             for files in resfiles:
-                plot_results(files)
+                plot_results(files, self.test_n, self.test_n == 2, self.test_n > 5)
         else:
-            for filenames in resfiles:
-                plot_results([filenames], self.test_n == 7, self.test_n > 5, 
-                             grouping=(self.test_n<7))
+            if self.test_n == 6:
+                round_trip_grouped(resfiles)
+            if self.test_n == 7:
+                files = []
+                for filenames in resfiles:
+                    while len(filenames) > len(files):
+                        files.append([])
+                    for j in range(len(filenames)):
+                        for f in filenames[j]:
+                            files[j].append(f)
+                for filenames in files:
+                    plot_results([[filenames]], self.test_n, self.test_n == 7, self.test_n > 5, grouping=(self.test_n<7))
+            else:
+                files = []
+                for filenames in resfiles:
+                    for filename in filenames:
+                        files.append(filename)
+                plot_results([files], self.test_n, self.test_n == 7, self.test_n > 5, grouping=(self.test_n<7))
 
 if __name__ == "__main__":
     unittest.main()
