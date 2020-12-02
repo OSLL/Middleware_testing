@@ -88,7 +88,7 @@ def from_txt(fpub, fsub):
 
 def check_size(i,common):
     global count_qmsgs
-    if common[i][1] is 'pub':
+    if common[i][1] == 'pub':
         count_qmsgs+=1
     else:
         count_qmsgs-=1
@@ -143,6 +143,10 @@ def plot_boxes(data, positions, xlabel, unit, title, plot_filename):
 
 
 def plot_graph(ids, y, unit, title, plot_filename, labels=None):
+    try:
+        os.makedirs(plot_filename[:plot_filename.rfind('/')])
+    except OSError:
+        None
     if labels != None:
         for i in range(0, len(ids)):
             buf_id = []
@@ -173,6 +177,11 @@ def plot_graph(ids, y, unit, title, plot_filename, labels=None):
 
 
 def plot_message_queue(list_counts, plot_filename):
+    try:
+        os.makedirs(plot_filename[:plot_filename.rfind('/')])
+    except OSError:
+        None
+
     plt.plot([i for i in range(1, len(list_counts)+1)], list_counts)
     plt.ylabel('messages in queue')
     plt.xlabel('message number')
@@ -181,11 +190,29 @@ def plot_message_queue(list_counts, plot_filename):
     plt.clf()
 
 
-def plot_pub_results(filenames, directory, res_name):
+def plot_pub_results(filenames, test_n, direct, res_name):
     for filename in filenames:
-        directory = filename[:filename.rfind('data/')] + 'plots/'
+        node = filename[filename.rfind('/')+1:filename.rfind('.json')]
+        if test_n in [1, 3, 4, 5]:
+            s = '/' + node[:node.find('_')]
+            node = node[node.find('_')+1:]
+        else:
+            s = filename[:filename.rfind('/')]
+        subdir = s[s.rfind('/'):]
+        if subdir == '/data':
+            subdir = ''
+        else:
+            subdir += '/'
+        directory = direct + subdir + '/write_time/'
         try:
-            os.mkdir(directory)
+            os.makedirs(directory)
+        except OSError:
+            None
+        node_name = filename[:filename.rfind('/data/')]
+        node_name = node_name[node_name.rfind('/') + 1:]
+        res_name = node_name + '_' + filename[filename.rfind('/') + 1:filename.rfind('.json')]
+        try:
+            os.makedirs(directory)
         except OSError:
             None
         (proc_time, ids) = pub_from_json(filename)
@@ -195,20 +222,18 @@ def plot_pub_results(filenames, directory, res_name):
             k = int(len(proc_time) * (i+1)/10)
             boxes.append(np.array(proc_time[0:k]))
         plot_boxes(boxes, [len(t) for t in boxes], 'number of messages', unit, 
-               'Writing time boxes', f'{directory}{res_name}_proc_time_box.png')
-        plot_graph(ids, proc_time, unit, 'Writing time', f'{directory}{res_name}_proc_time.png')
+               'Writing time boxes', f'{directory}{node}_proc_time_box.png')
+        plot_graph(ids, proc_time, unit, 'Writing time', f'{directory}{node}_proc_time.png')
 
 
-def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=False, grouping=True):
+def plot_sub_results(test_n, filenames, direct, res_name, isMultisub=False, isPingPong=False, grouping=True):
     if not isMultisub:
         saved = []
+        directories = []
         if isPingPong:
             for files in filenames:
-                directory = files[0][:files[0].rfind('data/')] + 'plots/'
-                try:
-                    os.mkdir(directory)
-                except OSError:
-                    None
+                saved.append([])
+                directory = files[0][:files[0].rfind('test_')+7] + 'plots/'
                 s = files[0][:files[0].rfind('/')]
                 subdir = s[s.rfind('/'):]
                 if subdir == '/data':
@@ -216,12 +241,12 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                 else:
                     subdir += '/'
                 try:
-                    os.mkdir(directory + subdir)
+                    os.makedirs(directory + subdir)
                 except OSError:
                     None
-                
+                directories.append(directory + subdir)
                 delay = []
-                if files[0].endswith('_sub.json'):
+                if files[0].endswith('_sub.json') and grouping:
                     buf = files[0]
                     files[0] = files[1]
                     files[1] = buf
@@ -235,7 +260,7 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
 
                     (read_proc_time, runit, _) = scale_values(read_proc_time)
                     plot_graph(ids, read_proc_time, runit, 'Reading time',
-                               f'{directory}{node_name}_{node}_read_proc_time.png')
+                               f'{directory}{subdir}/read_time/{node_name}_{node}_read_proc_time.png')
                     proc_time = []
                     for i in range(0, 10):
                         k = int(len(read_proc_time) * (i + 1) / 10)
@@ -243,17 +268,17 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                     plot_boxes(proc_time, [len(d) for d in proc_time],
                                'number of messages', runit,
                                f'{node_name}: Reading time boxes',
-                               f'{directory}{node_name}_{node}_read_proc_time_box.png')
+                               f'{directory}{subdir}/read_time/{node_name}_{node}_read_proc_time_box.png')
                 
                     list_counts = queue_size(send_time, receive_time)
                     plot_message_queue(list_counts, 
-                        f'{directory}{subdir}{node_name}_{node}_queue.png')
+                        f'{directory}{subdir}/queue/{node_name}_{node}_queue.png')
 
                     if not grouping:
                         (delay_time, unit, scale) = scale_values(delay_time)
                         plot_graph(ids, delay_time, unit, 
                              f'{node_name}: Delay time', 
-                             f'{directory}{subdir}{node_name}_{node}_delay.png')
+                             f'{directory}{subdir}/delay/{node_name}_{node}_delay.png')
                         delay = []
                         for i in range(0, 10):
                             k = int(len(delay_time) * (i+1)/10)
@@ -261,11 +286,12 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                         plot_boxes(delay, [len(d) for d in delay],
                              'number of messages', 
                              unit, f'{node_name}: Delay time boxes', 
-                             f'{directory}{subdir}{node_name}_{node}_delay_box.png')
+                             f'{directory}{subdir}/delay/{node_name}_{node}_delay_box.png')
                         mean = np.mean(delay_time)
                         plot_graph(ids, [abs(mean - d) for d in delay_time], 
                                 unit, f'Jitter', 
-                                f'{directory}{subdir}{node_name}_{node}_jitter.png')
+                                f'{directory}{subdir}/delay/{node_name}_{node}_jitter.png')
+                        saved[-1].append((ids, delay_time, node_name, scale, unit, node))
                     else:
                         if i == 0:
                             delay = delay_time.copy()
@@ -280,7 +306,7 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                     ids = list(range(0, len(delay)))
                     plot_graph(ids, [d/scale for d in delay], unit, 
                                f'{node_name}: Delay time', 
-                               f'{directory}{node_name}_{res_name}_delay.png')
+                               f'{directory}{subdir}/delay/{node_name}_{res_name}_delay.png')
                     delay_time = []
                     for i in range(0, 10):
                         k = int(len(delay) * (i+1)/10)
@@ -288,19 +314,32 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                     plot_boxes(delay_time, [len(d) for d in delay_time],
                            'number of messages', 
                            unit, f'{node_name}: Delay time boxes', 
-                           f'{directory}{node_name}_{res_name}_delay_box.png')
+                           f'{directory}{subdir}/delay/{node_name}_{res_name}_delay_box.png')
                     mean = np.mean(delay)
                     plot_graph(ids, [abs(mean - d) for d in delay], 
                                unit, f'Jitter', 
-                               f'{directory}{node_name}_{res_name}_jitter.png')
-                    saved.append((ids, delay, node_name, scale, unit))
+                               f'{directory}{subdir}/delay/{node_name}_{res_name}_jitter.png')
+                    saved[-1].append((ids, delay, node_name, scale, unit))
         else:
+            saved.append([])
             for filename in filenames:
-                directory = filename[:filename.rfind('data/')] + 'plots/'
+                directory = filename[:filename.rfind('results/')] + 'plots/'
+                node = filename[filename.rfind('/')+1:filename.rfind('.json')]
+                if test_n in [1, 3, 4, 5]:
+                    s = '/' + node[:node.find('_')]
+                    node = node[node.find('_')+1:]
+                else:
+                    s = filename[:filename.rfind('/')]
+                subdir = s[s.rfind('/'):]
+                if subdir == '/data':
+                    subdir = ''
+                else:
+                    subdir += '/'
                 try:
-                    os.mkdir(directory)
+                    os.makedirs(directory + subdir)
                 except OSError:
                     None
+                directories.append(directory + subdir)
                 node_name = filename[:filename.rfind('/data/')]
                 node_name = node_name[node_name.rfind('/')+1:]
 
@@ -312,7 +351,7 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                 (delay_time, unit, scale) = scale_values(delay_time)
                 (read_proc_time, runit, _) = scale_values(read_proc_time)
                 plot_graph(ids, read_proc_time, runit, 'Reading time',
-                             f'{directory}{res_name}_read_proc_time.png')
+                             f'{directory}{subdir}/read_time/{node_name}_{node}_read_proc_time.png')
                 proc_time = []
                 for i in range(0, 10):
                     k = int(len(read_proc_time) * (i+1)/10)
@@ -320,47 +359,66 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
                 plot_boxes(proc_time, [len(d) for d in proc_time], 
                         'number of messages', runit, 
                         f'{node_name}: Reading time boxes', 
-                        f'{directory}{node_name}_{res_name}_read_proc_time_box.png')
+                        f'{directory}{subdir}/read_time/{node_name}_{node}_read_proc_time_box.png')
                 list_counts = queue_size(send_time, receive_time)
                 plot_message_queue(list_counts, 
-                                f'{directory}{node_name}_{res_name}_queue.png')
+                                f'{directory}{subdir}/queue/{node_name}_{node}_queue.png')
                 plot_graph(ids, delay_time, unit, f'{node_name}: Delay time', 
-                           f'{directory}{node_name}_{res_name}_delay.png')
+                           f'{directory}{subdir}/delay/{node_name}_{node}_delay.png')
                 delay = []
                 for i in range(0, 10):
                     k = int(len(delay_time) * (i+1)/10)
                     delay.append(delay_time[0:k])
                 plot_boxes(delay, [len(d) for d in delay],'number of messages', 
                        unit, f'{node_name}: Delay time boxes', 
-                       f'{directory}{node_name}_{res_name}_delay_box.png')
+                       f'{directory}{subdir}/delay/{node_name}_{node}_delay_box.png')
                 mean = np.mean(delay_time)
                 plot_graph(ids, [abs(mean - d) 
-                           for d in delay_time], unit, f'Jitter', 
-                           f'{directory}{node_name}_{res_name}_jitter.png')
-                saved.append((ids, saved_delay_time, node_name, scale, unit))
-        saved.sort(key=lambda x: x[3])
-        for i in range(0, math.ceil(len(saved)/3.0)):
-            saved_ids = list(map(lambda x: x[0], saved))[3*i:3*i+3]
-            saved_delay = list(map(lambda x: x[1], saved))[3*i:3*i+3]
-            labels = list(map(lambda x: x[2], saved))[3*i:3*i+3]
-            scales = list(map(lambda x: x[3], saved))[3*i:3*i+3]
-            units = list(map(lambda x: x[4], saved))[3*i:3*i+3]
+                    for d in delay_time], unit, f'{node_name}: Jitter', 
+                           f'{directory}{subdir}/delay/{node_name}_{node}_jitter.png')
+                saved[-1].append((ids, saved_delay_time, node_name, scale, unit, node))
+        pref = []
+        saved_ = []
+        directories_ = []
+        if (isPingPong and not grouping) or not isPingPong:
+            for i in range(len(saved)):
+                prefixes = set([s[5] for s in saved[i]])
+                for p in prefixes:
+                    saved_.append(list(filter(lambda x: x[5] == p, saved[i])))
+                    pref.append(p+'_')
+                    directories_.append(directories[i])
+        else:
+            saved_ = saved
+            node_pref = ''
+            directories_ = directories
 
-            mscale = max(scales)
-            index = scales.index(mscale)
-            munit = units[index]
-            node_names_prefix = '_'.join(labels)
+        for j, save in enumerate(saved_):
+            directory = directories_[j]
+            if (isPingPong and not grouping) or not isPingPong:
+                node_pref = pref[j]
+            save.sort(key=lambda x: x[3])
+            for i in range(0, math.ceil(len(save)/3.0)):
+                saved_ids = list(map(lambda x: x[0], save))[3*i:3*i+3]
+                saved_delay = list(map(lambda x: x[1], save))[3*i:3*i+3]
+                labels = list(map(lambda x: x[2], save))[3*i:3*i+3]
+                scales = list(map(lambda x: x[3], save))[3*i:3*i+3]
+                units = list(map(lambda x: x[4], save))[3*i:3*i+3]
 
-            saved_delay = [[d/mscale for d in saved_delay[i]]
-                            for i in range(0, len(saved_delay))]
-            plot_graph(saved_ids, saved_delay, munit, 'Delay time', 
-                       f'{direct}{node_names_prefix}_{res_name}_delay.png', 
-                       labels)
-            mean = [np.mean(d) for d in saved_delay]
-            plot_graph(saved_ids, [[abs(mean[i] - d) for d in saved_delay[i]] 
-                       for i in range(0, len(mean))], munit, f'Jitter', 
-                       f'{direct}{node_names_prefix}_{res_name}_jitter.png', 
-                       labels)
+                mscale = max(scales)
+                index = scales.index(mscale)
+                munit = units[index]
+                node_names_prefix = '_'.join(labels)
+
+                saved_delay = [[d/mscale for d in saved_delay[i]]
+                                for i in range(0, len(saved_delay))]
+                plot_graph(saved_ids, saved_delay, munit, 'Delay time', 
+                f'{directory}{node_pref}{node_names_prefix}_delay.png', 
+                          labels)
+                mean = [np.mean(d) for d in saved_delay]
+                plot_graph(saved_ids, [[abs(mean[i] - d) for d in saved_delay[i]] 
+                           for i in range(0, len(mean))], munit, f'Jitter', 
+                           f'{directory}{node_pref}{node_names_prefix}_jitter.png', 
+                           labels)
     else:
         delay = []
         for files in filenames:
@@ -374,7 +432,7 @@ def plot_sub_results(filenames, direct, res_name, isMultisub=False, isPingPong=F
 
 
 
-def plot_results(filenames, multisub=False, isPingPong=False, grouping=True):
+def plot_results(filenames, test_n, multisub=False, isPingPong=False, grouping=True):
     if multisub:
         filenames = filenames[0]
         directory = filenames[0][0][:filenames[0][0].rfind('data/')] + 'plots/'
@@ -386,14 +444,17 @@ def plot_results(filenames, multisub=False, isPingPong=False, grouping=True):
 
         if not isPingPong:
             res_name = 'multisub'
-            plot_sub_results(filenames, directory, res_name, True)
+            plot_sub_results(test_n, filenames, directory, res_name, True)
         else:
+            directory = filenames[0][0][:filenames[0][0].rfind('results/')]
             res_name = ''
-            plot_sub_results(filenames, directory, res_name, isPingPong=True, grouping=False)
+            for files in filenames:
+                plot_pub_results(files, test_n, directory + '/plots', res_name)
+            plot_sub_results(test_n, filenames, directory, res_name, isPingPong=True, grouping=False)
         return
 
     if not isPingPong:
-        directory = filenames[0][:filenames[0].rfind('results/')]
+        directory = filenames[0][:filenames[0].rfind('results/')] + 'plots/'
         res_name = filenames[0][filenames[0].rfind('/')+1:filenames[0].rfind('_')]
     else:
         directory = filenames[0][0][:filenames[0][0].rfind('results/')]
@@ -404,16 +465,72 @@ def plot_results(filenames, multisub=False, isPingPong=False, grouping=True):
     except OSError:
         None
     if isPingPong:
-        plot_sub_results(filenames, directory, res_name, False, isPingPong, grouping)
-        filename = filenames[0][0]
-        node_name = filename[:filename.rfind('/data/')]
-        node_name = node_name[node_name.rfind('/') + 1:]
-        res_name = node_name + '_' + filename[filename.rfind('/') + 1:filename.rfind('.json')]
-        plot_pub_results(filenames[0], directory, res_name)
+        for files in filenames:
+            plot_pub_results(files, test_n, directory + '/plots', res_name)
+        plot_sub_results(test_n, filenames, directory, res_name, False, isPingPong, grouping)
     elif filenames[0].endswith('_pub.json'):
-        plot_pub_results(filenames, directory, res_name)
+        plot_pub_results(filenames, test_n, directory, res_name)
     else:
-        plot_sub_results(filenames, directory, res_name)
+        plot_sub_results(test_n, filenames, directory, res_name)
+
+
+
+def plot_round_trip_time(filenames, need_plot = False):
+    with open(filenames[0], 'r') as f:
+        data1 = json.load(f)
+    with open(filenames[1], 'r') as f:
+        data2 = json.load(f)
+    sent_time1 = [msg["msg"]["sent_time"] for msg in data1]
+    sent_time2 = [msg["msg"]["sent_time"] for msg in data2]
+    rec_time1 = [msg["msg"]["recieve_timestamp"] for msg in data1]
+    rec_time2 = [msg["msg"]["recieve_timestamp"] for msg in data2]
+    ids = [[msg["msg"]["id"] for msg in data1]]
+    round_trip = []
+    if sent_time1[0] < sent_time2[0] and rec_time1[0] < rec_time2[0]:
+        for i in range(len(sent_time1)):
+            round_trip.append(rec_time2[i] - sent_time1[i])
+    else:
+        for i in range(len(sent_time1)):
+            round_trip.append(rec_time1[i] - sent_time2[i])
+    node_name = filenames[0][:filenames[0].rfind('/data')]
+    node_name = node_name[node_name.rfind('/')+1:]
+    if need_plot == True:
+        (round_trip, unit,_) = scale_values(round_trip)
+        round_trip = [round_trip]
+        plot_graph(ids, round_trip, unit, f'round_trip_time', f'round_trip_time.png', [f'{node_name}']) 
+    else:
+        return ids[0], round_trip, node_name
+
+
+def round_trip_grouped(filenames):
+    ids = []
+    round_trips = []
+    labels = []
+    count = 0
+    direct = filenames[0][0][filenames[0][0].find('test_'):]
+    direct = direct[:direct.find('/')+1]
+    direct += 'RTT'
+    try:
+        os.makedirs(direct)
+    except OSError:
+        None
+    for files in filenames:
+        (_id, _time, _name) = plot_round_trip_time(files)
+        ids.append(_id)
+        round_trips.append(_time)
+        labels.append(_name)
+    for i in range(0,len(labels),3):
+        munit = 'nsec'
+        mscale = 1
+        for times in round_trips[i:i+3]:
+            (_, unit, scale) = scale_values(times)
+            if scale > mscale:
+                mscale = scale
+                munit = unit
+        for times in round_trips[i:i+3]:
+            times = [t/mscale for t in times]
+        resfile = '_'.join(labels[i:i+3])
+        plot_graph(ids[i:i+3], round_trips[i:i+3], munit, f'round_trip_time', f'{direct}/{resfile}_round_trip_time.png', labels[i:i+3])
 
 
 if __name__ == '__main__':
@@ -422,13 +539,26 @@ if __name__ == '__main__':
             resfiles = get_resfiles(i, i == 2 or i == 7)
             if i == 2:
                 for filenames in resfiles:
-                    plot_results([filenames], i == 2, i > 5)
+                    plot_results([filenames], i, i == 2, i > 5)
             elif i < 6:
                 resfiles = get_grouped_filenames(resfiles)
                 for files in resfiles:
-                    plot_results(files, i == 2, i > 5)
+                    plot_results(files, i, i == 2, i > 5)
             else:
-                for filenames in resfiles:
-                    plot_results([filenames], i == 7, i > 5, grouping=(i<7))
+                if i == 6:
+                    round_trip_grouped(resfiles)
+                if i == 7:
+                    files = []
+                    for filenames in resfiles:
+                        while len(filenames) > len(files):
+                            files.append([])
+                        for j in range(len(filenames)):
+                            for f in filenames[j]:
+                                files[j].append(f)
+                    for filenames in files:
+                        plot_results([[filenames]], i, i == 7, i > 5, grouping=(i<7))
+                else:
+                    for filenames in resfiles:
+                        plot_results([filenames], i, i == 7, i > 5, grouping=(i<7))
         except OSError:
             continue
