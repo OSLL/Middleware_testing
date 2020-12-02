@@ -62,8 +62,8 @@ private:
     dds_entity_t _reader_entity;
     dds_entity_t _topic_entity2;
 
-    void *_samples[MAX_SAMPLES];
-    dds_sample_info_t _infos[MAX_SAMPLES];
+    void *_samples[MAX_SAMPLES+1];
+    dds_sample_info_t _infos[MAX_SAMPLES+1];
 
 };
 
