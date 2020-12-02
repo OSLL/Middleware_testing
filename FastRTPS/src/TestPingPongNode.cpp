@@ -39,7 +39,6 @@ TestPingPongNode::TestPingPongNode(std::string &topic1, std::string topic2, int 
             , m_DynType(DynamicType_ptr(nullptr))
             , m_slistener(this)
 {
-    _msgSize = msgSizeMax;
     init();
 }
 
