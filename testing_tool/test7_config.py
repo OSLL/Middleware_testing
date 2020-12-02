@@ -23,6 +23,7 @@ def test7_config():
         args["res_filenames"][0] = constr_resfilename(name, 'p')
         args["res_filenames"][1] = constr_resfilename(name, 's')
         configs.append(constr_config(7, name, args))
+    args["interval"] = 1000/400
     for p in pair_count:
         try:
             os.mkdir('test_7/config/' + str(p))
