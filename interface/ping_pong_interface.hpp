@@ -125,15 +125,16 @@ public:
 
         std::this_thread::sleep_for(std::chrono::seconds(4));
 
-        for(int i = 0; i < _msgCount; i++){
-            if(_isFirst)
+        for(int i = 0; i < _msgCount; i++) {
+            if (_isFirst) {
                 publish(i, _msgSize);
-
+            }
             isTimeoutEx = wait_for_msg();
-            if(isTimeoutEx)
+            if (isTimeoutEx)
                 break;
-            if(!_isFirst)
+            if (!_isFirst) {
                 publish(i, _msgSize);
+            }
         }
 
         std::cout << "Test ended" << std::endl;
@@ -150,10 +151,19 @@ public:
         start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
         nanoseconds>(std::chrono::high_resolution_clock::
                      now().time_since_epoch()).count();
-
+        while (_isFirst && _isNew) {
+            mu.lock();
+            bool isStarted = _isTestStarted;
+            mu.unlock();
+            if (!isStarted) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            } else break;
+        }
         bool notReceived = true;
         while (notReceived) {
-
+            if (_last_rec_msg_id-1 == _msgCount && _isNew){
+                break;
+            }
             mu.lock();      // mute thread to write msg and update _last_rec_msg_id
             if(receive()) { // true - принято
                 if(!_isNew || !_isFirst)
@@ -180,9 +190,9 @@ public:
 
     int StartTestNew(){
         std::future<bool> future;
+        std::this_thread::sleep_for(std::chrono::seconds(4));
         if (_isFirst)   //run receiving msgs in another thread
             future = std::async(std::launch::async, &TestMiddlewarePingPong<MsgType>::wait_for_msg, this);
-        std::this_thread::sleep_for(std::chrono::seconds(4));
         unsigned long start_timeout, end_timeout;
         start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
         nanoseconds>(std::chrono::high_resolution_clock::
@@ -203,6 +213,11 @@ public:
                     }
                     mu.unlock();
                 }
+                if (i == 0) {
+                    mu.lock();
+                    _isTestStarted = true;
+                    mu.unlock();
+                }
                 start_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                              now().time_since_epoch()).count();
@@ -210,6 +225,7 @@ public:
                 if (i % (_msgs_before_step - 1) == 0 && _cur_size <= _msgSizeMax)
                     _cur_size += _step;
                 publish(i, _cur_size);
+
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
             }
@@ -232,6 +248,7 @@ public:
         _recieve_timestamps[_last_rec_msg_id] = std::chrono::duration_cast<std::chrono::
         nanoseconds>(std::chrono::high_resolution_clock::
                      now().time_since_epoch()).count();
+        //std::cout << "rec" << _last_rec_msg_id  << std::endl;
         if (!_isFirst && _isNew){
             if (_last_rec_msg_id % (_msgs_before_step - 1) == 0 && _cur_size <= _msgSizeMax)
                 _cur_size += _step;
@@ -250,6 +267,7 @@ public:
     void to_json() {
         auto json_output = nlohmann::json::array();
         nlohmann::json json_msg;
+        std::cout << "Start writing to JSON" << std::endl;
         for (unsigned i = 0; i < _msgs.size(); i++) {
             auto &msg = _msgs[i];
             json_msg["msg"] =
@@ -265,7 +283,11 @@ public:
         }
 
         std::ofstream file(_filename);
+        if (!file){
+            std::cout << "Cannot open file: "<< _filename << std::endl;
+        }
         file << json_output;
+        std::cout << "End writing to JSON, filename: "<< _filename << std::endl;
     }
 
     virtual void publish(short id, unsigned size)=0;
@@ -281,6 +303,7 @@ protected:
     bool _isFirst;
     bool _isNew;
     bool _constQueue = false;
+    bool _isTestStarted = false;
     int _topic_priority;
     int _msgCount;
     int _priority; //def not stated

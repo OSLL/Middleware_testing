@@ -5,7 +5,7 @@
 
 #include "../../interface/sub_interface.hpp"
 
-class TestSubscriber : public TestMiddlewareSub<zmq::message_t>
+class TestSubscriber : public TestMiddlewareSub<std::shared_ptr<zmq::message_t>>
 {
     public:
 
@@ -15,9 +15,9 @@ class TestSubscriber : public TestMiddlewareSub<zmq::message_t>
 
         bool receive();
 
-	short get_id(zmq::message_t &msg);
+	short get_id(std::shared_ptr<zmq::message_t> &msg);
 
-	unsigned long get_timestamp(zmq::message_t &msg);
+	unsigned long get_timestamp(std::shared_ptr<zmq::message_t> &msg);
     private:
 	int mcount;
 	zmq::context_t context;

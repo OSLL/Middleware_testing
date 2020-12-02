@@ -2,10 +2,10 @@
 #define TESTPINGPONG_H_
 
 #include <zmq_addon.hpp>
-
+#include <memory>
 #include "../../interface/ping_pong_interface.hpp"
 
-class TestPingPong : public TestMiddlewarePingPong<zmq::message_t>
+class TestPingPong : public TestMiddlewarePingPong<std::shared_ptr<zmq::message_t>>
 {
     public:
 
@@ -25,9 +25,9 @@ class TestPingPong : public TestMiddlewarePingPong<zmq::message_t>
 
         bool receive();
 
-	short get_id(zmq::message_t &msg);
+	short get_id(std::shared_ptr<zmq::message_t> &msg);
 
-	unsigned long get_timestamp(zmq::message_t &msg);
+	unsigned long get_timestamp(std::shared_ptr<zmq::message_t> &msg);
     
 	void publish(short id, unsigned size);
     private:
