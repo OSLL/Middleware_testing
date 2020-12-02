@@ -491,8 +491,8 @@ def plot_round_trip_time(filenames, plot_direct=''):
     node_name = filenames[0][:filenames[0].rfind('/data')]
     node_name = node_name[node_name.rfind('/')+1:]
     if plot_direct != '':
-        (round_trip, unit,_) = scale_values(round_trip)
-        plot_graph(ids, round_trip, unit, f'{node_name}: Round Trip Time', f'{plot_direct}/{node_name}/RTT/round_trip_time.png') 
+        (_, unit, scale) = scale_values(round_trip)
+        plot_graph(ids, [t/scale for t in round_trip], unit, f'{node_name}: Round Trip Time', f'{plot_direct}/{node_name}/RTT/round_trip_time.png') 
     return ids, round_trip, node_name
 
 
@@ -521,10 +521,8 @@ def round_trip_grouped(filenames):
             if scale > mscale:
                 mscale = scale
                 munit = unit
-        for times in round_trips[i:i+3]:
-            times = [t/mscale for t in times]
         node_names = '_'.join(labels[i:i+3])
-        plot_graph(ids[i:i+3], round_trips[i:i+3], munit, f'round_trip_time', f'{direct}/{node_names}_round_trip_time.png', labels[i:i+3])
+        plot_graph(ids[i:i+3], [[t/mscale for t in times] for times in round_trips[i:i+3]], munit, f'Round Trip Time', f'{direct}/{node_names}_round_trip_time.png', labels[i:i+3])
 
 
 if __name__ == '__main__':
