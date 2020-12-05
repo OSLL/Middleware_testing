@@ -12,6 +12,18 @@ def test7_config():
             "priority":[-1, -1], "cpu_index":[-1, -1], 
             "interval":50, "topic_priority":100}
     pair_count = [1, 2, 3]
+    freq = [20, 40, 200, 400, 800, 1000]
+    for f in freq:
+        try:
+            os.mkdir('test_7/config/' + 'freq_' + str(f))
+        except OSError:
+            None
+        name = 'freq_' + str(f) + '/' + str(f)
+        args["interval"] = 1000/f
+        args["res_filenames"][0] = constr_resfilename(name, 'p')
+        args["res_filenames"][1] = constr_resfilename(name, 's')
+        configs.append(constr_config(7, name, args))
+    args["interval"] = 1000/400
     for p in pair_count:
         try:
             os.mkdir('test_7/config/' + str(p))
