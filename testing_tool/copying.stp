@@ -1,0 +1,11 @@
+#!/usr/bin/env stap
+
+probe kernel.function("_copy_to_user")
+{
+  printf("%d t\n", pid())
+}
+
+probe kernel.function("_copy_from_user")
+{
+  printf("%d f\n", pid())
+}

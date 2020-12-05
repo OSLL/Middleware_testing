@@ -1,11 +1,13 @@
 import unittest
 import os
+import signal
 import subprocess
 import json
 from datetime import datetime
-from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
+from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process, get_all_pids
 from plotting import get_resfiles, get_grouped_filenames, plot_results, round_trip_grouped
 from get_sys_info import system
+from tracer import CopyingTracer
 
 class MiddlewareTesting(unittest.TestCase):
     pubs = ["../Endurox/src/build/Endurox "]
@@ -43,28 +45,38 @@ class MiddlewareTesting(unittest.TestCase):
                     print(datetime.now(), f" >>> subtest - {subtest_n+1}/{len(configs)}", file=log_file)
                 subs = []
                 pubs = []
+                pub_sub_pids = []
                 try:
                     if subtest[0].find('/') != -1:
                         os.mkdir(cwd + '/' + subtest[0][:subtest[0].find('/')])
                 except OSError:
                     None
+                if self.test_n == 6:
+                    tracer = CopyingTracer()
                 for config in subtest:
                     print(datetime.now(), f"  >>> using config - {config}", file=log_file)
-                    subs.append(create_process(prefix + self.subs[i], '../../../config/' + config, self.stype, cwd))
+                    subs.append((create_process('exec ' + prefix + self.subs[i], '../../../config/' + config, self.stype, cwd), config))
                 if self.pairs:
                     for config in subtest:
-                        pubs.append(create_process(prefix + self.pubs[i], '../../../config/' + config, self.ptype, cwd, True))
+                        pubs.append((create_process('exec ' + prefix + self.pubs[i], '../../../config/' + config, self.ptype, cwd, True), config))
                 else:
-                    p = create_process(prefix + self.pubs[i], '../../../config/' + subtest[0], self.ptype, cwd, True)
+                    p = (create_process('exec ' + prefix + self.pubs[i], '../../../config/' + subtest[0], self.ptype, cwd, True), subtest[0])
+                    if self.test_n == 6:
+                        pub_pids, sub_pids = get_all_pids(p[0], subs[0][0])
                 for sub_n, s in enumerate(subs):
-                    wait_and_end_process(s)
+                    wait_and_end_process(s[0])
                     print(datetime.now(), f"subscriber №{sub_n+1} finished", file=log_file)
                 if self.pairs:
                     for pub_n, p in enumerate(pubs):
-                        wait_and_end_process(p)
+                        wait_and_end_process(p[0])
                         print(datetime.now(), f"publisher №{pub_n+1} finished", file=log_file)
                 else:
-                    wait_and_end_process(p)
+                    wait_and_end_process(p[0])
+                
+                if self.test_n == 6:
+                    tracer.close()
+                    tracer.write_results((subs[0], sub_pids), (p, pub_pids), test_dir + '/trace/' + self.nodes[i] + '/')
+                
                 print(datetime.now(), "publisher finished", file=log_file, flush=True)
             self.sys.end(self.test_n)
 
