@@ -14,8 +14,9 @@ def write_result_to_file(node, directory, trace_to, trace_from, name_str):
     count_to = 0
     count_from = 0
     for pid in node[1]:
-        if int(pid) in trace_to.keys() or int(pid) in trace_from.keys():
+        if int(pid) in trace_to.keys():
             count_to += trace_to[int(pid)]
+        if int(pid) in trace_from.keys():
             count_from += trace_from[int(pid)]
     with open(directory + resfile, 'w') as f:
         json.dump({"copy_to_user": count_to, "copy_from_user": count_from}, f)
