@@ -1,5 +1,25 @@
 import subprocess
 import os
+import json
+
+
+def write_result_to_file(node, directory, trace_to, trace_from, name_str):
+    resfile = name_str + '_trace.json'
+    direct = directory + resfile
+    direct = direct[:direct.rfind('/')]
+    try:
+        os.makedirs(direct)
+    except OSError:
+        None
+    count_to = 0
+    count_from = 0
+    for pid in node[1]:
+        if int(pid) in trace_to.keys() or int(pid) in trace_from.keys():
+            count_to += trace_to[int(pid)]
+            count_from += trace_from[int(pid)]
+    with open(directory + resfile, 'w') as f:
+        json.dump({"copy_to_user": count_to, "copy_from_user": count_from}, f)
+
 
 class CopyingTracer:
 
@@ -9,7 +29,7 @@ class CopyingTracer:
     def close(self):
         self.tracer.terminate()
 
-    def write_results(self, subs, pubs, directory):
+    def write_results(self, sub, pub, directory):
         trace_to = {}
         trace_from = {}
         for line in self.tracer.stdout.readlines():
@@ -26,26 +46,7 @@ class CopyingTracer:
                 if pid not in trace_from:
                     trace_from[pid] = 0
                 trace_from[pid] += 1
-        for s in subs:
-            config = s[1]
-            resfile = config[:config.find('.json')] + '_sub.trace'
-            direct = directory + resfile
-            direct = direct[:direct.rfind('/')]
-            try:
-                os.makedirs(direct)
-            except OSError:
-                None
-            with open(directory + resfile, 'w') as f:
-                f.write(str(trace_to[s[0].pid]) + ' ' + str(trace_from[s[0].pid]))
-        for p in pubs:
-            config = p[1]
-            resfile = config[:config.find('.json')] + '_pub.trace'
-            direct = directory + resfile
-            direct = direct[:direct.rfind('/')]
-            try:
-                os.makedirs(direct)
-            except OSError:
-                None
-            with open(directory + resfile, 'w') as f:
-                f.write(str(trace_to[p[0].pid]) + ' ' + str(trace_from[p[0].pid]))
+
+        write_result_to_file(sub, directory, trace_to, trace_from, 'first')
+        write_result_to_file(pub, directory, trace_to, trace_from, 'second')
         self.tracer.stdout.close()

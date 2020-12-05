@@ -1,10 +1,12 @@
 import os
 import subprocess
 import json
+import re
 from datetime import datetime
 from os.path import isfile, isdir, join
 
 log_file = open('log.txt', 'w')
+
 
 def get_configs(test_n, subtests=False):
     directory = f'test_{test_n}/config'
@@ -38,6 +40,16 @@ def wait_and_end_process(process):
         print(datetime.now(), "Process finished incorrectly, exit code", process.poll(), file=log_file)
     process.stdout.close()
     process.stdin.close()
+
+
+def get_all_pids(publisher, subscriber):
+    p_pid = publisher.pid
+    s_pid = subscriber.pid
+    res_pub = subprocess.run(["pstree", "-p", str(p_pid)], stdout=subprocess.PIPE).stdout.decode("utf-8")
+    all_pub_pids = re.findall(r'(\d+)', res_pub)
+    res_sub = subprocess.run(["pstree", "-p", str(s_pid)], stdout=subprocess.PIPE).stdout.decode("utf-8")
+    all_sub_pids = re.findall(r'(\d+)', res_sub)
+    return all_pub_pids, all_sub_pids
 
 
 def mk_nodedir(test_dir, node):
