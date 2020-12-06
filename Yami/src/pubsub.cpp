@@ -149,6 +149,7 @@ private:
         std::string _address1, _address2;
         yami::value_publisher val;
 	int last_id = -1, last_rec = -1;
+        bool isSubscribed;
 public:
 	PingPong(std::string& address,
 		int port,
@@ -169,22 +170,43 @@ public:
                 _address1 = address.substr(0,address.rfind(":")+1) + std::to_string(port);
                 _address2 = address.substr(0,address.rfind(":")+1) + std::to_string(port+1);
                 if(isFirst){
-                    agent.add_listener(_address1);
                 }
                 else{
-                    agent.add_listener(_address2);
                 }
+		unsigned long int start=std::chrono::duration_cast<std::chrono::
+                	nanoseconds>(std::chrono::high_resolution_clock::
+                	now().time_since_epoch()).count(), end;
                 agent.register_raw_object("handler",update_ping_pong<MsgType>,this);
-                yami::parameters param;
-                param.set_string("destination_object","handler");
                 if(isFirst){
+                        isSubscribed = false;
+                        while(true){
+                                end=std::chrono::duration_cast<std::chrono::
+                                        nanoseconds>(std::chrono::high_resolution_clock::
+                                        now().time_since_epoch()).count();
+                                if(end - start > (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(2)).count())) break;
+                        }
                         agent.register_value_publisher(topic1, val);
-                        agent.open_connection(_address2);
-                        agent.send_one_way(_address2,topic2,"subscribe",param,0,false);
+                        yami::parameters param;
+                        param.set_string("destination_object","handler");
+                        agent.add_listener(_address1);
                 }else{
+                        isSubscribed = true;
+                        yami::parameters param;
+                        param.set_string("destination_object","handler");
                         agent.register_value_publisher(topic2, val);
-                        agent.open_connection(_address1);
-                        agent.send_one_way(_address1,topic2,"subscribe",param,0,false);
+                        std::cout<<"Send One Way\n";
+                        while(true){
+                                try{
+                                        agent.send_one_way(_address1,topic1,"subscribe",param);
+                                        break;
+                                }catch(yami::yami_runtime_error& e){
+                                        end=std::chrono::duration_cast<std::chrono::
+                                                nanoseconds>(std::chrono::high_resolution_clock::
+                                                now().time_since_epoch()).count();
+                                        if(end - start > (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(2)).count())) throw e;
+                                }
+                        }
+                    agent.add_listener(_address2);
                 }
 		std::cout<<"Subscribed"<<std::endl;
 	}
@@ -211,25 +233,43 @@ public:
                 _address1 = address.substr(0,address.rfind(":")+1) + std::to_string(port);
                 _address2 = address.substr(0,address.rfind(":")+1) + std::to_string(port+1);
                 if(isFirst){
-                    agent.add_listener(_address1);
                 }
                 else{
-                    agent.add_listener(_address2);
                 }
 		unsigned long int start=std::chrono::duration_cast<std::chrono::
                 	nanoseconds>(std::chrono::high_resolution_clock::
                 	now().time_since_epoch()).count(), end;
                 agent.register_raw_object("handler",update_ping_pong<MsgType>,this);
-                yami::parameters param;
-                param.set_string("destination_object","handler");
                 if(isFirst){
+                        isSubscribed = false;
+                        while(true){
+                                end=std::chrono::duration_cast<std::chrono::
+                                        nanoseconds>(std::chrono::high_resolution_clock::
+                                        now().time_since_epoch()).count();
+                                if(end - start > (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(2)).count())) break;
+                        }
                         agent.register_value_publisher(topic1, val);
-                        agent.open_connection(_address2);
-                        agent.send_one_way(_address2,topic2,"subscribe",param,0,false);
+                        yami::parameters param;
+                        param.set_string("destination_object","handler");
+                        agent.add_listener(_address1);
                 }else{
+                        isSubscribed = true;
+                        yami::parameters param;
+                        param.set_string("destination_object","handler");
                         agent.register_value_publisher(topic2, val);
-                        agent.open_connection(_address1);
-                        agent.send_one_way(_address1,topic1,"subscribe",param,0,false);
+                        std::cout<<"Send One Way\n";
+                        while(true){
+                                try{
+                                        agent.send_one_way(_address1,topic1,"subscribe",param);
+                                        break;
+                                }catch(yami::yami_runtime_error& e){
+                                        end=std::chrono::duration_cast<std::chrono::
+                                                nanoseconds>(std::chrono::high_resolution_clock::
+                                                now().time_since_epoch()).count();
+                                        if(end - start > (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(2)).count())) throw e;
+                                }
+                        }
+                    agent.add_listener(_address2);
                 }
 		std::cout<<"Subscribed"<<std::endl;
 	}
@@ -273,6 +313,13 @@ public:
 		cont.set_long_long("timestamp",time);
 		cont.set_binary_shallow("str",str.c_str(),str.length());
                 val.publish(cont);
+                if(!isSubscribed){
+                        yami::parameters param;
+                        param.set_string("destination_object","handler");
+                        std::cout<<"Send One Way\n";
+                        agent.send_one_way(_address2,TestMiddlewarePingPong<MsgType>::_topic_name2,"subscribe",param);
+                        isSubscribed = true;
+                }
 		time=std::chrono::duration_cast<std::chrono::
                 	nanoseconds>(std::chrono::high_resolution_clock::
                 	now().time_since_epoch()).count() - time;
@@ -317,6 +364,7 @@ void update_ping_pong(yami::incoming_message& message, void* ping_pong){
         size_t len;
         const char* bin=(const char*)param.get_binary("str",len);
         std::string str(bin,len);
+        //std::cout << "Receive " << msg.id << "\n";
 	time=std::chrono::duration_cast<std::chrono::
                	nanoseconds>(std::chrono::high_resolution_clock::
                	now().time_since_epoch()).count()-time;
@@ -489,6 +537,7 @@ int main(int argc, char** argv){
                                                         interval, min_msg_size, max_msg_size, step, before_step, isFirst);
                                 ping_pong.StartTest();
 			}else{
+                                std::this_thread::sleep_for(std::chrono::seconds(1));
                                 PingPong<Message> ping_pong = (interval == 0)? 
                                     PingPong<Message>(address, port, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
                                                         interval, min_msg_size, isFirst):
