@@ -176,6 +176,38 @@ public:
             sub = session.createReceiver(param1);
         }
     }
+    
+    PingPong(std::string& address,
+        std::string& topic1,
+        std::string& topic2,
+        int msgCount,
+        int prior,
+        int cpu_index,
+        std::string &filename, 
+        int topic_priority,
+        int interval, 
+        int msgSizeMin,
+        int msgSizeMax,
+        int step,
+        int before_step, 
+        bool isFirst
+        ): TestMiddlewarePingPong<MsgType>(topic1, topic2, msgCount, prior, cpu_index, filename,
+                                topic_priority, interval, msgSizeMin, msgSizeMax, step, before_step, isFirst)
+    {
+        std::string param1 = topic1 + PARAM_STRING;
+        std::string param2 = topic2 + PARAM_STRING;
+        qpid::messaging::Connection connection(address, "");
+
+        connection.open();
+        session = connection.createSession();
+        if(isFirst){
+            pub = session.createSender(param1);
+            sub = session.createReceiver(param2);
+        }else{
+            pub = session.createSender(param2);
+            sub = session.createReceiver(param1);
+        }
+    }
 
     ~PingPong(){
         connection.close();
@@ -186,13 +218,20 @@ public:
         
         qpid::messaging::Message message;
         qpid::types::Variant::Map content;
+        unsigned long time=std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                now().time_since_epoch()).count();
         content["id"] = id;
         content["time"] = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                 now().time_since_epoch()).count();
         content["data"] = str;
         message.setContentObject(content);
+        time=std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                now().time_since_epoch()).count() - time;
         pub.send(message, true);
+        TestMiddlewarePingPong<MsgType>::_write_msg_time[id] = time;
     }
 
         
@@ -207,12 +246,19 @@ public:
     bool receive() override{
         qpid::messaging::Message message;
         bool get=sub.fetch(message, qpid::messaging::Duration::IMMEDIATE);
-	if(get){
+	if(get){ 
+            unsigned long time=std::chrono::duration_cast<std::chrono::
+                    nanoseconds>(std::chrono::high_resolution_clock::
+                    now().time_since_epoch()).count();
             qpid::types::Variant::Map content = message.getContentObject().asMap();
             Message msg = {content["time"], content["id"]};
             std::string str(((std::string)content["data"]).c_str());
             session.acknowledge();
+            time=std::chrono::duration_cast<std::chrono::
+                    nanoseconds>(std::chrono::high_resolution_clock::
+                    now().time_since_epoch()).count() - time;
             TestMiddlewarePingPong<MsgType>::write_received_msg(msg);
+            TestMiddlewarePingPong<MsgType>::_read_msg_time[msg.id] = time;
         }
         return get;
     }
@@ -291,12 +337,18 @@ int main(int argc, char** argv){
             
             std::cout<<"PingPong"<<std::endl;
             if(isFirst){
-                    PingPong<Message> ping_pong(address, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
-                                            interval, min_size, isFirst);
+                    PingPong<Message> ping_pong = (interval == 0)?
+                        PingPong<Message>(address, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+                                                interval, min_size, isFirst):
+                        PingPong<Message>(address, topic1, topic2, m_count, prior1, cpu1, filename1, topic_prior,
+                                                interval, min_size, max_size, step, before_step, isFirst);
                     ping_pong.StartTest();
             }else{
-                    PingPong<Message> ping_pong(address, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
-                                            interval, min_size, isFirst);
+                    PingPong<Message> ping_pong = (interval == 0)?
+                        PingPong<Message>(address, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+                                                interval, min_size, isFirst):
+                        PingPong<Message>(address, topic1, topic2, m_count, prior2, cpu2, filename2, topic_prior,
+                                                interval, min_size, max_size, step, before_step, isFirst);
                     ping_pong.StartTest();	
             }
             std::cout<<"End PingPong"<<std::endl;

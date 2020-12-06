@@ -5,7 +5,7 @@ TestSubscriber::TestSubscriber(std::string &topic, int msgCount, int prior, int 
     , sock(context, zmq::socket_type::sub)
 {
     for(auto &msg : _msgs)
-	msg = zmq::message_t(max_msg_size+60);
+	    msg = std::make_shared<zmq::message_t>(zmq::message_t(max_msg_size+60));
     std::string str("tcp://127.0.0.1:56");
     str += std::to_string(topic.length());
     sock.connect(str);
@@ -22,24 +22,26 @@ bool TestSubscriber::receive() {
     if(mcount >= _msgCount)
 	return false;
     try{
+        auto *msg = new zmq::message_t();
         int cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-        if(sock.recv(_msgs[mcount], zmq::recv_flags::none)){
-	    _read_msg_time[mcount] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
-	    _recieve_timestamps[mcount] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-	    ++mcount;
-	    return true;
+        if(sock.recv(*msg, zmq::recv_flags::none)){
+            std::shared_ptr<zmq::message_t> msg_ptr(msg);
+            write_received_msg(msg_ptr, std::chrono::duration_cast<std::chrono::nanoseconds>
+                    (std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time);
+            ++mcount;
+            return true;
         }
     }
     catch(std::exception& e){}
     return false;
 }
 
-short TestSubscriber::get_id(zmq::message_t &msg) {
-    nlohmann::json js = nlohmann::json::parse(std::string((char*)msg.data(), msg.size()));
+short TestSubscriber::get_id(std::shared_ptr<zmq::message_t> &msg) {
+    nlohmann::json js = nlohmann::json::parse(std::string((char*)msg->data(), msg->size()));
     return js["id"];
 }
 
-unsigned long TestSubscriber::get_timestamp(zmq::message_t &msg) {
-    nlohmann::json js = nlohmann::json::parse(std::string((char*)msg.data(), msg.size()));
+unsigned long TestSubscriber::get_timestamp(std::shared_ptr<zmq::message_t> &msg) {
+    nlohmann::json js = nlohmann::json::parse(std::string((char*)msg->data(), msg->size()));
     return js["timestamp"];
 }

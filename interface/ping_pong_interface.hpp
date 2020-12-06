@@ -14,7 +14,7 @@
 
 #define CPUSET_MODE_T (S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH)
 #define TIMEOUT 2 * pow(10, 10)
-#define WATERMARK 10
+#define WATERMARK 50
 
 template <class MsgType>
 class TestMiddlewarePingPong {
@@ -26,6 +26,8 @@ public:
             _topic_name2(topic2),
             _filename(filename),
             _recieve_timestamps(msgCount),
+            _read_msg_time(msgCount),
+            _write_msg_time(msgCount),
             _msgs(msgCount),
             _isFirst(isFirst),
             _isNew(false),
@@ -34,7 +36,8 @@ public:
             _priority(prior),
             _cpu_index(cpu_index),
             _msInterval(msInterval),
-            _msgSize(msgSize)
+            _msgSize(msgSize),
+            _cur_size(_msgSizeMin)
             {
                 set_cpu_index_and_prior();
             }
@@ -46,6 +49,8 @@ public:
             _topic_name2(topic2),
             _filename(filename),
             _recieve_timestamps(msgCount),
+            _read_msg_time(msgCount),
+            _write_msg_time(msgCount),
             _msgs(msgCount),
             _isFirst(isFirst),
             _isNew(true),
@@ -58,8 +63,15 @@ public:
             _msgSizeMax(msgSizeMax),
             _step(step),
             _msgs_before_step(before_step),
-            _msgSize(msgSizeMin)
+            _msgSize(msgSizeMin),
+            _cur_size(_msgSizeMin)
             {
+                if (_msgSize == 0){
+                    _msInterval = 0;
+                    _msgSize = _msgSizeMax;
+                    _msgSizeMin = _msgSize;
+                    _constQueue = true;
+                }
                 set_cpu_index_and_prior();
             }
     
@@ -113,16 +125,19 @@ public:
 
         std::this_thread::sleep_for(std::chrono::seconds(4));
 
-        for(int i = 0; i < _msgCount; i++){
-            if(_isFirst)
+        for(int i = 0; i < _msgCount; i++) {
+            if (_isFirst) {
                 publish(i, _msgSize);
-
+            }
             isTimeoutEx = wait_for_msg();
-            if(isTimeoutEx)
+            if (isTimeoutEx)
                 break;
-            if(!_isFirst)
+            if (!_isFirst) {
                 publish(i, _msgSize);
+            }
         }
+
+        std::cout << "Test ended" << std::endl;
 
         to_json();
 
@@ -136,16 +151,26 @@ public:
         start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
         nanoseconds>(std::chrono::high_resolution_clock::
                      now().time_since_epoch()).count();
-
+        while (_isFirst && _isNew) {
+            mu.lock();
+            bool isStarted = _isTestStarted;
+            mu.unlock();
+            if (!isStarted) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            } else break;
+        }
         bool notReceived = true;
         while (notReceived) {
-
+            if (_last_rec_msg_id-1 == _msgCount && _isNew){
+                break;
+            }
             mu.lock();      // mute thread to write msg and update _last_rec_msg_id
-
             if(receive()) { // true - принято
                 if(!_isNew || !_isFirst)
                     notReceived = false;
-                _last_rec_msg_id+=1;
+                start_timeout = std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                             now().time_since_epoch()).count();
             } else {
                 end_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
@@ -165,54 +190,73 @@ public:
 
     int StartTestNew(){
         std::future<bool> future;
+        std::this_thread::sleep_for(std::chrono::seconds(4));
         if (_isFirst)   //run receiving msgs in another thread
             future = std::async(std::launch::async, &TestMiddlewarePingPong<MsgType>::wait_for_msg, this);
-        std::this_thread::sleep_for(std::chrono::seconds(4));
-        int cur_size = _msgSizeMin;
+        unsigned long start_timeout, end_timeout;
+        start_timeout = end_timeout = std::chrono::duration_cast<std::chrono::
+        nanoseconds>(std::chrono::high_resolution_clock::
+                     now().time_since_epoch()).count();
         if (_isFirst) {
-
             for (auto i = 0; i < _msgCount; ++i) {
-                if (_msgSize == 0){
+                if (_constQueue){
                     mu.lock();
                     if (i - _last_rec_msg_id > WATERMARK) {
                         --i;
                         mu.unlock();
+                        end_timeout = std::chrono::duration_cast<std::chrono::
+                        nanoseconds>(std::chrono::high_resolution_clock::
+                                     now().time_since_epoch()).count();
+                        if (end_timeout - start_timeout > TIMEOUT)
+                            break;
                         continue;
                     }
                     mu.unlock();
                 }
+                if (i == 0) {
+                    mu.lock();
+                    _isTestStarted = true;
+                    mu.unlock();
+                }
+                start_timeout = std::chrono::duration_cast<std::chrono::
+                nanoseconds>(std::chrono::high_resolution_clock::
+                             now().time_since_epoch()).count();
 
-                if (i % (_msgs_before_step - 1) == 0 && cur_size <= _msgSizeMax)
-                    cur_size += _step;
+                if (i % (_msgs_before_step - 1) == 0 && _cur_size <= _msgSizeMax)
+                    _cur_size += _step;
+                publish(i, _cur_size);
 
-                publish(i, cur_size);
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
             }
+            std::cout << "Waitung for second thread!" << std::endl;
             future.wait();
+            std::cout << "All threads done!" << std::endl;
         } else{
-            while (!wait_for_msg()){
-                if (_last_rec_msg_id % (_msgs_before_step - 1) == 0 && cur_size <= _msgSizeMax)
-                    cur_size += _step;
-
-                publish(_last_rec_msg_id, cur_size);
-
-            }
+            while (!wait_for_msg());
+            std::this_thread::sleep_for(std::chrono::seconds(4));
         }
+        std::cout << "Test ended" << std::endl;
 
         to_json();
         return 0;
     }
 
     void write_received_msg(MsgType &msg) {
-        _msgs[get_id(msg)] = msg;
-        _recieve_timestamps[get_id(msg)] = std::chrono::duration_cast<std::chrono::
+        _last_rec_msg_id = get_id(msg);
+        _msgs[_last_rec_msg_id] = msg;
+        _recieve_timestamps[_last_rec_msg_id] = std::chrono::duration_cast<std::chrono::
         nanoseconds>(std::chrono::high_resolution_clock::
                      now().time_since_epoch()).count();
+        //std::cout << "rec" << _last_rec_msg_id  << std::endl;
+        if (!_isFirst && _isNew){
+            if (_last_rec_msg_id % (_msgs_before_step - 1) == 0 && _cur_size <= _msgSizeMax)
+                _cur_size += _step;
+            publish(_last_rec_msg_id, _cur_size);
+        }
     };
 
     virtual bool receive() = 0;
-
     int StartTest(){
         if(_isNew) return StartTestNew();
         else return StartTestOld();
@@ -223,22 +267,27 @@ public:
     void to_json() {
         auto json_output = nlohmann::json::array();
         nlohmann::json json_msg;
-
+        std::cout << "Start writing to JSON" << std::endl;
         for (unsigned i = 0; i < _msgs.size(); i++) {
             auto &msg = _msgs[i];
-
             json_msg["msg"] =
                     {
                             {"id", get_id(msg)},
                             {"sent_time", get_timestamp(msg)},
                             {"recieve_timestamp", _recieve_timestamps[i]},
                             {"delay", _recieve_timestamps[i] - get_timestamp(msg)},
+                            {"read_proc_time", _read_msg_time[i]},
+                            {"proc_time", _write_msg_time[i]}
                     };
             json_output.emplace_back(json_msg);
         }
 
         std::ofstream file(_filename);
+        if (!file){
+            std::cout << "Cannot open file: "<< _filename << std::endl;
+        }
         file << json_output;
+        std::cout << "End writing to JSON, filename: "<< _filename << std::endl;
     }
 
     virtual void publish(short id, unsigned size)=0;
@@ -248,9 +297,13 @@ protected:
     std::string _topic_name2;
     std::string _filename;
     std::vector<unsigned long> _recieve_timestamps;
+    std::vector <unsigned long> _read_msg_time;
+    std::vector <unsigned long> _write_msg_time;
     std::vector<MsgType> _msgs;
     bool _isFirst;
     bool _isNew;
+    bool _constQueue = false;
+    bool _isTestStarted = false;
     int _topic_priority;
     int _msgCount;
     int _priority; //def not stated
@@ -262,5 +315,6 @@ protected:
     int _msgs_before_step;
     int _msgSize;
     int _last_rec_msg_id = -1;
+    int _cur_size;
     std::mutex mu;
 };

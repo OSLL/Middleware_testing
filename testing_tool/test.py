@@ -1,12 +1,13 @@
 import unittest
 import os
+import signal
 import subprocess
 import json
 from datetime import datetime
-from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process
-from plotting import get_resfiles, get_grouped_filenames, plot_results
+from general_funcs import log_file, get_configs, mk_nodedir, create_process, wait_and_end_process, get_all_pids
+from plotting import get_resfiles, get_grouped_filenames, plot_results, round_trip_grouped
 from get_sys_info import system
-from check_sleep import calc_sleep
+from tracer import CopyingTracer
 
 class MiddlewareTesting(unittest.TestCase):
     pubs = ["../Endurox/src/build/Endurox "]
@@ -38,45 +39,44 @@ class MiddlewareTesting(unittest.TestCase):
         for i in range(0, len(self.pubs)):
             print(datetime.now(), " >>> testing " + self.nodes[i], file=log_file)
             self.sys.start(self.nodes[i])
-            if self.perf:
-                perf_cmd_sub = self.perf + f" -o {self.nodes[i]}_sub.data"
-                perf_cmd_pub = self.perf + f" -o {self.nodes[i]}_pub.data"
-            else:
-                perf_cmd_sub = ''
-                perf_cmd_pub = ''
             cwd = mk_nodedir(test_dir, self.nodes[i])
             for subtest_n, subtest in enumerate(configs):
-                if self.perf and self.test_n == 3:
-                    subtest_name = subtest[0][subtest[0].rfind('/')+1:]
-                    subtest_name = subtest_name[:subtest_name.rfind('.')]
-                    perf_cmd_sub = self.perf + f" -o {self.nodes[i]}_{subtest_name}_sub.data "
-                    perf_cmd_pub = self.perf + f" -o {self.nodes[i]}_{subtest_name}_pub.data "
                 if len(configs) != 1:
                     print(datetime.now(), f" >>> subtest - {subtest_n+1}/{len(configs)}", file=log_file)
                 subs = []
                 pubs = []
+                pub_sub_pids = []
                 try:
                     if subtest[0].find('/') != -1:
                         os.mkdir(cwd + '/' + subtest[0][:subtest[0].find('/')])
                 except OSError:
                     None
+                if self.test_n == 6:
+                    tracer = CopyingTracer()
                 for config in subtest:
                     print(datetime.now(), f"  >>> using config - {config}", file=log_file)
-                    subs.append(create_process(perf_cmd_sub + prefix + self.subs[i], '../../../config/' + config, self.stype, cwd))
+                    subs.append((create_process('exec ' + prefix + self.subs[i], '../../../config/' + config, self.stype, cwd), config))
                 if self.pairs:
                     for config in subtest:
-                        pubs.append(create_process(perf_cmd_pub + prefix + self.pubs[i], '../../../config/' + config, self.ptype, cwd, True))
+                        pubs.append((create_process('exec ' + prefix + self.pubs[i], '../../../config/' + config, self.ptype, cwd, True), config))
                 else:
-                    p = create_process(perf_cmd_pub + prefix + self.pubs[i], '../../../config/' + subtest[0], self.ptype, cwd, True)
+                    p = (create_process('exec ' + prefix + self.pubs[i], '../../../config/' + subtest[0], self.ptype, cwd, True), subtest[0])
+                    if self.test_n == 6:
+                        pub_pids, sub_pids = get_all_pids(p[0], subs[0][0])
                 for sub_n, s in enumerate(subs):
-                    wait_and_end_process(s)
+                    wait_and_end_process(s[0])
                     print(datetime.now(), f"subscriber №{sub_n+1} finished", file=log_file)
                 if self.pairs:
                     for pub_n, p in enumerate(pubs):
-                        wait_and_end_process(p)
+                        wait_and_end_process(p[0])
                         print(datetime.now(), f"publisher №{pub_n+1} finished", file=log_file)
                 else:
-                    wait_and_end_process(p)
+                    wait_and_end_process(p[0])
+                
+                if self.test_n == 6:
+                    tracer.close()
+                    tracer.write_results((subs[0], sub_pids), (p, pub_pids), test_dir + '/trace/' + self.nodes[i] + '/')
+                
                 print(datetime.now(), "publisher finished", file=log_file, flush=True)
             self.sys.end(self.test_n)
 
@@ -85,7 +85,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 1
         self.subtests = False
         self.pairs = False
-        self.perf = ''
         self.startTest()
 
     def test2(self):
@@ -93,7 +92,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 2
         self.subtests = True
         self.pairs = False
-        self.perf = ''
         self.startTest()
 
     def test3(self):
@@ -101,7 +99,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 3
         self.subtests = False
         self.pairs = False
-        self.perf = 'strace -ttt -T -k -e trace=futex,nanosleep'
         self.startTest()
 
     def test4(self):
@@ -109,7 +106,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 4
         self.subtests = False
         self.pairs = False
-        self.perf = ''
         self.startTest()
 
     def test5(self):
@@ -117,7 +113,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.test_n = 5
         self.subtests = False
         self.pairs = False
-        self.perf = ''
         self.startTest()
     
     def test6(self):
@@ -127,7 +122,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.ptype = 'ping_pong'
         self.stype = 'ping_pong'
-        self.perf = 'perf record'
         self.startTest()
     
     def test7(self):
@@ -137,7 +131,6 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = True
         self.ptype = 'ping_pong'
         self.stype = 'ping_pong'
-        self.perf = ''
         self.startTest()
 
     def test8(self):
@@ -147,14 +140,11 @@ class MiddlewareTesting(unittest.TestCase):
         self.pairs = False
         self.ptype = 'ping_pong'
         self.stype = 'ping_pong'
-        self.perf = ''
         self.startTest()
 
     def tearDown(self):
-        if self.test_n == 3:
-            calc_sleep(self.test_n)
         resfiles = get_resfiles(self.test_n, self.subtests)
-        self.sys.packet_loss(resfiles, self.test_n, self.test_n > 5)
+        self.sys.packet_loss(resfiles, self.test_n, self.subtests, self.test_n > 5)
         with open('system_info.json','w') as out:
             out.write(self.sys.get_info())
         if self.test_n == 2:
@@ -163,11 +153,26 @@ class MiddlewareTesting(unittest.TestCase):
         elif self.test_n < 6:
             resfiles = get_grouped_filenames(resfiles)
             for files in resfiles:
-                plot_results(files)
+                plot_results(files, self.test_n, self.test_n == 2, self.test_n > 5)
         else:
-            for filenames in resfiles:
-                plot_results([filenames], self.test_n == 7, self.test_n > 5, 
-                             grouping=(self.test_n<7))
+            if self.test_n == 6:
+                round_trip_grouped(resfiles)
+            if self.test_n == 7:
+                files = []
+                for filenames in resfiles:
+                    while len(filenames) > len(files):
+                        files.append([])
+                    for j in range(len(filenames)):
+                        for f in filenames[j]:
+                            files[j].append(f)
+                for filenames in files:
+                    plot_results([[filenames]], self.test_n, self.test_n == 7, self.test_n > 5, grouping=(self.test_n<7))
+            else:
+                files = []
+                for filenames in resfiles:
+                    for filename in filenames:
+                        files.append(filename)
+                plot_results([files], self.test_n, self.test_n == 7, self.test_n > 5, grouping=(self.test_n<7))
 
 if __name__ == "__main__":
     unittest.main()
