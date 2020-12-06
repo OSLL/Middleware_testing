@@ -19,10 +19,17 @@ cmake ..
 make
 ```
 
+Для ping_pong тестов также нужно собрать yami4names. Для этого нужно
+перейти в папку ```<yami_install_dir>/src/services/names``` и ввести ```make```
+
 ## Запуск
+
+Для ping_pong тестов нужно предварительно запустить yami4names из папки 
+```<yami_install_dir>/src/services/names```
 
 Запустить ```YamiPubSub```. Ключи:
 * -t, --type - тип узла: publisher, sunscriber, ping_pong
 * -c, --config - конфигурационный файл для теста
 * -a, --address - адрес для связи между узлами
+* --server - адрес сервера, хранящего информацию о портах для топиков. Необходимо для ping_pong тестов
 
