@@ -1,3 +1,5 @@
+#define MUTEX_PUBLISH
+
 #include<iostream>
 #include<vector>
 #include<chrono>
@@ -144,9 +146,13 @@ namespace RabbitmqTest{
 			_exchange(exchange)
 		{
 			connection=AmqpClient::Channel::Create(host,port,username,password,vhost,max_frame);
-			connection->DeclareQueue("");
-			if(isFirst) connection->BindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name2);
-			else connection->BindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name1);
+			if(isFirst){
+                            connection->DeclareQueue(topic2);
+                            connection->BindQueue(topic2,_exchange,topic2);
+                        }else{
+                            connection->DeclareQueue(topic1);
+                            connection->BindQueue(topic1,_exchange,topic1);
+                        }
 		}
 
 		PingPong(std::string& topic1,
@@ -173,15 +179,23 @@ namespace RabbitmqTest{
 			_exchange(exchange)
 		{
 			connection=AmqpClient::Channel::Create(host,port,username,password,vhost,max_frame);
-			connection->DeclareQueue("");
-			if(isFirst) connection->BindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name2);
-			else connection->BindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name1);
+			if(isFirst){
+                            connection->DeclareQueue(topic2);
+                            connection->BindQueue(topic2,_exchange,topic2);
+                        }else{
+                            connection->DeclareQueue(topic1);
+                            connection->BindQueue(topic1,_exchange,topic1);
+                        }
 		}
 		
 		~PingPong(){
-			if(TestMiddlewarePingPong<MsgType>::_isFirst) connection->UnbindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name2);
-			else connection->UnbindQueue("",_exchange,TestMiddlewarePingPong<MsgType>::_topic_name1);
-			connection->DeleteQueue("");
+			if(TestMiddlewarePingPong<MsgType>::_isFirst){
+                            connection->UnbindQueue(TestMiddlewarePingPong<MsgType>::_topic_name2,_exchange);
+                            connection->DeleteQueue(TestMiddlewarePingPong<MsgType>::_topic_name2);
+                        }else{
+                            connection->UnbindQueue(TestMiddlewarePingPong<MsgType>::_topic_name1,_exchange);
+                            connection->DeleteQueue(TestMiddlewarePingPong<MsgType>::_topic_name1);
+                        }
 		}
 		
 		void publish(short id, unsigned size) override{
@@ -212,7 +226,9 @@ namespace RabbitmqTest{
 		}
 		bool receive() override{
 			AmqpClient::Envelope::ptr_t enve;
-			bool get=connection->BasicGet(enve,"");
+			bool get=( TestMiddlewarePingPong<MsgType>::_isFirst? 
+                                connection->BasicGet(enve,TestMiddlewarePingPong<MsgType>::_topic_name2) : 
+                                connection->BasicGet(enve, TestMiddlewarePingPong<MsgType>::_topic_name1));
 			if(get){
                         unsigned long int time=std::chrono::duration_cast<std::chrono::
                                 nanoseconds>(std::chrono::high_resolution_clock::
