@@ -209,7 +209,13 @@ public:
 
                 if (i % (_msgs_before_step - 1) == 0 && _cur_size <= _msgSizeMax)
                     _cur_size += _step;
+                #ifdef MUTEX_PUBLISH
+                mu.lock();
                 publish(i, _cur_size);
+                mu.unlock();
+                #else
+                publish(i, _cur_size);
+                #endif
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(_msInterval));
             }
