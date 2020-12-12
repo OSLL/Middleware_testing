@@ -471,58 +471,130 @@ def plot_results(filenames, test_n, multisub=False, isPingPong=False, grouping=T
 
 
 
-def plot_round_trip_time(filenames, plot_direct=''):
-    with open(filenames[0], 'r') as f:
-        data1 = json.load(f)
-    with open(filenames[1], 'r') as f:
-        data2 = json.load(f)
-    sent_time1 = [msg["msg"]["sent_time"] for msg in data1]
-    sent_time2 = [msg["msg"]["sent_time"] for msg in data2]
-    rec_time1 = [msg["msg"]["recieve_timestamp"] for msg in data1]
-    rec_time2 = [msg["msg"]["recieve_timestamp"] for msg in data2]
-    ids = [msg["msg"]["id"] for msg in data1]
-    round_trip = []
-    if sent_time1[0] < sent_time2[0] and rec_time1[0] < rec_time2[0]:
-        for i in range(len(sent_time1)):
-            round_trip.append(rec_time2[i] - sent_time1[i])
+def plot_round_trip_time(filenames, plot_direct='', isSubtests = False):
+    if isSubtests:
+        resfiles = []
+        for filename in filenames:
+            if not filename.endswith('_pub.json'):
+                continue
+            for f in filenames:
+                if filename != f and filename[:filename.rfind('_')] == f[:f.rfind('_')]:
+                    resfiles.append([filename, f])
+                    break
+        all_ids = []
+        round_trips = []
+        node_name = filenames[0][:filenames[0].rfind('/data')]
+        node_name = node_name[node_name.rfind('/')+1:]
+        subtest = filenames[0][:filenames[0].rfind('/')]
+        subtest = subtest[subtest.rfind('/')+1:]
+        nodes = []
+        for files in resfiles:
+            with open(files[0], 'r') as f:
+                data1 = json.load(f)
+            with open(files[1], 'r') as f:
+                data2 = json.load(f)
+            sent_time1 = [msg["msg"]["sent_time"] for msg in data1]
+            sent_time2 = [msg["msg"]["sent_time"] for msg in data2]
+            rec_time1 = [msg["msg"]["recieve_timestamp"] for msg in data1]
+            rec_time2 = [msg["msg"]["recieve_timestamp"] for msg in data2]
+            ids = [msg["msg"]["id"] for msg in data1]
+            round_trip = []
+            if files[0].endswith('_pub.json'):
+                for i in range(len(ids)):
+                    round_trip.append(rec_time1[i] - sent_time2[i])
+            else:
+                for i in range(len(ids)):
+                    round_trip.append(rec_time2[i] - sent_time1[i])
+            all_ids.append(ids)
+            round_trips.append(round_trip)
+            node = files[0][files[0].rfind('/') + 1:]
+            node = node[:node.rfind('_')]
+            nodes.append(node)
+        if plot_direct != '':
+            try:
+                os.makedirs(f'{plot_direct}/{node_name}/{subtest}')
+            except OSError:
+                None
+            mscale = 1
+            munit = 'usec'
+            for times in round_trips:
+                (_, unit, scale) = scale_values(times)
+                if scale > mscale:
+                    mscale = scale
+                    munit = unit
+            if len(round_trips) == 1:
+                plot_graph(all_ids[0], [t/mscale for t in round_trips[0]], munit, f'{node_name}: Round Trip Time', f'{plot_direct}/{node_name}/{subtest}/RTT/{nodes[0]}_round_trip_time.png') 
+            else:
+                name = '_'.join(nodes)
+                plot_graph(all_ids, [[t/mscale for t in rtt] for rtt in round_trips], munit, f'{node_name}: Round Trip Time', f'{plot_direct}/{node_name}/{subtest}/RTT/{name}_round_trip_time.png', nodes) 
+        return all_ids, round_trips, node_name
     else:
-        for i in range(len(sent_time1)):
-            round_trip.append(rec_time1[i] - sent_time2[i])
-    node_name = filenames[0][:filenames[0].rfind('/data')]
-    node_name = node_name[node_name.rfind('/')+1:]
-    if plot_direct != '':
-        (_, unit, scale) = scale_values(round_trip)
-        plot_graph(ids, [t/scale for t in round_trip], unit, f'{node_name}: Round Trip Time', f'{plot_direct}/{node_name}/RTT/round_trip_time.png') 
-    return ids, round_trip, node_name
+        with open(filenames[0], 'r') as f:
+            data1 = json.load(f)
+        with open(filenames[1], 'r') as f:
+            data2 = json.load(f)
+        sent_time1 = [msg["msg"]["sent_time"] for msg in data1]
+        sent_time2 = [msg["msg"]["sent_time"] for msg in data2]
+        rec_time1 = [msg["msg"]["recieve_timestamp"] for msg in data1]
+        rec_time2 = [msg["msg"]["recieve_timestamp"] for msg in data2]
+        ids = [msg["msg"]["id"] for msg in data1]
+        round_trip = []
+        if filenames[0].endswith('_pub.json'):
+            for i in range(len(ids)):
+                round_trip.append(rec_time1[i] - sent_time2[i])
+        else:
+            for i in range(len(ids)):
+                round_trip.append(rec_time2[i] - sent_time1[i])
+        node_name = filenames[0][:filenames[0].rfind('/data')]
+        node_name = node_name[node_name.rfind('/')+1:]
+        if plot_direct != '':
+            (_, unit, scale) = scale_values(round_trip)
+            plot_graph(ids, [t/scale for t in round_trip], unit, f'{node_name}: Round Trip Time', f'{plot_direct}/{node_name}/RTT/round_trip_time.png') 
+        return ids, round_trip, node_name
 
 
-def round_trip_grouped(filenames):
+def round_trip_grouped(filenames, isSubtests = False):
     ids = []
     round_trips = []
     labels = []
-    direct = filenames[0][0][filenames[0][0].find('test_'):]
-    direct = direct[:direct.find('/')+1] + 'plots/'
-    try:
-        os.makedirs(direct)
-    except OSError:
-        None
-    for files in filenames:
-        if len(files) == 0:
-            continue
-        (_id, _time, _name) = plot_round_trip_time(files, direct)
-        ids.append(_id)
-        round_trips.append(_time)
-        labels.append(_name)
-    for i in range(0,len(labels),3):
-        munit = 'nsec'
-        mscale = 1
-        for times in round_trips[i:i+3]:
-            (_, unit, scale) = scale_values(times)
-            if scale > mscale:
-                mscale = scale
-                munit = unit
-        node_names = '_'.join(labels[i:i+3])
-        plot_graph(ids[i:i+3], [[t/mscale for t in times] for times in round_trips[i:i+3]], munit, f'Round Trip Time', f'{direct}/{node_names}_round_trip_time.png', labels[i:i+3])
+    if isSubtests:
+        for files in filenames:
+            if files == [] or files[0] == []:
+                continue
+            direct = files[0][0][files[0][0].find('test_'):]
+            direct = direct[:direct.find('/')+1] + 'plots/'
+            try:
+                os.makedirs(direct)
+            except OSError:
+                None
+            for f in files:
+                if len(f) == 0:
+                    continue
+                (_,_,_) = plot_round_trip_time(f, direct, isSubtests = True)
+    else:
+        direct = filenames[0][0][filenames[0][0].find('test_'):]
+        direct = direct[:direct.find('/')+1] + 'plots/'
+        try:
+            os.makedirs(direct)
+        except OSError:
+            None
+        for files in filenames:
+            if len(files) == 0:
+                continue
+            (_id, _time, _name) = plot_round_trip_time(files, direct)
+            ids.append(_id)
+            round_trips.append(_time)
+            labels.append(_name)
+        for i in range(0,len(labels),3):
+            munit = 'nsec'
+            mscale = 1
+            for times in round_trips[i:i+3]:
+                (_, unit, scale) = scale_values(times)
+                if scale > mscale:
+                    mscale = scale
+                    munit = unit
+            node_names = '_'.join(labels[i:i+3])
+            plot_graph(ids[i:i+3], [[t/mscale for t in times] for times in round_trips[i:i+3]], munit, f'Round Trip Time', f'{direct}/{node_names}_round_trip_time.png', labels[i:i+3])
 
 
 if __name__ == '__main__':
@@ -537,8 +609,8 @@ if __name__ == '__main__':
                 for files in resfiles:
                     plot_results(files, i, i == 2, i > 5)
             else:
-                if i == 6:
-                    round_trip_grouped(resfiles)
+                if i in [6, 7]:
+                    round_trip_grouped(resfiles, i == 7)
                 if i == 7:
                     files = []
                     for filenames in resfiles:
