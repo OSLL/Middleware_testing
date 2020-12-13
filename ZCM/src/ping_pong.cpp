@@ -41,6 +41,8 @@ void TestPingPong::init()
     std::cout << _topic_name1 << " "<<_topic_name2 <<std::endl;
     zcm.subscribe(_topic_name2,  &TestPingPong::handleMessage, this);
     zcm.start();
+    msg_t msg;
+    zcm.publish(_topic_name1, &msg);
 }
 
 
@@ -70,11 +72,11 @@ void TestPingPong::handleMessage(const zcm::ReceiveBuffer *rbuf, const std::stri
             (std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     msg_t rec_msg;
     rec_msg.id = msg->id;
-    std::cout << rec_msg.id << std::endl;
+    //std::cout << "rec msg " << rec_msg.id << std::endl;
     rec_msg.timestamp = msg->timestamp;
     write_received_msg(rec_msg);
-    _read_msg_time[get_id(rec_msg)] = std::chrono::duration_cast<std::chrono::nanoseconds>
-            (std::chrono::high_resolution_clock::now().time_since_epoch()).count() - rbuf->recv_utime;
+    _read_msg_time[get_id(rec_msg)] =  timestamp - std::chrono::duration_cast<std::chrono::nanoseconds>
+            (std::chrono::microseconds(rbuf->recv_utime)).count();
     isReceived = true;
 }
 
@@ -82,14 +84,13 @@ void TestPingPong::publish(short id, unsigned size) {
     std::string data(size, 'a');
     msg_t msg;
     msg.id = id;
-    std::cout << id << std::endl;
+    //std::cout << "Sent msg " << id << " Chan: " << _topic_name1<< std::endl;
     msg.str = data;
     unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     msg.timestamp = cur_time;
     int status = zcm.publish(_topic_name1, &msg);
     if(status < 0)
         std::cout << "Unsuccessful publishing: id "<< id << std::endl;
-    zcm.flush();
     _write_msg_time[id] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
 }
 
