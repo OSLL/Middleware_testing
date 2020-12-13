@@ -23,7 +23,7 @@ bool TestSubscriber::receive() {
 	return false;
     try{
         auto *msg = new zmq::message_t();
-        int cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        auto cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         if(sock.recv(*msg, zmq::recv_flags::none)){
             std::shared_ptr<zmq::message_t> msg_ptr(msg);
             write_received_msg(msg_ptr, std::chrono::duration_cast<std::chrono::nanoseconds>

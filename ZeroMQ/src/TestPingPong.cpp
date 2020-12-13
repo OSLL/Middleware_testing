@@ -71,7 +71,7 @@ bool TestPingPong::receive() {
 	return false;
     try{
         auto *msg = new zmq::message_t();
-        int cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        auto cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         if(ssock.recv(*msg, zmq::recv_flags::none)){
             std::shared_ptr<zmq::message_t> msg_ptr(msg);
             _read_msg_time[mcount] = std::chrono::duration_cast<std::chrono::nanoseconds>
@@ -98,7 +98,7 @@ unsigned long TestPingPong::get_timestamp(std::shared_ptr<zmq::message_t> &msg) 
 void TestPingPong::publish(short id, unsigned size) {
     std::string data(size, 'a');
     unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-    //std::cout<< "sent " << id << std::endl;
+    std::cout<<_isFirst<< "Start sending " << id << std::endl;
     nlohmann::json jmsg;
     jmsg["id"] = id;
     jmsg["timestamp"] = cur_time;
@@ -107,4 +107,5 @@ void TestPingPong::publish(short id, unsigned size) {
     cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     psock.send((const void*)jstr.c_str(), (size_t)jstr.length());
     _write_msg_time[id] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
+    std::cout<<_isFirst<< "End sending " << id << std::endl;
 }
