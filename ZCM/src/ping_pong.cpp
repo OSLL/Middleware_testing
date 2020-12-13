@@ -88,9 +88,11 @@ void TestPingPong::publish(short id, unsigned size) {
     msg.str = data;
     unsigned long cur_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     msg.timestamp = cur_time;
-    int status = zcm.publish(_topic_name1, &msg);
-    if(status < 0)
-        std::cout << "Unsuccessful publishing: id "<< id << std::endl;
+    int status = -1;
+    while (status < 0) {
+        status = zcm.publish(_topic_name1, &msg);
+        //std::cout << "Unsuccessful publishing: id " << id << std::endl;
+    }
     _write_msg_time[id] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
 }
 
