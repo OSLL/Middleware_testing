@@ -1,0 +1,6 @@
+struct msg_t
+{
+    int32_t id;
+    int64_t timestamp;
+    string str;
+}
