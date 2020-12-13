@@ -32,6 +32,7 @@ unsigned long TestPublisher::publish(short id, unsigned size) {
     while (status < 0) {
         status = zcm.publish(_topic_name, &msg);
         //std::cout << "Unsuccessful publishing: id " << id << std::endl;
+        std::this_thread::sleep_for(std::chrono::microseconds(5));
     }
     return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
 }
