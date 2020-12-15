@@ -219,6 +219,10 @@ def plot_pub_results(filenames, test_n):
         plot_boxes(boxes, [len(t) for t in boxes], 'number of messages', unit, 
                'Writing time boxes', f'{directory}{node}_proc_time_box.png')
         plot_graph(ids, proc_time, unit, 'Writing time', f'{directory}{node}_proc_time.png')
+        mean = np.mean(proc_time)
+        proc_time_jitter = [np.fabs(el - mean) for el in proc_time]
+        plot_graph(ids, proc_time_jitter, unit, 'Writing time jitter', f'{directory}{node}_proc_time_jitter.png')
+        #print(f'{directory}{node}_proc_time_jitter.png ___ MEAN: {np.mean(proc_time_jitter)}')
 
 
 def plot_sub_results(test_n, filenames, isMultisub=False, isPingPong=False, grouping=True):
@@ -268,7 +272,7 @@ def plot_sub_results(test_n, filenames, isMultisub=False, isPingPong=False, grou
                                'number of messages', runit,
                                f'{node_name}: Reading time boxes',
                                f'{directory}{node_name}{subdir}/read_time/{node}_read_proc_time_box.png')
-                
+
                     list_counts = queue_size(send_time, receive_time)
                     plot_message_queue(list_counts, 
                         f'{directory}{node_name}{subdir}/queue/{node}_queue.png')
@@ -368,6 +372,13 @@ def plot_sub_results(test_n, filenames, isMultisub=False, isPingPong=False, grou
                         'number of messages', runit, 
                         f'{node_name}: Reading time boxes', 
                         f'{directory}{node_name}{subdir}/read_time/{node}_read_proc_time_box.png')
+
+                mean = np.mean(read_proc_time)
+                read_proc_time_jitter = [np.fabs(el - mean) for el in read_proc_time]
+                plot_graph(ids, read_proc_time_jitter, runit, 'Reading time jitter',
+                           f'{directory}{node_name}{subdir}/read_time/{node}_read_proc_time_jitter.png')
+                #print(f'{directory}{node_name}{subdir}/read_time/{node}_read_proc_time_jitter.png ___ MEAN: {np.mean(read_proc_time_jitter)}')
+
                 list_counts = queue_size(send_time, receive_time)
                 plot_message_queue(list_counts, 
                                 f'{directory}{node_name}{subdir}/queue/{node}_queue.png')
