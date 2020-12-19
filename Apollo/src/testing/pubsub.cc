@@ -83,9 +83,12 @@ public:
             ): TestMiddlewareSub<Message>(topic, msgCount, prior,
                         cpu_index, filename, topic_priority)
     {
-    std::unique_ptr<Node> node = apollo::cyber::CreateNode(name);
-    reader = node->CreateReader<Message>(topic, MessageCallbackSub);
-    rec = false;
+        std::unique_ptr<Node> node = apollo::cyber::CreateNode(name);
+        apollo::cyber::ReaderConfig reader_config;
+        reader_config.channel_name = topic;
+        reader_config.pending_queue_size = 512;
+        reader = node->CreateReader<Message>(reader_config, MessageCallbackSub);
+        rec = false;
     }
 
     ~Subscriber(){
@@ -136,10 +139,16 @@ public:
     std::unique_ptr<Node> node = apollo::cyber::CreateNode(name);
     if(isFirst){
         writer = node->CreateWriter<Message>(topic1);
-        reader = node->CreateReader<Message>(topic2, MessageCallbackPingPong);
+        apollo::cyber::ReaderConfig reader_config;
+        reader_config.channel_name = topic2;
+        reader_config.pending_queue_size = 512;
+        reader = node->CreateReader<Message>(reader_config, MessageCallbackPingPong);
     }else{
         writer = node->CreateWriter<Message>(topic2);
-        reader = node->CreateReader<Message>(topic1, MessageCallbackPingPong);
+        apollo::cyber::ReaderConfig reader_config;
+        reader_config.channel_name = topic1;
+        reader_config.pending_queue_size = 512;
+        reader = node->CreateReader<Message>(reader_config, MessageCallbackPingPong);
     }
     rec = false;
     }
@@ -164,10 +173,16 @@ public:
     std::unique_ptr<Node> node = apollo::cyber::CreateNode(name);
     if(isFirst){
         writer = node->CreateWriter<Message>(topic1);
-        reader = node->CreateReader<Message>(topic2, MessageCallbackPingPong);
+        apollo::cyber::ReaderConfig reader_config;
+        reader_config.channel_name = topic2;
+        reader_config.pending_queue_size = 512;
+        reader = node->CreateReader<Message>(reader_config, MessageCallbackPingPong);
     }else{
         writer = node->CreateWriter<Message>(topic2);
-        reader = node->CreateReader<Message>(topic1, MessageCallbackPingPong);
+        apollo::cyber::ReaderConfig reader_config;
+        reader_config.channel_name = topic1;
+        reader_config.pending_queue_size = 512;
+        reader = node->CreateReader<Message>(reader_config, MessageCallbackPingPong);
     }
     rec = false;
     }
@@ -176,6 +191,8 @@ public:
     }
 
     void publish(short id, unsigned size) override{
+
+        //std::cout << "Publish " << id << "\n";
         unsigned long time=std::chrono::duration_cast<std::chrono::
                     nanoseconds>(std::chrono::high_resolution_clock::
                     now().time_since_epoch()).count();
@@ -246,6 +263,7 @@ void MessageCallbackPingPong(const std::shared_ptr<testing::proto::Message>& msg
     p_ping_pong->write_received_msg(m);
     p_ping_pong->_read_msg_time[m.id()] = time;
     p_ping_pong->rec = true;
+    //std::cout << "Receive " << m.id() << "\n";
 
 }
 
