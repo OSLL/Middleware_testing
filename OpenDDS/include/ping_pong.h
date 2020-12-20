@@ -3,7 +3,7 @@
 
 #include <Subscriber.h>
 #include <Publisher.h>
-#include "ping_pong_interface.hpp"
+#include "../../interface/ping_pong_interface.hpp"
 
 class TestPingPongNode: public TestMiddlewarePingPong<Messenger::Message>{
 public:

@@ -22,7 +22,8 @@
 
 #include <argparse/argparse.hpp>
 
-#include <pub_interface.hpp>
+#include "../../interface/pub_interface.hpp"
+
 
 class Publisher: public TestMiddlewarePub{
 
