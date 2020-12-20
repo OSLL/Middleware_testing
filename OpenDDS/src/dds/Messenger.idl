@@ -8,7 +8,7 @@ module Messenger {
   @topic
   struct Message {
     @key long id;
-    unsigned long timestamp;
+    unsigned long long timestamp;
     string payload;
   };
 };
