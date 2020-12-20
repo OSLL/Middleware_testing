@@ -20,5 +20,6 @@ include_directories(../../interface
 
 add_executable(opendds_node src/ping_pong/ping_pong.cpp src/subscriber/Subscriber.cpp src/dds/DataReaderListenerImpl.cpp
         src/publisher/Publisher.cpp src/opendds_node.cpp)
-OPENDDS_TARGET_SOURCES(ping_pong src/dds/Messenger.idl)
-target_link_libraries(ping_pong ${opendds_libs} pthread)
+OPENDDS_TARGET_SOURCES(opendds_node src/dds/Messenger.idl)
+
+target_link_libraries(opendds_node ${opendds_libs} pthread)
