@@ -1,7 +1,3 @@
-//
-// Created by egor on 15.04.2020.
-//
-
 #ifndef OPENDDS_DEVGUIDE_MESSENGER_SUBSCRIBER_H
 #define OPENDDS_DEVGUIDE_MESSENGER_SUBSCRIBER_H
 
@@ -26,23 +22,10 @@
 
 class Subscriber: public TestMiddlewareSub<Messenger::Message>{
 
-    std::string a = "mock-string";
-
 public:
     Subscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename, int topic_priority) :
-            _topic_name(topic),
-            _msgCount(msgCount),
-            _priority(prior),
-            _cpu_index(cpu_index),
-            _filename(filename),
             TestMiddlewareSub<Messenger::Message>(topic, msgCount, prior, cpu_index, filename, topic_priority)
     {};
-
-
-    Subscriber():
-            TestMiddlewareSub<Messenger::Message>(a, 0 , 0, 0, a, 0)
-    {};
-
 
     void createSubscriber(int argc, ACE_TCHAR *argv[]);
 
@@ -52,32 +35,21 @@ public:
 
     bool receive() override;
 
-    bool receive(Messenger::Message& msg);
+    ~Subscriber(){
+        cleanUp();
+    }
 
     void cleanUp();
 
 protected:
-    std::string _topic_name;
-    int _msgCount;
-    int _priority; //def not stated
-    int _cpu_index; //def not stated
-    std::string _filename;
-
     Messenger::MessageSeq _messages;
     DDS::SampleInfoSeq _info;
     DDS::DomainParticipant_var _participant;
     DDS::Subscriber_var _subscriber;
     DDS::DomainParticipantFactory_var _dpf;
-    DDS::WaitSet_var _ws;
-    DDS::StatusCondition_var _condition;
-    DDS::Duration_t _timeout;
     DDS::DataReader_var _reader;
     Messenger::MessageDataReader_var _reader_i;
     DDS::DataReaderListener_var _listener;
-    Messenger::MessageTypeSupport_var _ts;
-
-
-    int _id = 0;
 };
 
 #endif //OPENDDS_DEVGUIDE_MESSENGER_SUBSCRIBER_H
