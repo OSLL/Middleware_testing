@@ -6,7 +6,7 @@
 #include <nlohmann/json.hpp>
 #include <Publisher.h>
 #include <Subscriber.h>
-#include "ping_pong/ping_pong.h"
+#include "ping_pong.h"
 
 int main(int argc, char **argv) {
     argparse::ArgumentParser parser("OpenDDS node argparsing");
@@ -22,6 +22,8 @@ int main(int argc, char **argv) {
             .implicit_value(true)
             .default_value(false)
             .help("--first is required argument if ping_pong type is specified with type of node");
+    parser.add_argument("-DCPSConfigFile");
+
 
     try {
         parser.parse_args(argc, argv);
@@ -68,12 +70,13 @@ int main(int argc, char **argv) {
             publisher.createPublisher(argc, argv);
             publisher.StartTest();
         }
-        if (type_name == "subscriber") {
+        else if (type_name == "subscriber") {
+            std::cout<<type_name<<std::endl;
             Subscriber subscriber(topic1, m_count, priority_sub, cpu_index_sub, filename_sub, topic_prior);
             subscriber.createSubscriber(argc, argv);
             subscriber.StartTest();
         }
-        if (type_name == "ping_pong"){
+        else if (type_name == "ping_pong"){
             std::string filename;
             if(isFirst)
                 filename = filename_pub;

@@ -1,7 +1,3 @@
-//
-// Created by egor on 02.04.20.
-//
-
 #include <Publisher.h>
 #include <time.h>
 #include <stdlib.h>
@@ -9,13 +5,14 @@
 
 void Publisher::createPublisher(int argc, ACE_TCHAR *argv[]) {
 
-    srand (time(NULL));
     try {
         // Initialize Domain_ParticipantFactory
         _dpf = TheParticipantFactoryWithArgs(argc, argv);
 
         // Create Domain_Participant
-        _participant = _dpf->create_participant(rand() % 214748364 + 1,
+        std::hash<std::string> hash_fn;
+        auto domainId = (unsigned int) hash_fn(_topic_name) % 100000;
+        _participant = _dpf->create_participant(domainId,
                 PARTICIPANT_QOS_DEFAULT,
                 DDS::DomainParticipantListener::_nil(),
                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
@@ -35,7 +32,8 @@ void Publisher::createPublisher(int argc, ACE_TCHAR *argv[]) {
 
         // Create Topic (Movie Discussion List)
         CORBA::String_var type_name = ts->get_type_name();
-        DDS::Topic_var topic = _participant->create_topic(_topic.c_str(),
+
+        DDS::Topic_var topic = _participant->create_topic(_topic_name.c_str(),
                                           type_name.in(),
                                           TOPIC_QOS_DEFAULT,
                                           DDS::TopicListener::_nil(),
@@ -105,7 +103,7 @@ void Publisher::createPublisher(int argc, ACE_TCHAR *argv[]) {
         }
 
         DDS::ConditionSeq conditions;
-        DDS::Duration_t timeout = { 60, 0 };
+        DDS::Duration_t timeout = { 15, 0 };
         if (ws->wait(conditions, timeout) != DDS::RETCODE_OK) {
             ACE_ERROR((LM_ERROR, ACE_TEXT("ERROR: %N:%l: main() -") ACE_TEXT(" wait failed!\n")));
         }
@@ -121,7 +119,7 @@ unsigned long Publisher::publish(short id, unsigned size, char alpha) {
                  now().time_since_epoch()).count();
 
 
-    std::cout << "message " << id << " sent" << std::endl;
+    // std::cout << "message " << id << " sent" << std::endl;
 
     // Write samples
     _message.id = id;
@@ -153,9 +151,18 @@ unsigned long Publisher::publish(short id, unsigned size) {
 
 void Publisher::cleanUp(){
     // Clean-up!
-    _participant->delete_contained_entities();
-    _dpf->delete_participant(_participant.in());
-
+    std::cout << "CleanUp started!\n";
+    try {
+        if (!CORBA::is_nil (_participant.in ())) {
+            _participant->delete_contained_entities();
+        }
+        if (!CORBA::is_nil (_dpf.in ())) {
+            _dpf->delete_participant(_participant.in ());
+        }
+    } catch (CORBA::Exception& e) {
+        std::cout << "Exception caught in cleanup." << std::endl << e << std::endl;
+        ACE_OS::exit(1);
+    }
     TheServiceParticipant->shutdown();
 };
 

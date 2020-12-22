@@ -8,15 +8,13 @@
 
 void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
     try {
-	srand (time(NULL));
         // Initialize DomainParticipantFactory
         _dpf = TheParticipantFactoryWithArgs(argc, argv);
 
-
-
         // Create DomainParticipant
-        _participant =
-                _dpf->create_participant(rand() % 214748364 + 1,
+        std::hash<std::string> hash_fn;
+        auto domainId = (unsigned int) hash_fn(_topic_name) % 100000;
+        _participant = _dpf->create_participant(domainId,
                                         PARTICIPANT_QOS_DEFAULT,
                                         DDS::DomainParticipantListener::_nil(),
                                         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
@@ -28,7 +26,7 @@ void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
         }
 
         // Register Type (Messenger::Message)
-        _ts = new Messenger::MessageTypeSupportImpl();
+        auto _ts = new Messenger::MessageTypeSupportImpl();
 
         if (_ts->register_type(_participant.in(), "") != DDS::RETCODE_OK) {
             ACE_ERROR((LM_ERROR,
@@ -39,7 +37,7 @@ void Subscriber::createSubscriber(int argc, ACE_TCHAR *argv[]) {
         // Create Topic (Movie Discussion List)
         CORBA::String_var type_name = _ts->get_type_name();
         DDS::Topic_var topic =
-                _participant->create_topic("test_topic",
+                _participant->create_topic(_topic_name.c_str(),
                                           type_name.in(),
                                           TOPIC_QOS_DEFAULT,
                                           DDS::TopicListener::_nil(),
@@ -106,7 +104,7 @@ unsigned long Subscriber::get_timestamp(Messenger::Message& msg) {
 };
 
 
-bool Subscriber::receive(Messenger::Message& msg) {
+bool Subscriber::receive() {
 
     auto start_timestamp = std::chrono::duration_cast<std::chrono::
     nanoseconds>(std::chrono::high_resolution_clock::
@@ -120,18 +118,15 @@ bool Subscriber::receive(Messenger::Message& msg) {
                                               DDS::ANY_INSTANCE_STATE);
 
 
-    unsigned long proc_time = std::chrono::duration_cast<std::chrono::
+    auto proc_time = std::chrono::duration_cast<std::chrono::
     nanoseconds>(std::chrono::high_resolution_clock::
                  now().time_since_epoch()).count()
                               - start_timestamp;
 
     if (error == DDS::RETCODE_OK) {
         if (_info[0].valid_data) {
-
-            _id++;
-
+            // std::cout<<"rec msg " << get_id(_messages[0]) <<std::endl;
             write_received_msg(_messages[0], proc_time);
-            msg = _messages[0];
             _reader_i->return_loan(_messages, _info);
             return true;
         }
@@ -141,17 +136,19 @@ bool Subscriber::receive(Messenger::Message& msg) {
 };
 
 
-bool Subscriber::receive() {
-    Messenger::Message msg_mock;
-    return receive(msg_mock);
-};
-
 void Subscriber::cleanUp(){
-
-    std::cout << _id << std::endl;
     // Clean-up!
-    _participant->delete_contained_entities();
-    _dpf->delete_participant(_participant.in());
-
+    std::cout << "CleanUp started!\n";
+    try {
+        if (!CORBA::is_nil (_participant.in ())) {
+            _participant->delete_contained_entities();
+        }
+        if (!CORBA::is_nil (_dpf.in ())) {
+            _dpf->delete_participant(_participant.in ());
+        }
+    } catch (CORBA::Exception& e) {
+        std::cout << "Exception caught in cleanup." << std::endl << e << std::endl;
+        ACE_OS::exit(1);
+    }
     TheServiceParticipant->shutdown();
 };

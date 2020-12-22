@@ -20,6 +20,8 @@ make -j install
 
 ## How to run
 
+source <OpenDDS_install_path>/setenv.sh
+
 DCPSInfoRepo -o repo.ior to start DDS domain
 
 publisher/subscriber -DCPSConfigFile shmem.ini
