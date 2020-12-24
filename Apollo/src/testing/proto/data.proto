@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package testing.proto;
+
+/*message Message {
+  required int32 id =1;
+  required uint64 time = 2;
+  required string data = 3;
+};*/
+message Message {
+  required int32 id =1;
+  required uint64 time = 2;
+  required bytes data = 3;
+};
