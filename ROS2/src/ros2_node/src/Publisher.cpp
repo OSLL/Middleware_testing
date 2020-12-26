@@ -45,6 +45,6 @@ unsigned long Publisher::publish(short id, unsigned int size) {
 }
 
 Publisher::~Publisher() {
-
+    delete _ros_node;
     rclcpp::shutdown();
 }
