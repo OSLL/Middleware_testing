@@ -8,6 +8,10 @@ SubscriberNode::SubscriberNode(std::string &topic, TestMiddlewareSub<ros2_node::
                               std::placeholders::_1));
 }
 
+SubscriberNode::SubscriberNode():
+        Node("subscriber"){
+}
+
 rclcpp::QoS SubscriberNode::createQoS() {
     rmw_qos_profile_t pr = rmw_qos_profile_default;
     pr.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;

@@ -4,6 +4,7 @@
 
 #include "../include/ros2_node/Publisher.h"
 #include "../include/ros2_node/Subscriber.h"
+#include "../include/ros2_node/PingPong.h"
 
 int main(int argc, char **argv) {
     argparse::ArgumentParser parser("OpenSplice node argparsing");
@@ -78,10 +79,17 @@ int main(int argc, char **argv) {
                 filename = filename_sub;
 
             if(interval == 0){
-
+                PingPong ping_pong(topic1, topic2, m_count, priority_pub,
+                                       cpu_index_pub, filename, topic_prior, interval,
+                                       min_msg_size, isFirst);
+                ping_pong.StartTest();
             }
             else{
-
+                PingPong ping_pong(topic1, topic2, m_count,
+                                       priority_pub, cpu_index_pub, filename,
+                                       topic_prior, interval, min_msg_size,
+                                       max_msg_size, step, msgs_before_step, isFirst);
+                ping_pong.StartTest();
             }
         }
         else{

@@ -42,7 +42,7 @@ rosidl_generate_interfaces(ros2_node
 
 ament_export_dependencies(rosidl_default_runtime)
 
-add_executable(node src/main.cpp src/Publisher.cpp src/Subscriber.cpp)
+add_executable(node src/main.cpp src/Publisher.cpp src/Subscriber.cpp src/PingPong.cpp)
 ament_target_dependencies(node rclcpp std_msgs)
 
 rosidl_target_interfaces(node

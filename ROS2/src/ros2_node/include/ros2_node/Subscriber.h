@@ -8,8 +8,9 @@
 class SubscriberNode: public rclcpp::Node{
 public:
     SubscriberNode(std::string &topic, TestMiddlewareSub<ros2_node::msg::TestData::SharedPtr> *master);
+    SubscriberNode();
 
-private:
+protected:
     rclcpp::Subscription<ros2_node::msg::TestData>::SharedPtr _subscription;
     rclcpp::QoS createQoS();
 };
