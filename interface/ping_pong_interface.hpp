@@ -13,7 +13,7 @@
 #include "test_errors.hpp"
 
 #define CPUSET_MODE_T (S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH)
-#define TIMEOUT 2 * pow(10, 10)
+#define WAIT_MSG_TIMEOUT 2 * pow(10, 10)
 #define WATERMARK 50
 
 template <class MsgType>
@@ -175,7 +175,7 @@ public:
                 end_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                              now().time_since_epoch()).count();
-                if (end_timeout - start_timeout > TIMEOUT) {
+                if (end_timeout - start_timeout > WAIT_MSG_TIMEOUT) {
                     mu.unlock();
                     return true;
                 }
@@ -207,7 +207,7 @@ public:
                         end_timeout = std::chrono::duration_cast<std::chrono::
                         nanoseconds>(std::chrono::high_resolution_clock::
                                      now().time_since_epoch()).count();
-                        if (end_timeout - start_timeout > TIMEOUT)
+                        if (end_timeout - start_timeout > WAIT_MSG_TIMEOUT)
                             break;
                         continue;
                     }
