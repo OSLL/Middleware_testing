@@ -19,6 +19,8 @@ class MiddlewareTesting(unittest.TestCase):
 
     sys = system()
 
+    isaac_dir = '/home/user/isaac/'
+
     @classmethod
     def setUpClass(self):
         for p in self.pubs:
@@ -51,6 +53,14 @@ class MiddlewareTesting(unittest.TestCase):
                         os.mkdir(cwd + '/' + subtest[0][:subtest[0].find('/')])
                 except OSError:
                     None
+                if self.nodes[i] == 'Isaac':
+                    if type(subtest) == list:
+                        isaac_generate_config(self.test_n, subtest, self.ptype == 'ping_pong')
+                    else:
+                        isaac_generate_config(self.test_n, [subtest], self.ptype == 'ping_pong')
+                    run_isaac(isaac_dir, os.getcwd() + '/testing.app.json', self.test_n == 6, test_dir + '/trace/' + self.nodes[i] + '/')
+                    print(datetime.now(), "isaac finished", file=log_file, flush=True)
+                    continue
                 if self.test_n == 6:
                     tracer = CopyingTracer()
                 for config in subtest:
