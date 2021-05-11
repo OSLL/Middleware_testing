@@ -8,11 +8,10 @@ import java.util.Arrays;
 import java.io.FileReader;
 import java.io.IOException;
 
-//import org.apache.activemq.artemis.jms.client.ActiveMQTopicConnectionFactory;
-//import com.sun.messaging.ConnectionFactory;
 import org.apache.commons.cli.*;
 
-import javax.jms.TopicConnectionFactory;
+import com.sun.messaging.ConnectionFactory;
+import com.sun.messaging.ConnectionConfiguration;
 import javax.jms.TopicSubscriber;
 import javax.jms.TopicPublisher;
 import javax.jms.MapMessage;
@@ -26,11 +25,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
-//import javax.naming.*;
-//import javax.jms.ConnectionFactory;
-import com.sun.messaging.ConnectionFactory;
-import com.sun.messaging.ConnectionConfiguration;
-//import com.sun.messaging.jmq.jmsserver.Globals;
 
 class Message{
     public int id;
@@ -42,9 +36,8 @@ class Message{
     }
 }
 
-class ActiveMQPublisher extends PublisherInterface{
+class JMQPublisher extends PublisherInterface{
 
-    //ActiveMQTopicConnectionFactory cf;
     ConnectionFactory cf;
     TopicConnection con;
     TopicSession session;
@@ -52,12 +45,11 @@ class ActiveMQPublisher extends PublisherInterface{
     TopicPublisher pub;
     private long TIME_SCALE = 1_000_000;
 
-    public ActiveMQPublisher(String address, String topic_name, int msgCount, int prior, 
+    public JMQPublisher(String address, String topic_name, int msgCount, int prior, 
             int cpu_index, int min_msg_size, int max_msg_size, int step, int interval,
             int msgs_before_step, String filename,  int topic_prior) throws Exception {
         super(topic_name, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step,
                 interval, msgs_before_step, filename, topic_prior);
-        //cf = new ActiveMQTopicConnectionFactory(address);
         cf = new ConnectionFactory();
         cf.setProperty(ConnectionConfiguration.imqAddressList, address);
         con = cf.createTopicConnection();
@@ -98,19 +90,17 @@ class ActiveMQPublisher extends PublisherInterface{
     }
 }
 
-class ActiveMQSubscriber extends SubscriberInterface<Message>{
+class JMQSubscriber extends SubscriberInterface<Message>{
 
-    //ActiveMQTopicConnectionFactory cf;
     ConnectionFactory cf;
     TopicConnection con;
     TopicSession session;
     Topic topic;
     TopicSubscriber sub;
 
-    public ActiveMQSubscriber(String address, String topic_name, int msgCount, int prior,
+    public JMQSubscriber(String address, String topic_name, int msgCount, int prior,
             int cpu_index, String filename, int topic_prior) throws Exception {
         super(topic_name, msgCount, prior, cpu_index, filename, topic_prior, Message.class);
-        //cf = new ActiveMQTopicConnectionFactory(address);
         cf = new ConnectionFactory();
         cf.setProperty(ConnectionConfiguration.imqAddressList, address);
         con = cf.createTopicConnection();
@@ -162,9 +152,8 @@ class ActiveMQSubscriber extends SubscriberInterface<Message>{
     }
 }
 
-class ActiveMQPingPong extends PingPongInterface<Message>{
+class JMQPingPong extends PingPongInterface<Message>{
 
-    //ActiveMQTopicConnectionFactory cf;
     ConnectionFactory cf;
     TopicConnection con;
     TopicSession session;
@@ -173,12 +162,11 @@ class ActiveMQPingPong extends PingPongInterface<Message>{
     TopicSubscriber sub;
     private long TIME_SCALE = 1_000_000;
 
-    ActiveMQPingPong(String address, String topic1_name, String topic2_name, int msgCount,
+    JMQPingPong(String address, String topic1_name, String topic2_name, int msgCount,
             int prior, int cpu_index, String filename, int topic_prior, int interval,
             int msg_size, boolean isFirst) throws Exception{
         super(topic1_name, topic2_name, msgCount, prior, cpu_index, filename,
                 topic_prior, interval, msg_size, isFirst, Message.class);
-        //cf = new ActiveMQTopicConnectionFactory(address);
         cf = new ConnectionFactory();
         cf.setProperty(ConnectionConfiguration.imqAddressList, address);
         con = cf.createTopicConnection();
@@ -193,12 +181,11 @@ class ActiveMQPingPong extends PingPongInterface<Message>{
         con.start();
     }
 
-    ActiveMQPingPong(String address, String topic1_name, String topic2_name, int msgCount,
+    JMQPingPong(String address, String topic1_name, String topic2_name, int msgCount,
             int prior, int cpu_index, String filename, int topic_prior, int interval,
             int msg_size_min, int msg_size_max, int step, int before_step, boolean isFirst) throws Exception{
         super(topic1_name, topic2_name, msgCount, prior, cpu_index, filename,
                 topic_prior, interval, msg_size_min, msg_size_max, step, before_step, isFirst, Message.class);
-        //cf = new ActiveMQTopicConnectionFactory(address);
         cf = new ConnectionFactory();
         cf.setProperty(ConnectionConfiguration.imqAddressList, address);
         con = cf.createTopicConnection();
@@ -218,9 +205,8 @@ class ActiveMQPingPong extends PingPongInterface<Message>{
             long time = System.currentTimeMillis() * TIME_SCALE + System.nanoTime();
             byte[] bytes = new byte[size];
             Arrays.fill(bytes, (byte)65);
-            System.out.println("Send Message: " + id);
+            //System.out.println("Send Message: " + id);
             MapMessage msg = session.createMapMessage();
-            //long time = System.currentTimeMillis() * TIME_SCALE + System.nanoTime();
             msg.setInt("id",id);
             msg.setLong("time", time);
             msg.setBytes("bytes", bytes);
@@ -238,10 +224,10 @@ class ActiveMQPingPong extends PingPongInterface<Message>{
             if(msg == null)
                 return false;
             Message m = new Message(msg.getInt("id"), msg.getLong("time"));
-            System.out.println("Receive message:");
-            System.out.println("\tTime: " + msg.getLong("time"));
-            System.out.println("\tId: " + msg.getInt("id"));
-            System.out.println("\tMessage: " + new String(msg.getBytes("bytes")));
+            //System.out.println("Receive message:");
+            //System.out.println("\tTime: " + msg.getLong("time"));
+            //System.out.println("\tId: " + msg.getInt("id"));
+            //System.out.println("\tMessage: " + new String(msg.getBytes("bytes")));
             String s = new String(msg.getBytes("bytes"));
             write_received_msg(m);
             return true;
@@ -273,7 +259,7 @@ class ActiveMQPingPong extends PingPongInterface<Message>{
     }
 }
 
-public class ActiveMQPubSub{
+public class JMQPubSub{
     
     public static void main(String[] args) throws Exception {
 
@@ -345,7 +331,7 @@ public class ActiveMQPubSub{
 
         if(type.equals("publisher")){
             try{
-                ActiveMQPublisher pub = new ActiveMQPublisher(address, topic1, m_count, prior1, cpu1,
+                JMQPublisher pub = new JMQPublisher(address, topic1, m_count, prior1, cpu1,
                         min_size, max_size, step, interval, before_step, filename1, topic_prior);
                 pub.startTest();
                 pub.close();
@@ -355,7 +341,7 @@ public class ActiveMQPubSub{
             }
         } else if(type.equals("subscriber")){
             try{
-                ActiveMQSubscriber sub = new ActiveMQSubscriber(address, topic1, m_count, prior2, cpu2,
+                JMQSubscriber sub = new JMQSubscriber(address, topic1, m_count, prior2, cpu2,
                         filename2, topic_prior);
                 sub.startTest();
                 sub.close();
@@ -366,10 +352,10 @@ public class ActiveMQPubSub{
         } else if(type.equals("ping_pong")){
             if(isFirst){
                 try{
-                    ActiveMQPingPong ping_pong = (interval == 0? 
-                        new ActiveMQPingPong(address, topic1, topic2, m_count,
+                    JMQPingPong ping_pong = (interval == 0? 
+                        new JMQPingPong(address, topic1, topic2, m_count,
                                 prior1, cpu1, filename1, topic_prior, interval, min_size, isFirst) :
-                        new ActiveMQPingPong(address, topic1, topic2, m_count,
+                        new JMQPingPong(address, topic1, topic2, m_count,
                                 prior1, cpu1, filename1, topic_prior, interval, min_size, max_size, step, before_step, isFirst));
                     ping_pong.startTest();
                     ping_pong.close();
@@ -379,10 +365,10 @@ public class ActiveMQPubSub{
                 }
             }else{
                 try{
-                    ActiveMQPingPong ping_pong = (interval == 0?
-                        new ActiveMQPingPong(address, topic1, topic2, m_count,
+                    JMQPingPong ping_pong = (interval == 0?
+                        new JMQPingPong(address, topic1, topic2, m_count,
                                 prior2, cpu2, filename2, topic_prior, interval, min_size, isFirst) :
-                        new ActiveMQPingPong(address, topic1, topic2, m_count,
+                        new JMQPingPong(address, topic1, topic2, m_count,
                                 prior2, cpu2, filename2, topic_prior, interval, min_size, max_size, step, before_step, isFirst));
                     ping_pong.startTest();
                     ping_pong.close();

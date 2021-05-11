@@ -115,7 +115,7 @@ public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
                 if(!is_started) Thread.currentThread().sleep(1);
                 else break;
             }
-            boolean is_not_received = false;
+            boolean is_not_received = true;
             while(is_not_received){
                 if(_last_rec_msg_id - 1 == _msgCount && _isNew)
                     break;
