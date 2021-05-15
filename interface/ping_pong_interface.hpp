@@ -171,6 +171,8 @@ public:
                 start_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
                              now().time_since_epoch()).count();
+                mu.unlock();
+                continue;
             } else {
                 end_timeout = std::chrono::duration_cast<std::chrono::
                 nanoseconds>(std::chrono::high_resolution_clock::
@@ -179,7 +181,6 @@ public:
                     mu.unlock();
                     return true;
                 }
-
             }
             mu.unlock();
 
