@@ -3,13 +3,15 @@
 
 bool TestSubscriber::receive() {
     auto start_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    if (_last_id >= _msgCount - 1)
+        return false;
     auto msg = _client.consume_message();
     unsigned long proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - start_timestamp;
-
     if (msg) {
         std::string payload = msg->to_string();
         write_received_msg(payload, proc_time);
-        // std::cout << "Rec msg: " << payload << std::endl;
+        _last_id = get_id(payload);
+        // std::cout << "Rec msg: " << _last_id << std::endl;
         return true;
     }
     return false;
@@ -22,7 +24,7 @@ short TestSubscriber::get_id(std::string &msg) {
 unsigned long TestSubscriber::get_timestamp(std::string &msg) {
     auto start_pos = msg.find("time:") + sizeof("time:") - 1;
     auto len = msg.find("data") - start_pos;
-    return std::stoi(msg.substr(start_pos, len));
+    return std::stoll(msg.substr(start_pos, len));
 }
 
 TestSubscriber::TestSubscriber(std::string &topic, int msgCount, int prior, int cpu_index, std::string &filename,

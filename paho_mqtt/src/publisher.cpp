@@ -7,7 +7,7 @@ TestPublisher::TestPublisher(std::string topic,  int msgCount, int prior, int cp
                              int topic_priority):
         TestMiddlewarePub(topic, msgCount, prior, cpu_index, min_msg_size, max_msg_size, step, interval,
                           msgs_before_step, filename, topic_priority),
-        _client(ADDRESS, filename)
+        _client(ADDRESS, filename, mqtt::create_options(MQTTVERSION_5))
                           {
     _client.connect()->wait();
     _topic = new mqtt::topic(_client, topic, QOS);

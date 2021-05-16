@@ -1,10 +1,4 @@
-#include <chrono>
-#include <iostream>
-#include <thread>
-#include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#pragma once
 #include "mqtt/client.h"
 #include "../../interface/sub_interface.hpp"
 #define ADDRESS     "tcp://localhost:1883"
@@ -22,4 +16,5 @@ public:
 
 private:
     mqtt::client _client;
+    short _last_id = -1;
 };

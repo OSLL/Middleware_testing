@@ -1,11 +1,11 @@
+#pragma once
 #include <chrono>
 #include <iostream>
 #include <unistd.h>
-#include "mqtt/async_client.h"
+#include "mqtt/client.h"
 #include "../../interface/pub_interface.hpp"
 #define ADDRESS     "tcp://localhost:1883"
 #define QOS         1
-#pragma once
 
 class TestPublisher: public TestMiddlewarePub{
 public:
