@@ -28,7 +28,8 @@ private:
     mqtt::async_client _client_pub;
     mqtt::client _client_sub;
     mqtt::topic *_topic;
-    short _last_id = -1;
+    short _last_arrived_id = -1;
+    short _last_sent_id = -1;
 
 };
 

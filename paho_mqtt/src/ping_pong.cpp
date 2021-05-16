@@ -25,7 +25,7 @@ TestPingPongNode::TestPingPongNode(std::string &topic1, std::string topic2, int 
 
 bool TestPingPongNode::receive() {
     auto start_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-    if (_last_id >= _msgCount - 1)
+    if (_last_arrived_id >= _msgCount - 1 || (_isFirst && _last_sent_id == _last_arrived_id))
         return false;
     auto msg = _client_sub.consume_message();
     unsigned long proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - start_timestamp;
@@ -33,8 +33,8 @@ bool TestPingPongNode::receive() {
         std::string payload = msg->to_string();
         write_received_msg(payload);
         _read_msg_time[get_id(payload)] = proc_time;
-        _last_id = get_id(payload);
-        // std::cout << "Rec msg: " << _last_id << std::endl;
+        _last_arrived_id = get_id(payload);
+        // std::cout << "Rec msg: " << _last_arrived_id << std::endl;
         return true;
     }
     return false;
@@ -59,8 +59,10 @@ void TestPingPongNode::publish(short id, unsigned int size) {
     tok = _topic->publish(data);
 
     tok->wait();
-    // std:: cout << "Sent msg " << id << std::endl;
     proc_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - cur_time;
+    _write_msg_time[id]=proc_time;
+    _last_sent_id = id;
+    // std:: cout << "Sent msg " << id << std::endl;
 }
 
 void TestPingPongNode::init() {
