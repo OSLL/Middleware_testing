@@ -57,9 +57,8 @@ public abstract class SubscriberInterface<T> extends TestMiddlewareInterface{
                         isTimeoutEx = true;
                         break;
                     }
+                    Thread.currentThread().sleep(1);
                 }
-
-                Thread.currentThread().sleep(1);
             }
 
             to_Json();

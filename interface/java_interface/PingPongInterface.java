@@ -125,6 +125,8 @@ public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
                     if(!_isNew || !_isFirst)
                         is_not_received = false;
                     start_timeout = System.currentTimeMillis() * TIME_SCALE + System.nanoTime();
+                    sem.release();
+                    continue;
                 }else{
                     end_timeout = System.currentTimeMillis() * TIME_SCALE + System.nanoTime();
                     if(end_timeout - start_timeout > TIMEOUT){
