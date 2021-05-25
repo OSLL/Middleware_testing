@@ -1,19 +1,63 @@
-## ROS2-DDS-Testing
+## Middleware testing
 
-**Запуск тестов.**
+### О проекте
 
-Все файлы находятся на ветке test_rate!
+Проект предназначен для тестирования существующих middleware фреймворков.
+Для удобств тестирования был создан тестовый скрипт, который автоматизированно производит тестирование выбранных фреймворков согласно тестовым сценариям и конфигурационным файлам. Файлы тестового скрипта расположены в директории `testing_tool`.
 
-* Неодходимо перейти в режим суперпользователся для создания cgroup и добавления в него PID: 
-`sudo su`
+Также для удобств написания узлов фреймворков для тестирования был создан интерфейс на языке C++. Он включает в себя ожидаемое поведение узлов, разбор параметров, установку приоритета процесса, сохранение результатов в файл. Файлы интерфейса расположены в директории `interface`.
 
-* Затем запустить скрипт:
-`./env_prep.bash
+### Зависимости
 
-* Теперь можно запустить тесты, для запуска тестов необходимо ввести команду:
+Для запуска тестов необходим python 3 версии >= 3.6. Установить можно с помощью команды:
 
-`RMW_IMPLEMENTATION=rmw_opensplice_cpp ros2 launch test_sub_and_pub run_test1_3.launch.py message_number:=<number of msgs to be sent> message_length:=<length of each message>`
+`sudo apt-get install python3.6`
 
-Для использования FastRTPS необходимо изменить параметр:
+Далее необходимо установить python модули, используемые в тестовом скрипте. Для начала надо установить утилиту pip:
 
-`RMW_IMPLEMENTATION=rmw_fastrtps_cpp`
+`sudo apt-get install pip3`
+
+Далее устанавливаем с помощью pip модули:
+
+`sudo pip3 install numpy matplotlib py-cpuinfo psutil`
+
+Для сборки узлов, использующих интерфейс на C++, необходимо установить библиотеки argparse и nlohmann/json. Установка argparse:
+
+```
+git clone https://github.com/p-ranav/argparse.git
+cd argparse
+cmake .
+make install
+```
+
+Установка nlohmann/json:
+
+```
+git clone https://github.com/nlohmann/json.git
+mkdir json/build
+cd build
+cmake ..
+make
+make install
+```
+
+### Запуск тестов
+
+Переходим в директорию `testing_tool`. В 13 и 14 строчки между квадратных скобок добавляем в кавычках пути к исполняемым файлам узлов тестируемых фреймворков. Например:
+```
+    pubs = ["../FastRTPS/src/build/FastRTPSTest "]
+    subs = ["../FastRTPS/src/build/FastRTPSTest "]
+```
+
+Необходимо сгенерировать конфигурационные файлы командой:
+
+`python3 generate_configs.py`
+
+Запуск тестов производится следующей командой:
+
+`sudo python3 test.py`
+
+Для построения графиков по полученным данным необходимо запустить скрипт plotting.py:
+
+`python3 plotting.py`
+

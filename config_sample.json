@@ -9,6 +9,5 @@
     "priority": [-1, -1],
     "cpu_index": [-1, -1],
     "interval": 0,
-    "topic_priority": 100,
-    "isPingPong": true
+    "topic_priority": 100
 }

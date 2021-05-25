@@ -1,0 +1,111 @@
+{
+  "name": "testing",
+  "modules": [
+    "testing:nodes"
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "name": "control",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "control",
+            "type": "Control"
+          }
+        ]
+      },
+      {
+        "name": "ping_pong0",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "ping_pong",
+            "type": "PingPong"
+          }
+        ]
+      },
+      {
+        "name": "ping_pong1",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "pub",
+            "type": "Publisher"
+          },
+          {
+            "name": "sub",
+            "type": "Subscriber"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": "ping_pong1/pub/send",
+        "target": "ping_pong0/ping_pong/receive"
+      },
+      {
+        "source": "ping_pong0/ping_pong/send",
+        "target": "ping_pong1/sub/receive"
+      }
+    ]
+  },
+  "config": {
+    "control": {
+      "control": {
+        "node_count": 2
+      }
+    },
+    "ping_pong0": {
+      "ping_pong": {
+        "tick_period": "1ms",
+        "msg_count": 100,
+        "prior": -1,
+        "cpu_index": -1,
+        "min_msg_size": 0,
+        "max_msg_size": 0,
+        "step": 0,
+        "msgs_before_step": 100,
+        "filename": "/home/mira/goa4/isaac/sdk/packages/testing/tests/test_8/result/Isaac/data/second_sub.json",
+        "ping_pong": true,
+        "first": false
+      }
+    },
+    "ping_pong1": {
+      "sub": {
+        "tick_period": "1ms",
+        "msg_count": 100,
+        "prior": -1,
+        "cpu_index": -1,
+        "min_msg_size": 0,
+        "max_msg_size": 0,
+        "step": 0,
+        "msgs_before_step": 100,
+        "filename": "/home/mira/goa4/isaac/sdk/packages/testing/tests/test_8/result/Isaac/data/first_pub.json",
+        "ping_pong": true
+      },
+      "pub": {
+        "tick_period": "1ms",
+        "msg_count": 100,
+        "prior": -1,
+        "cpu_index": -1,
+        "min_msg_size": 0,
+        "max_msg_size": 0,
+        "step": 0,
+        "msgs_before_step": 100,
+        "filename": "/home/mira/goa4/isaac/sdk/packages/testing/tests/test_8/result/Isaac/data/first_pub.json",
+        "ping_pong": true
+      }
+    }
+  }
+}
