@@ -1,4 +1,4 @@
-# OpenSplice testing guid
+# Open62541 testing guid
 
 ## Open62541 installing
 
