@@ -46,7 +46,7 @@ public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
 
     public PingPongInterface(String topic1, String topic2, int msgCount, int prior, int cpu_index,
             String filename, int topic_priority, int msInterval, int msgSize, boolean isFirst,  Class<T>dataType){
-        super(prior, cpu_index, false);
+        super(cpu_index, prior, false);
         this._filename = filename;
         if (isFirst) {
             this._topic_name1 = topic1;
@@ -74,7 +74,7 @@ public abstract class PingPongInterface<T> extends TestMiddlewareInterface{
     public PingPongInterface(String topic1, String topic2, int msgCount, int prior, int cpu_index,
             String filename, int topic_priority, int msInterval, int msgSizeMin, int msgSizeMax, int step,
             int before_step, boolean isFirst,  Class<T>dataType){
-        super(prior, cpu_index, false);
+        super(cpu_index, prior, false);
         _topic_name1 = topic1;
         _topic_name2 = topic2;
         _filename = filename;

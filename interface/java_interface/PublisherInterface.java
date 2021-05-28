@@ -22,7 +22,7 @@ public abstract class PublisherInterface extends TestMiddlewareInterface{
     public PublisherInterface(String topic, int msgCount, int prior, int cpu_index,
             int min_msg_size, int max_msg_size, int step, int interval, int msgs_before_step,
             String filename, int topic_priority){
-        super(prior, cpu_index, false);
+        super(cpu_index, prior, false);
         this._filename = filename;
         this._topic_name = topic;
         this._msInterval = interval;
