@@ -326,7 +326,12 @@ public class JMQPubSub{
         int max_size = ((Long) json.get("max_msg_size")).intValue();
         int step = ((Long) json.get("step")).intValue();
         int before_step = ((Long) json.get("msgs_before_step")).intValue();
-        int interval = ((Double) json.get("interval")).intValue();
+        int interval = 0;
+        try{
+            interval = ((Double) json.get("interval")).intValue();
+        }catch(ClassCastException e){
+            interval = ((Long) json.get("interval")).intValue();
+        }
         int topic_prior = ((Long) json.get("topic_priority")).intValue();
 
         if(type.equals("publisher")){
