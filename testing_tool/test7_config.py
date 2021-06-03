@@ -7,7 +7,7 @@ def test7_config():
     mkdir_config(7)
     args = {"topic":['test_topic', 'test_topic1'], 
             "res_filenames":['pub', 'sub'],
-            "m_count":2400, "min_msg_size":0, "max_msg_size":2*1024*1024-1,
+            "m_count":2400, "min_msg_size":1, "max_msg_size":2*1024*1024-1,
             "step":256*1024, "msgs_before_step":300,
             "priority":[-1, -1], "cpu_index":[-1, -1], 
             "interval":50, "topic_priority":100}
