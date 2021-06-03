@@ -17,3 +17,8 @@
 
 To run the program use command: ```./node```
 To get info about parameters use: ```./node --help```
+
+
+# PTP sync demo
+
+![AAA](https://github.com/OSLL/ROS2-DDS-Testing/blob/open62541/TSN_media/PTP_demo.gif)
